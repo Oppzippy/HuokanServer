@@ -13,9 +13,9 @@
 				"enabled": true
 			},
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/bin/Debug/net5.0/HuokanServer.dll",
+			"program": "${workspaceFolder}/HuokanServer/bin/Debug/net5.0/HuokanServer.dll",
 			"args": [],
-			"cwd": "${workspaceFolder}",
+			"cwd": "${workspaceFolder}/HuokanServer",
 			"stopAtEntry": false,
 			// Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
 			"serverReadyAction": {
@@ -26,7 +26,7 @@
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			},
 			"sourceFileMap": {
-				"/Views": "${workspaceFolder}/Views"
+				"/Views": "${workspaceFolder}/HuokanServer/Views"
 			}
 		},
 		{
