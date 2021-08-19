@@ -1,0 +1,206 @@
+openapi: "3.0.2"
+info:
+  title: Deposit Log
+  version: "1.0"
+servers:
+  - url: https://depositlog.oppzippy.com/v1
+paths:
+  /depositLogs:
+    post:
+      operationId: importDepositLog
+      tags:
+        - "depositLogs"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                userId:
+                  type: string
+                  description: Discord user ID of the user who is performing the import.
+                depositLog:
+                  $ref: "#/components/schemas/DepositLog"
+              required:
+                - "userId"
+                - "depositLog"
+      responses:
+        "200":
+          description: The deposit log imported successfully.
+        "400":
+          description: Invalid request body.
+        "401":
+          description: You must supply an api key.
+        "403":
+          description: You do not have permission to perform imports on behalf of the specified user.
+  /deposits/{guildId}:
+    get:
+      operationId: getDeposits
+      tags:
+        - "deposits"
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: All deposits in the guild bank sorted oldest to newest.
+                items:
+                  $ref: "#/components/schemas/Deposit"
+  /guilds:
+    get:
+      operationId: getGuilds
+      tags:
+        - "guilds"
+      parameters:
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: realm
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: All guilds
+                items:
+                  $ref: "#/components/schemas/Guild"
+    post:
+      operationId: createGuild
+      tags:
+        - "guilds"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                realm:
+                  type: string
+              required:
+                - "name"
+                - "realm"
+      responses:
+        "200":
+          description: Created guild.
+        "409":
+          description: A guild with that name and realm already exists.
+  /guilds/{guildId}:
+    get:
+      operationId: getGuild
+      tags:
+        - "guilds"
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The guild exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guild"
+        "404":
+          description: The guild does not exist.
+    patch:
+      operationId: updateGuild
+      tags:
+        - "guilds"
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated guild
+        "404":
+          description: Guild does not exist
+    delete:
+      operationId: deleteGuild
+      tags:
+        - "guilds"
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted guild
+        "404":
+          description: Guild does not exist
+
+components:
+  schemas:
+    DepositLog:
+      description: Deposit log
+      type: object
+      properties:
+        log:
+          type: array
+          items:
+            $ref: "#/components/schemas/DepositLogEntry"
+        guildId:
+          type: string
+        capturedAt:
+          type: string
+          description: "RFC3339 date and time that the log was captured at."
+      required:
+        - "log"
+        - "guildId"
+        - "capturedAt"
+    DepositLogEntry:
+      type: object
+      properties:
+        characterName:
+          type: string
+        depositInCopper:
+          type: number
+        guildBankCopper:
+          type: number
+      required:
+        - "characterName"
+        - "depositInCopper"
+        - "guildBankCopper"
+    Deposit:
+      type: object
+      properties:
+        characterName:
+          type: string
+        depositInCopper:
+          type: string
+      required:
+        - "characterName"
+        - "depositInCopper"
+    Guild:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        realm:
+          type: string
