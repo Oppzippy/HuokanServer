@@ -1,0 +1,18 @@
+services:
+  integration_app:
+    build:
+      context: .
+      dockerfile: IntegrationTest.Dockerfile
+    environment:
+      DB_HOST: integration_postgres
+      DB_PORT: 5432
+    depends_on:
+      - integration_postgres
+  integration_postgres:
+    image: postgres:alpine
+    tmpfs:
+      - /usr/local/pgsql/data/:rw
+    environment:
+      POSTGRES_DB: huokan
+      POSTGRES_USER: huokan
+      POSTGRES_PASSWORD: huokan
