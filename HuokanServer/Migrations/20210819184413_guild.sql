@@ -2,6 +2,7 @@ CREATE TABLE organization (
 	id SERIAL PRIMARY KEY,
 	'name' TEXT NOT NULL,
 	slug TEXT NOT NULL UNIQUE,
+	discord_guild_id NUMERIC NOT NULL UNIQUE,
 	created_at TIMESTAMP NOT NULL
 );
 
@@ -19,7 +20,7 @@ CREATE TABLE guild (
 CREATE TABLE user (
 	id SERIAL PRIMARY KEY,
 	organization_id INTEGER NOT NULL REFERENCES organization(id),
-	discord_user_id TEXT NOT NULL,
+	discord_user_id NUMERIC NOT NULL,
 	discord_token TEXT NULL,
 	created_at TIMESTAMP NOT NULL,
 	UNIQUE(organization_id, discord_user_id)

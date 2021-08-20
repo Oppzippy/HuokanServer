@@ -5,7 +5,7 @@ using Dapper;
 
 namespace HuokanServer.Models.Repository.OrganizationRepository
 {
-	public class OrganizationRepository : RepositoryBase
+	public class OrganizationRepository : DbRepositoryBase
 	{
 		public OrganizationRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
@@ -16,6 +16,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					id,
 					'name',
 					slug,
+					discord_guild_id,
 					created_at
 				FROM
 					organization
@@ -28,15 +29,36 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 			);
 		}
 
+		public async Task<BackedOrganization> FindOrganization(ulong discordGuildId)
+		{
+			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
+				SELECT
+					id,
+					'name',
+					slug,
+					discord_guild_id,
+					created_at
+				FROM
+					organization
+				WHERE
+					discord_guild_id = @DiscordGuildId",
+				new
+				{
+					DiscordGuildId = discordGuildId,
+				}
+			);
+		}
+
 		public async Task CreateOrganization(Organization organization)
 		{
 			await dbConnection.ExecuteAsync(@"
-				INSERT INTO organization ('name', slug, created_at)
-				VALUES (@Name, @Slug, @CreatedAt)",
+				INSERT INTO organization ('name', slug, discord_guild_id, created_at)
+				VALUES (@Name, @Slug, @DiscordGuildId, @CreatedAt)",
 				new
 				{
 					Name = organization.Name,
 					Slug = organization.Slug,
+					DiscordGuildId = organization.DiscordGuildId,
 					CreatedAt = DateTime.UtcNow,
 				}
 			);

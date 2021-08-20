@@ -2,10 +2,10 @@ using System.Data;
 
 namespace HuokanServer.Models.Repository
 {
-	public abstract class RepositoryBase
+	public abstract class DbRepositoryBase
 	{
 		protected readonly IDbConnection dbConnection;
-		public RepositoryBase(IDbConnection dbConnection)
+		public DbRepositoryBase(IDbConnection dbConnection)
 		{
 			this.dbConnection = dbConnection;
 		}
