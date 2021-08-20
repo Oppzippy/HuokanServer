@@ -1,6 +1,5 @@
 using System;
-using HuokanServer.Models.Repository;
-using HuokanServer.Models.Repository.Dtos;
+using HuokanServer.Models.Repository.DepositRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests

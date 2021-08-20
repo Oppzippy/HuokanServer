@@ -4,9 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using HuokanServer.Models.Repository.Dtos;
 
-namespace HuokanServer.Models.Repository
+namespace HuokanServer.Models.Repository.DepositRepository
 {
 	public class DepositRepository : RepositoryBase
 	{
@@ -84,7 +83,7 @@ namespace HuokanServer.Models.Repository
 			);
 		}
 
-		public async Task Import(int graphId, int userId, List<GuildBankDeposit> deposits)
+		public async Task Import(int graphId, int userId, List<Deposit> deposits)
 		{
 			var sequences = await FindDepositSequence(graphId, deposits);
 			var maxLength = sequences.Max(sequence => sequence.Count);
@@ -99,7 +98,7 @@ namespace HuokanServer.Models.Repository
 			}
 		}
 
-		private async Task<List<List<int>>> FindDepositSequence(int graphId, List<GuildBankDeposit> deposits)
+		private async Task<List<List<int>>> FindDepositSequence(int graphId, List<Deposit> deposits)
 		{
 			if (deposits.Count == 0)
 			{
@@ -110,17 +109,17 @@ namespace HuokanServer.Models.Repository
 			return sequences;
 		}
 
-		private async Task<List<int>> FindDepositSequenceStart(int graphId, GuildBankDeposit firstDeposit)
+		private async Task<List<int>> FindDepositSequenceStart(int graphId, Deposit firstDeposit)
 		{
 			var rows = await dbConnection.QueryAsync<FindDepositSequenceStartResult>(@"
 				SELECT graph_node.id FROM graph
 					INNER JOIN graph_node ON graph_node.graph_id = graph.id
 					INNER JOIN deposit_node ON deposit_node.node_id = graph_node.id
 				WHERE
-					graph.id = @graph_id AND
-					deposit_node.character_name = @character_name AND
-					deposit_node.deposit_in_copper = @deposit_in_copper AND
-					deposit_node.guild_bank_copper = @guild_bank_copper",
+					graph.id = @GraphId AND
+					deposit_node.character_name = @CharacterName AND
+					deposit_node.deposit_in_copper = @DepositInCopper AND
+					deposit_node.guild_bank_copper = @GuildBankCopper",
 				new
 				{
 					GraphId = graphId,
@@ -137,7 +136,7 @@ namespace HuokanServer.Models.Repository
 			public int Id { get; set; }
 		}
 
-		private async Task<List<List<int>>> FindDepositSequenceRest(int graphId, List<GuildBankDeposit> deposits, List<int> depositIds)
+		private async Task<List<List<int>>> FindDepositSequenceRest(int graphId, List<Deposit> deposits, List<int> depositIds)
 		{
 			var sequencesByLatestId = new Dictionary<int, List<int>>();
 			foreach (var depositId in depositIds)
@@ -156,7 +155,7 @@ namespace HuokanServer.Models.Repository
 						INNER JOIN graph_edge ON graph_edge.end_node_id = graph_node.id
 						INNER JOIN deposit_node ON deposit_node.node_id = graph_node.id
 					WHERE
-						graph.id = @graph_id AND
+						graph.id = @GraphId AND
 						graph_edge.start_node_id = ANY(@PreviousNodeIds::INTEGER ARRAY) AND
 						deposit_node.character_name = @CharacterName AND
 						deposit_node.deposit_in_copper = @DepositInCopper AND
@@ -204,7 +203,7 @@ namespace HuokanServer.Models.Repository
 			transaction.Commit();
 		}
 
-		private async Task ImportSequence(int graphId, int userId, List<GuildBankDeposit> deposits, List<int> sequence)
+		private async Task ImportSequence(int graphId, int userId, List<Deposit> deposits, List<int> sequence)
 		{
 			using var transaction = dbConnection.BeginTransaction();
 			int? prevNodeId = null;
