@@ -26,5 +26,15 @@ CREATE TABLE user (
 	UNIQUE(organization_id, discord_user_id)
 );
 
+CREATE TABLE api_key (
+	id SERIAL PRIMARY KEY,
+	hashed_key TEXT NOT NULL UNIQUE,
+	user_id INTEGER NOT NULL,
+	created_at TIMESTAMP NOT NULL,
+	expires_at TIMESTAMP NULL
+);
+
+CREATE VIEW unexpired_api_key AS SELECT * FROM api_key WHERE expires_at IS NULL OR expires_at < NOW() AT TIME ZONE 'UTC';
+
 ALTER TABLE deposit_node_endorsement ALTER COLUMN user_id TYPE INTEGER USING user_id::INTEGER;
 ALTER TABLE deposit_node_endorsement ALTER COLUMN user_id SET NOT NULL;

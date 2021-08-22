@@ -1,4 +1,6 @@
 using System.Data;
+using HuokanServer.Middleware;
+using HuokanServer.Models.Repository.UserRepository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +27,7 @@ namespace HuokanServer
 			services.AddScoped<IDbConnection>((sp) => new NpgsqlConnection(connectionString));
 
 			services.AddControllers();
+
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "HuokanServer", Version = "v1" });
@@ -43,7 +46,7 @@ namespace HuokanServer
 
 			app.UseRouting();
 
-			app.UseAuthorization();
+			app.UseMiddleware<ApiKeyMiddleware>();
 
 			app.UseEndpoints(endpoints =>
 			{

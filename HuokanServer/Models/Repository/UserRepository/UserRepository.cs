@@ -9,6 +9,26 @@ namespace HuokanServer.Models.Repository.UserRepository
 	{
 		public UserRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
+		public async Task<BackedUser> GetUser(int id)
+		{
+			return await dbConnection.QueryFirstAsync<BackedUser>(@"
+				SELECT
+					id,
+					organization_id,
+					discord_user_id,
+					discord_token,
+					created_at
+				FROM
+					user
+				WHERE
+					id = @Id",
+				new
+				{
+					@Id = id,
+				}
+			);
+		}
+
 		public async Task<BackedUser> FindUser(User user)
 		{
 			return await dbConnection.QueryFirstAsync<BackedUser>(@"
