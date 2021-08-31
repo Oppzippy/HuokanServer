@@ -11,6 +11,8 @@ namespace HuokanServer.Models.Repository.PermissionRepository
 {
 	public class DiscordUserPermissionRepository : IDisposable, IUserPermissionRepository
 	{
+		// TODO implement using IDiscordUser
+
 		private readonly DiscordRestClient _discord;
 		// TODO replace with some sort of TTL cache (MemoryCache?)
 		private readonly Dictionary<ulong, DiscordMember> _currentUserMemberCache = new Dictionary<ulong, DiscordMember>();

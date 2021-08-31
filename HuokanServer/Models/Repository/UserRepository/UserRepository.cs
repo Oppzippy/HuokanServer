@@ -29,6 +29,17 @@ namespace HuokanServer.Models.Repository.UserRepository
 			);
 		}
 
+		public async Task<BackedUser> FindOrCreateUser(User user)
+		{
+			// TODO do this in a transaction
+			BackedUser existingUser = await FindUser(user);
+			if (existingUser != null)
+			{
+				return existingUser;
+			}
+			return await CreateUser(user);
+		}
+
 		public async Task<BackedUser> FindUser(User user)
 		{
 			return await dbConnection.QueryFirstAsync<BackedUser>(@"

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
@@ -8,6 +9,28 @@ namespace HuokanServer.Models.Repository.GuildRepository
 	public class GuildRepository : DbRepositoryBase
 	{
 		public GuildRepository(IDbConnection dbConnection) : base(dbConnection) { }
+
+		public async Task<List<BackedGuild>> FindGuilds(Guild guild)
+		{
+			var query = @"
+				SELECT
+					id, organization_id, 'name', realm, created_at
+				FROM
+					guild
+				WHERE
+					organization_id = @OrganizationId AND
+					is_not_deleted = TRUE";
+			if (guild.Name != null)
+			{
+				query += " AND 'name' = @Name";
+			}
+			if (guild.Realm != null)
+			{
+				query += " AND realm = @Realm";
+			}
+
+			return (await dbConnection.QueryAsync<BackedGuild>(query)).AsList();
+		}
 
 		public async Task<BackedGuild> FindGuild(Guild guild)
 		{
