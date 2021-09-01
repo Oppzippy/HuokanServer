@@ -1,6 +1,6 @@
 CREATE TABLE organization (
 	id SERIAL PRIMARY KEY,
-	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
+	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	'name' TEXT NOT NULL,
 	slug TEXT NOT NULL UNIQUE,
 	discord_guild_id NUMERIC NOT NULL UNIQUE,
@@ -9,7 +9,7 @@ CREATE TABLE organization (
 
 CREATE TABLE guild (
 	id SERIAL PRIMARY KEY,
-	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
+	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	organization_id INTEGER NOT NULL REFERENCES organization(id),
 	'name' TEXT NOT NULL,
 	realm TEXT NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE guild (
 
 CREATE TABLE user (
 	id SERIAL PRIMARY KEY,
-	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
+	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	organization_id INTEGER NOT NULL REFERENCES organization(id),
 	discord_user_id NUMERIC NOT NULL,
 	discord_token TEXT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE user (
 
 CREATE TABLE api_key (
 	id SERIAL PRIMARY KEY,
-	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
+	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	hashed_key TEXT NOT NULL UNIQUE,
 	user_id INTEGER NOT NULL,
 	created_at TIMESTAMP NOT NULL,
