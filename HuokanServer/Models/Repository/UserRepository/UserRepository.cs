@@ -9,11 +9,11 @@ namespace HuokanServer.Models.Repository.UserRepository
 	{
 		public UserRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
-		public async Task<BackedUser> GetUser(int id)
+		public async Task<BackedUser> GetUser(Guid id)
 		{
 			return await dbConnection.QueryFirstAsync<BackedUser>(@"
 				SELECT
-					id,
+					external_id AS id,
 					organization_id,
 					discord_user_id,
 					discord_token,
@@ -21,10 +21,10 @@ namespace HuokanServer.Models.Repository.UserRepository
 				FROM
 					user
 				WHERE
-					id = @Id",
+					external_id = @Id",
 				new
 				{
-					@Id = id,
+					Id = id,
 				}
 			);
 		}
@@ -44,7 +44,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 		{
 			return await dbConnection.QueryFirstAsync<BackedUser>(@"
 				SELECT
-					id,
+					external_id AS id,
 					organization_id,
 					discord_user_id,
 					discord_token,
@@ -66,7 +66,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 				VALUES
 					(@OrganizationId, @DiscordUserId, @CreatedAt)
 				RETURNING
-					id, organization_id, discord_user_id, discord_token, created_at",
+					external_id AS id, organization_id, discord_user_id, discord_token, created_at",
 				new
 				{
 					OrganizationId = user.OrganizationId,
@@ -84,7 +84,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 				SET
 					discord_token = @DiscordToken
 				WHERE
-					id = @Id",
+					external_id = @Id",
 				user
 			);
 		}

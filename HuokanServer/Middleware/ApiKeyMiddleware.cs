@@ -2,10 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.Models.Repository.ApiKeyRepository;
 using HuokanServer.Models.Repository.UserRepository;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HuokanServer.Middleware
 {

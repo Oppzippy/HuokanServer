@@ -18,11 +18,13 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 			var hash = HashApiKey(apiKey);
 			return await dbConnection.QueryFirstAsync<BackedApiKey>(@"
                 SELECT
-                    user_id
+                    user.external_id AS id
                 FROM
                     unexpired_api_key
+				INNER JOIN
+					user ON unexpired_api_key.user_id = user.id
                 WHERE
-                    hashed_key = @HashedKey",
+                    unexpired_api_key.hashed_key = @HashedKey",
 				new
 				{
 					HashedKey = hash,
@@ -43,7 +45,7 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
                     expires_at
                 ) VALUES (
                     @KeyHash,
-                    @UserId,
+                    (SELECT id FROM user WHERE external_id = @UserId),
                     @CreatedAt
                     @ExpiresAt
                 )",

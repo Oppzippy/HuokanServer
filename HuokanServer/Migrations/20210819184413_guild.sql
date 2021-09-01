@@ -1,5 +1,6 @@
 CREATE TABLE organization (
 	id SERIAL PRIMARY KEY,
+	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
 	'name' TEXT NOT NULL,
 	slug TEXT NOT NULL UNIQUE,
 	discord_guild_id NUMERIC NOT NULL UNIQUE,
@@ -8,9 +9,11 @@ CREATE TABLE organization (
 
 CREATE TABLE guild (
 	id SERIAL PRIMARY KEY,
+	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
 	organization_id INTEGER NOT NULL REFERENCES organization(id),
 	'name' TEXT NOT NULL,
 	realm TEXT NOT NULL,
+	guild_bank_graph_id INTEGER NULL REFERENCES graph(id),
 	created_at TIMESTAMP NOT NULL,
 	deleted_at TIMESTAMP NULL,
 	is_not_deleted BOOLEAN GENERATED ALWAYS AS (deleted_at IS NULL) STORED,
@@ -19,6 +22,7 @@ CREATE TABLE guild (
 
 CREATE TABLE user (
 	id SERIAL PRIMARY KEY,
+	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
 	organization_id INTEGER NOT NULL REFERENCES organization(id),
 	discord_user_id NUMERIC NOT NULL,
 	discord_token TEXT NULL,
@@ -28,6 +32,7 @@ CREATE TABLE user (
 
 CREATE TABLE api_key (
 	id SERIAL PRIMARY KEY,
+	external_id UUID NOT NULL DEFAULT gen_random_uuid(),
 	hashed_key TEXT NOT NULL UNIQUE,
 	user_id INTEGER NOT NULL,
 	created_at TIMESTAMP NOT NULL,

@@ -14,36 +14,48 @@ namespace HuokanServer.Models.Repository.GuildRepository
 		{
 			var query = @"
 				SELECT
-					id, organization_id, 'name', realm, created_at
+					guild.external_id AS id,
+					organization.external_id AS organization_id,
+					guild.'name',
+					guild.realm,
+					guild.created_at
 				FROM
 					guild
+				INNER JOIN
+					organization ON guild.organization_id = organization.id
 				WHERE
-					organization_id = @OrganizationId AND
+					organization.external_id = @OrganizationId AND
 					is_not_deleted = TRUE";
 			if (guild.Name != null)
 			{
-				query += " AND 'name' = @Name";
+				query += " AND guild.'name' = @Name";
 			}
 			if (guild.Realm != null)
 			{
-				query += " AND realm = @Realm";
+				query += " AND guild.realm = @Realm";
 			}
 
-			return (await dbConnection.QueryAsync<BackedGuild>(query)).AsList();
+			return (await dbConnection.QueryAsync<BackedGuild>(query, guild)).AsList();
 		}
 
 		public async Task<BackedGuild> FindGuild(Guild guild)
 		{
 			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
 				SELECT
-					id, organization_id, 'name', realm, created_at
+					guild.external_id AS id,
+					organization.external_id AS organization_id,
+					guild.'name',
+					guild.realm,
+					guild.created_at
 				FROM
 					guild
+				INNER JOIN
+					organization ON guild.organization_id = organization.id
 				WHERE
-					organization_id = @OrganizationId AND
-					'name' = @Name AND
-					realm = @Realm AND
-					is_not_deleted = TRUE",
+					organization.external_id = @OrganizationId AND
+					guild.'name' = @Name AND
+					guild.realm = @Realm AND
+					guild.is_not_deleted = TRUE",
 				guild
 			);
 		}
@@ -59,7 +71,12 @@ namespace HuokanServer.Models.Repository.GuildRepository
 						created_at
 					)
 				VALUES
-					(@OrganizationId, @Name, @Realm, @CreatedAt)
+					(
+						(SELECT id FROM organization WHERE external_id = @OrganizationId),
+						@Name,
+						@Realm,
+						@CreatedAt
+					)
 				RETURNING
 					id, organization_id, 'name', realm, created_at",
 				new
@@ -78,13 +95,21 @@ namespace HuokanServer.Models.Repository.GuildRepository
 				UPDATE
 					guild
 				SET
-					organization_id = @OrganizationId,
-					'name' = @Name,
-					realm = @Realm,
+					guild.organization_id = (SELECT id FROM organization WHERE external_id = @OrganizationId),
+					guild.'name' = @Name,
+					guild.realm = @Realm,
+				FROM
+					organization
 				WHERE
-					id = @Id AND
-					organization_id = @OrganizationId
-				RETURNING id, organization_id, 'name', realm, created_at",
+					guild.organization_id = organization.id AND
+					guild.external_id = @Id AND
+					organization.external_id = @OrganizationId
+				RETURNING
+					guild.external_id AS id,
+					organization.external_id AS organization_id,
+					guild.'name',
+					guild.realm,
+					guild.created_at",
 				guild
 			);
 		}
@@ -95,10 +120,13 @@ namespace HuokanServer.Models.Repository.GuildRepository
 				UPDATE
 					guild
 				SET
-					deleted_at = @DeletedAt
+					guild.deleted_at = @DeletedAt
+				FROM
+					organization
 				WHERE
-					id = @Id AND
-					organization_id = @OrganizationId",
+					guild.organization_id = organization.id AND
+					guild.external_id = @Id AND
+					organization.external_id = @OrganizationId",
 				new
 				{
 					Id = guild.Id,

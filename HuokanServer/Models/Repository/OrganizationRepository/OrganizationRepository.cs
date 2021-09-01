@@ -13,7 +13,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 		{
 			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
 				SELECT
-					id,
+					external_id AS id,
 					'name',
 					slug,
 					discord_guild_id,
@@ -33,7 +33,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 		{
 			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
 				SELECT
-					id,
+					external_id AS id,
 					'name',
 					slug,
 					discord_guild_id,
