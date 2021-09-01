@@ -9,6 +9,26 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 	{
 		public OrganizationRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
+		public async Task<BackedOrganization> GetOrganization(Guid organizationId)
+		{
+			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
+				SELECT
+					external_id AS id,
+					'name',
+					slug,
+					discord_guild_id,
+					created_at
+				FROM
+					organization
+				WHERE
+					external_id = @Id",
+				new
+				{
+					Id = organizationId,
+				}
+			);
+		}
+
 		public async Task<BackedOrganization> FindOrganization(string slug)
 		{
 			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"

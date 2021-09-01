@@ -5,6 +5,7 @@ using System.Security.Policy;
 using System.Threading.Tasks;
 using HuokanServer.Models.Repository.GuildRepository;
 using HuokanServer.Models.Repository.UserRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HuokanServer.Controllers
@@ -24,6 +25,7 @@ namespace HuokanServer.Controllers
 
 		[HttpGet]
 		[Route("/guilds")]
+		[Authorize(Policy = "OrganizationMember")]
 		public async Task<IEnumerable<GuildInfo>> GetGuilds([FromQuery(Name = "name")] string guildName, [FromQuery(Name = "realm")] string guildRealm)
 		{
 			List<BackedGuild> guilds = await _guildRepository.FindGuilds(new Guild()
@@ -39,8 +41,17 @@ namespace HuokanServer.Controllers
 			});
 		}
 
+		[HttpGet]
+		[Route("/guilds/{guildId}")]
+		[Authorize(Policy = "OrganizationMember")]
+		public async Task<GuildInfo> GetGuild([FromRoute] Guid id)
+		{
+
+		}
+
 		[HttpPost]
 		[Route("/guilds")]
+		[Authorize(Policy = "OrganizationAdmin")]
 		public async Task<GuildInfo> CreateGuild([FromBody] GuildInfo guildInfo)
 		{
 			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
@@ -54,13 +65,6 @@ namespace HuokanServer.Controllers
 				Name = newGuild.Name,
 				Realm = newGuild.Realm,
 			};
-		}
-
-		[HttpGet]
-		[Route("/guilds/{guildId}")]
-		public async Task<GuildInfo> GetGuild([FromRoute] Guid id)
-		{
-
 		}
 
 		public record GuildInfo

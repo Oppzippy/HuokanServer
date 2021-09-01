@@ -1,5 +1,7 @@
 using System.Data;
+using HuokanServer.Authorization;
 using HuokanServer.Middleware;
+using HuokanServer.Models.Repository.UserPermissionRepository;
 using HuokanServer.Models.Repository.UserRepository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +27,12 @@ namespace HuokanServer
 		{
 			var connectionString = Configuration.GetConnectionString("Postgres");
 			services.AddScoped<IDbConnection>((sp) => new NpgsqlConnection(connectionString));
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("OrganizationAdministrator", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_ADMINISTRATOR)));
+				options.AddPolicy("OrganizationModerator", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_MODERATOR)));
+				options.AddPolicy("OrganizationMember", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_MEMBER)));
+			});
 
 			services.AddControllers();
 
