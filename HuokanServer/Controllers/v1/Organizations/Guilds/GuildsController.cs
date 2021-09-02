@@ -7,7 +7,7 @@ using HuokanServer.Models.Repository.UserRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Controllers.Organizations.Guilds
+namespace HuokanServer.Controllers.v1.Organizations.Guilds
 {
 	[ApiController]
 	[Route("/organizations/{organizationId}/guilds")]
@@ -32,12 +32,7 @@ namespace HuokanServer.Controllers.Organizations.Guilds
 				Name = guildName,
 				Realm = guildRealm,
 			});
-			return guilds.Select(guild => new ApiGuild()
-			{
-				Id = guild.Id,
-				Name = guild.Name,
-				Realm = guild.Realm,
-			});
+			return guilds.Select(ApiGuild.From);
 		}
 
 		[HttpGet]
@@ -46,12 +41,7 @@ namespace HuokanServer.Controllers.Organizations.Guilds
 		public async Task<ApiGuild> GetGuild([FromRoute] Guid id)
 		{
 			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, id);
-			return new ApiGuild()
-			{
-				Id = guild.Id,
-				Name = guild.Name,
-				Realm = guild.Realm,
-			};
+			return ApiGuild.From(guild);
 		}
 
 		[HttpPost]
@@ -64,12 +54,7 @@ namespace HuokanServer.Controllers.Organizations.Guilds
 				Name = guildInfo.Name,
 				Realm = guildInfo.Realm,
 			});
-			return new ApiGuild()
-			{
-				Id = newGuild.Id,
-				Name = newGuild.Name,
-				Realm = newGuild.Realm,
-			};
+			return ApiGuild.From(newGuild);
 		}
 
 		[HttpPatch]
@@ -84,12 +69,7 @@ namespace HuokanServer.Controllers.Organizations.Guilds
 				Realm = guildInfo.Realm,
 			};
 			BackedGuild updatedGuild = await _guildRepository.UpdateGuild(modifiedGuild);
-			return new ApiGuild()
-			{
-				Id = updatedGuild.Id,
-				Name = updatedGuild.Name,
-				Realm = updatedGuild.Realm,
-			};
+			return ApiGuild.From(updatedGuild);
 		}
 
 		[HttpDelete]
@@ -99,13 +79,6 @@ namespace HuokanServer.Controllers.Organizations.Guilds
 		{
 			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, guildId);
 			await _guildRepository.DeleteGuild(guild);
-		}
-
-		public record ApiGuild
-		{
-			public Guid Id { get; init; }
-			public string Name { get; init; }
-			public string Realm { get; init; }
 		}
 	}
 }

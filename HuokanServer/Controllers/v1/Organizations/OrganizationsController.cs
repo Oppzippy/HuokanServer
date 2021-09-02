@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,10 +16,10 @@ namespace HuokanServer.Controllers.v1.Organizations
 		private readonly OrganizationRepository _organizationRepository;
 		private readonly BackedUser _user;
 
-		public OrganizationsController(IHttpContextAccessor httpContextAccessor, OrganizationRepository organizationRepository)
+		public OrganizationsController(OrganizationRepository organizationRepository)
 		{
-			_user = httpContextAccessor.HttpContext.Features.Get<BackedUser>();
 			_organizationRepository = organizationRepository;
+			_user = HttpContext.Features.Get<BackedUser>();
 		}
 
 		[HttpGet]
@@ -28,38 +27,15 @@ namespace HuokanServer.Controllers.v1.Organizations
 		public async Task<IEnumerable<ApiOrganization>> GetOrganizations()
 		{
 			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user);
-			return organizations.Select(organization => new ApiOrganization()
-			{
-				Id = organization.Id,
-				Name = organization.Name,
-				Slug = organization.Slug,
-				DiscordGuildId = organization.DiscordGuildId,
-				CreatedAt = organization.CreatedAt,
-			});
+			return organizations.Select(ApiOrganization.From);
 		}
 
 		[HttpPost]
 		[Authorize(Policy = "Administrator")]
-		public async Task<ApiOrganization> CreateOrganization([FromBody] Organization organizationInfo)
+		public async Task<ApiOrganization> CreateOrganization([FromBody] ApiOrganization apiOrganization)
 		{
-			BackedOrganization newOrganization = await _organizationRepository.CreateOrganization(organizationInfo);
-			return new ApiOrganization()
-			{
-				Id = newOrganization.Id,
-				Name = newOrganization.Name,
-				Slug = newOrganization.Slug,
-				DiscordGuildId = newOrganization.DiscordGuildId,
-				CreatedAt = newOrganization.CreatedAt,
-			};
-		}
-
-		public record ApiOrganization
-		{
-			public Guid Id { get; init; }
-			public string Name { get; init; }
-			public string Slug { get; init; }
-			public ulong DiscordGuildId { get; init; }
-			public DateTime CreatedAt { get; init; }
+			BackedOrganization newOrganization = await _organizationRepository.CreateOrganization(apiOrganization.ToOrganization());
+			return ApiOrganization.From(newOrganization);
 		}
 	}
 }
