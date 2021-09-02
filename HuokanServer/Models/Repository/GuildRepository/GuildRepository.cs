@@ -10,6 +10,31 @@ namespace HuokanServer.Models.Repository.GuildRepository
 	{
 		public GuildRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
+		public async Task<BackedGuild> GetGuild(Guid organizationId, Guid guildId)
+		{
+			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
+				SELECT
+					guild.external_id AS id,
+					organization.external_id AS organization_id,
+					guild.'name',
+					guild.realm,
+					guild.created_at
+				FROM
+					guild
+				INNER JOIN
+					organization ON guild.organization_id = organization.id
+				WHERE
+					organization.external_id = @OrganizationId AND
+					guild.external_id = @GuildId
+					guild.is_not_deleted = TRUE",
+				new
+				{
+					OrganizationId = organizationId,
+					GuildId = guildId,
+				}
+			);
+		}
+
 		public async Task<List<BackedGuild>> FindGuilds(Guild guild)
 		{
 			var query = @"
@@ -36,28 +61,6 @@ namespace HuokanServer.Models.Repository.GuildRepository
 			}
 
 			return (await dbConnection.QueryAsync<BackedGuild>(query, guild)).AsList();
-		}
-
-		public async Task<BackedGuild> FindGuild(Guild guild)
-		{
-			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
-				SELECT
-					guild.external_id AS id,
-					organization.external_id AS organization_id,
-					guild.'name',
-					guild.realm,
-					guild.created_at
-				FROM
-					guild
-				INNER JOIN
-					organization ON guild.organization_id = organization.id
-				WHERE
-					organization.external_id = @OrganizationId AND
-					guild.'name' = @Name AND
-					guild.realm = @Realm AND
-					guild.is_not_deleted = TRUE",
-				guild
-			);
 		}
 
 		public async Task<BackedGuild> CreateGuild(Guild guild)

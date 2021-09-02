@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using HuokanServer.Models.Repository.GuildRepository;
 using HuokanServer.Models.Repository.UserRepository;
@@ -36,6 +35,7 @@ namespace HuokanServer.Controllers
 			});
 			return guilds.Select(guild => new GuildInfo()
 			{
+				Id = guild.Id,
 				Name = guild.Name,
 				Realm = guild.Realm,
 			});
@@ -46,12 +46,18 @@ namespace HuokanServer.Controllers
 		[Authorize(Policy = "OrganizationMember")]
 		public async Task<GuildInfo> GetGuild([FromRoute] Guid id)
 		{
-
+			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, id);
+			return new GuildInfo()
+			{
+				Id = guild.Id,
+				Name = guild.Name,
+				Realm = guild.Realm,
+			};
 		}
 
 		[HttpPost]
 		[Route("/guilds")]
-		[Authorize(Policy = "OrganizationAdmin")]
+		[Authorize(Policy = "OrganizationAdministrator")]
 		public async Task<GuildInfo> CreateGuild([FromBody] GuildInfo guildInfo)
 		{
 			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
@@ -62,13 +68,44 @@ namespace HuokanServer.Controllers
 			});
 			return new GuildInfo()
 			{
+				Id = newGuild.Id,
 				Name = newGuild.Name,
 				Realm = newGuild.Realm,
 			};
 		}
 
+		[HttpPatch]
+		[Route("/guilds/{guildId}")]
+		[Authorize(Policy = "OrganizationAdministrator")]
+		public async Task<GuildInfo> UpdateGuild([FromRoute] Guid guildId, [FromBody] GuildInfo guildInfo)
+		{
+			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, guildId);
+			BackedGuild modifiedGuild = guild with
+			{
+				Name = guildInfo.Name,
+				Realm = guildInfo.Realm,
+			};
+			BackedGuild updatedGuild = await _guildRepository.UpdateGuild(modifiedGuild);
+			return new GuildInfo()
+			{
+				Id = updatedGuild.Id,
+				Name = updatedGuild.Name,
+				Realm = updatedGuild.Realm,
+			};
+		}
+
+		[HttpDelete]
+		[Route("/guilds/{guildId}")]
+		[Authorize(Policy = "OrganizationAdministrator")]
+		public async Task DeleteGuild([FromRoute] Guid guildId)
+		{
+			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, guildId);
+			await _guildRepository.DeleteGuild(guild);
+		}
+
 		public record GuildInfo
 		{
+			public Guid Id { get; init; }
 			public string Name { get; init; }
 			public string Realm { get; init; }
 		}
