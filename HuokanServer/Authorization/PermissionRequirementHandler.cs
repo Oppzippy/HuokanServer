@@ -5,6 +5,8 @@ using HuokanServer.Models.Repository.UserPermissionRepository;
 using HuokanServer.Models.Repository.UserRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace HuokanServer.Authorization
 {
@@ -24,28 +26,37 @@ namespace HuokanServer.Authorization
 		protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
 		{
 			BackedUser user = _httpContextAccessor.HttpContext.Features.Get<BackedUser>();
-			BackedOrganization org = await _organizationRepository.GetOrganization(user.OrganizationId);
-			// TODO move switch out of here
-			switch (requirement.RequiredPermission)
+			RouteValueDictionary routeValues = _httpContextAccessor.HttpContext.Request.RouteValues;
+			if (routeValues.TryGetValue("organizationId", out object organizationIdObject) && organizationIdObject is string organizationIdString)
 			{
-				case Permission.ORGANIZATION_ADMINISTRATOR:
-					if (await _userPermissionRepository.IsOrganizationAdministrator(org))
-					{
-						context.Succeed(requirement);
-					}
-					break;
-				case Permission.ORGANIZATION_MODERATOR:
-					if (await _userPermissionRepository.IsOrganizationModerator(org))
-					{
-						context.Succeed(requirement);
-					}
-					break;
-				case Permission.ORGANIZATION_MEMBER:
-					if (await _userPermissionRepository.IsOrganizationMember(org))
-					{
-						context.Succeed(requirement);
-					}
-					break;
+				Guid organizationId = Guid.Parse(organizationIdString);
+				BackedOrganization org = await _organizationRepository.GetOrganization(organizationId);
+
+				switch (requirement.RequiredPermission)
+				{
+					case Permission.ORGANIZATION_ADMINISTRATOR:
+						if (await _userPermissionRepository.IsOrganizationAdministrator(org))
+						{
+							context.Succeed(requirement);
+						}
+						break;
+					case Permission.ORGANIZATION_MODERATOR:
+						if (await _userPermissionRepository.IsOrganizationModerator(org))
+						{
+							context.Succeed(requirement);
+						}
+						break;
+					case Permission.ORGANIZATION_MEMBER:
+						if (await _userPermissionRepository.IsOrganizationMember(org))
+						{
+							context.Succeed(requirement);
+						}
+						break;
+				}
+			}
+			else
+			{
+				// TODO add permission for logged in user
 			}
 		}
 	}

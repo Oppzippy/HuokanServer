@@ -59,11 +59,7 @@ namespace HuokanServer.Controllers.Auth
 			{
 				DiscordUserId = discordUser.Id,
 			});
-			var userWithNewToken = user with
-			{
-				DiscordToken = token.AccessToken,
-			};
-			await _userRepository.UpdateDiscordToken(userWithNewToken);
+			BackedUser userWithNewToken = await _userRepository.UpdateDiscordToken(user.Id, token.AccessToken);
 			string apiKey = await _apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = userWithNewToken.Id,

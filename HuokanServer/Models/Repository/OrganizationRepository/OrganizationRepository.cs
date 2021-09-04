@@ -71,7 +71,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 			);
 		}
 
-		public async Task<List<BackedOrganization>> FindOrganizationsContainingUser(BackedUser user)
+		public async Task<List<BackedOrganization>> FindOrganizationsContainingUser(Guid userId)
 		{
 			return (await dbConnection.QueryAsync<BackedOrganization>(@"
 				SELECT
@@ -82,13 +82,15 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					organization.created_at
 				FROM
 					organization
+				INNER JOIN organization_user_membership AS membership
+					ON membership.organization_id = organization.id
 				INNER JOIN user
-					ON user.organization_id = organization.id
+					ON user.id = membership.user_id
 				WHERE
 					user.external_id = @UserId",
 				new
 				{
-					UserId = user.Id,
+					UserId = userId,
 				}
 			)).AsList();
 		}

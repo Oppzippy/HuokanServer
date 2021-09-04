@@ -26,7 +26,7 @@ namespace HuokanServer.Controllers.v1.Organizations
 		[Authorize(Policy = "User")]
 		public async Task<IEnumerable<ApiOrganization>> GetOrganizations()
 		{
-			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user);
+			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user.Id);
 			return organizations.Select(ApiOrganization.From);
 		}
 

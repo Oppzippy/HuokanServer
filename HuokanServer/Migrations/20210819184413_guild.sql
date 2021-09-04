@@ -23,7 +23,6 @@ CREATE TABLE guild (
 CREATE TABLE user (
 	id SERIAL PRIMARY KEY,
 	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
-	organization_id INTEGER NOT NULL REFERENCES organization(id),
 	discord_user_id NUMERIC NOT NULL,
 	discord_token TEXT NULL,
 	created_at TIMESTAMP NOT NULL,
@@ -40,6 +39,15 @@ CREATE TABLE api_key (
 );
 
 CREATE VIEW unexpired_api_key AS SELECT * FROM api_key WHERE expires_at IS NULL OR expires_at < NOW() AT TIME ZONE 'UTC';
+
+CREATE TABLE organization_user_membership (
+	id SERIAL PRIMARY KEY,
+	organization_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	UNIQUE(organization_id, user_id)
+);
+
+CREATE INDEX organization_user_membership_reverse_index ON organization_user_membership (user_id, organization_id);
 
 ALTER TABLE deposit_node_endorsement ALTER COLUMN user_id TYPE INTEGER USING user_id::INTEGER;
 ALTER TABLE deposit_node_endorsement ALTER COLUMN user_id SET NOT NULL;

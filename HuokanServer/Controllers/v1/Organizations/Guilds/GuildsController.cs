@@ -24,11 +24,15 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 
 		[HttpGet]
 		[Authorize(Policy = "OrganizationMember")]
-		public async Task<IEnumerable<ApiGuild>> GetGuilds([FromQuery(Name = "name")] string guildName, [FromQuery(Name = "realm")] string guildRealm)
+		public async Task<IEnumerable<ApiGuild>> GetGuilds(
+			[FromRoute(Name = "organizationId")] Guid organizationId,
+			[FromQuery(Name = "name")] string guildName,
+			[FromQuery(Name = "realm")] string guildRealm
+		)
 		{
 			List<BackedGuild> guilds = await _guildRepository.FindGuilds(new Guild()
 			{
-				OrganizationId = _user.OrganizationId,
+				OrganizationId = organizationId,
 				Name = guildName,
 				Realm = guildRealm,
 			});
@@ -38,19 +42,22 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 		[HttpGet]
 		[Route("{guildId}")]
 		[Authorize(Policy = "OrganizationMember")]
-		public async Task<ApiGuild> GetGuild([FromRoute] Guid id)
+		public async Task<ApiGuild> GetGuild(
+			[FromRoute(Name = "organizationId")] Guid organizationId,
+			[FromRoute(Name = "guildID")] Guid guildId
+		)
 		{
-			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, id);
+			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
 			return ApiGuild.From(guild);
 		}
 
 		[HttpPost]
 		[Authorize(Policy = "OrganizationAdministrator")]
-		public async Task<ApiGuild> CreateGuild([FromBody] ApiGuild guildInfo)
+		public async Task<ApiGuild> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] ApiGuild guildInfo)
 		{
 			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
 			{
-				OrganizationId = _user.OrganizationId,
+				OrganizationId = organizationId,
 				Name = guildInfo.Name,
 				Realm = guildInfo.Realm,
 			});
@@ -60,9 +67,13 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 		[HttpPatch]
 		[Route("{guildId}")]
 		[Authorize(Policy = "OrganizationAdministrator")]
-		public async Task<ApiGuild> UpdateGuild([FromRoute] Guid guildId, [FromBody] ApiGuild guildInfo)
+		public async Task<ApiGuild> UpdateGuild(
+			[FromRoute(Name = "organizationId")] Guid organizationId,
+			[FromRoute(Name = "guildId")] Guid guildId,
+			[FromBody] ApiGuild guildInfo
+		)
 		{
-			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, guildId);
+			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
 			BackedGuild modifiedGuild = guild with
 			{
 				Name = guildInfo.Name,
@@ -75,9 +86,9 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 		[HttpDelete]
 		[Route("{guildId}")]
 		[Authorize(Policy = "OrganizationAdministrator")]
-		public async Task DeleteGuild([FromRoute] Guid guildId)
+		public async Task DeleteGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromRoute(Name = "guildId")] Guid guildId)
 		{
-			BackedGuild guild = await _guildRepository.GetGuild(_user.OrganizationId, guildId);
+			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
 			await _guildRepository.DeleteGuild(guild);
 		}
 	}
