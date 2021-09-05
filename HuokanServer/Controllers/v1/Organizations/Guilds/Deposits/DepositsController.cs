@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HuokanServer.Controllers.v1.Organizations.Guilds.Deposits
 {
+	[Route("organizations/{organizationId}/guilds/{guildId}/deposits")]
 	public class DepositsController : ControllerBase
 	{
 		private readonly DepositRepository _depositRepository;

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HuokanServer.Controllers.v1.Organizations
 {
 	[ApiController]
-	[Route("/organizations")]
+	[Route("organizations")]
 	public class OrganizationsController : ControllerBase
 	{
 		private readonly OrganizationRepository _organizationRepository;

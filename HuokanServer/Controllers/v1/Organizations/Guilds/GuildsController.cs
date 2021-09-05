@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HuokanServer.Controllers.v1.Organizations.Guilds
 {
 	[ApiController]
-	[Route("/organizations/{organizationId}/guilds")]
+	[Route("organizations/{organizationId}/guilds")]
 	public class GuildsController : ControllerBase
 	{
 		private GuildRepository _guildRepository;

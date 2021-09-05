@@ -1,13 +1,17 @@
 using System;
 using HuokanServer.Models.Repository.OrganizationRepository;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Controllers.v1.Organizations
 {
 	public record ApiOrganization
 	{
 		public Guid Id { get; init; }
+		[BindRequired]
 		public string Name { get; init; }
+		[BindRequired]
 		public string Slug { get; init; }
+		[BindRequired]
 		public ulong DiscordGuildId { get; init; }
 		public DateTime CreatedAt { get; init; }
 
