@@ -21,8 +21,8 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					guild.created_at
 				FROM
 					guild
-				INNER JOIN
-					organization ON guild.organization_id = organization.id
+				INNER JOIN organization ON
+					guild.organization_id = organization.id
 				WHERE
 					organization.external_id = @OrganizationId AND
 					guild.external_id = @GuildId
@@ -46,8 +46,8 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					guild.created_at
 				FROM
 					guild
-				INNER JOIN
-					organization ON guild.organization_id = organization.id
+				INNER JOIN organization ON
+					guild.organization_id = organization.id
 				WHERE
 					organization.external_id = @OrganizationId AND
 					is_not_deleted = TRUE";

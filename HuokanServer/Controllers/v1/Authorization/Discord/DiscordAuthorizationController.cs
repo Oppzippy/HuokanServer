@@ -30,7 +30,7 @@ namespace HuokanServer.Controllers.Auth
 		)
 		{
 			_settings = settings;
-			_oAuthClient = oAuth2Factory.CreateDiscord("", ""); // TODO get client id and secret from config
+			_oAuthClient = oAuth2Factory.CreateDiscord(settings.DiscordClientId, settings.DiscordClientSecret); // TODO get client id and secret from config
 			_discordUserFactory = discordUserFactory;
 			_userRepository = userRepository;
 			_apiKeyRepository = apiKeyRepository;

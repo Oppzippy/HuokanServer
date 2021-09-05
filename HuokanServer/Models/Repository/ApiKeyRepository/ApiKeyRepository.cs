@@ -21,8 +21,8 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
                     user.external_id AS id
                 FROM
                     unexpired_api_key
-				INNER JOIN
-					user ON unexpired_api_key.user_id = user.id
+				INNER JOIN user ON
+					unexpired_api_key.user_id = user.id
                 WHERE
                     unexpired_api_key.hashed_key = @HashedKey",
 				new

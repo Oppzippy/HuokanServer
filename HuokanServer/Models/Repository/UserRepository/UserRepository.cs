@@ -67,10 +67,10 @@ namespace HuokanServer.Models.Repository.UserRepository
 					user.created_at
 				FROM
 					user
-				INNER JOIN organization_user_membership AS membership
-					ON membership.user_id = user.id
-				INNER JOIN organization
-					ON organization.id = membership.organization_id
+				INNER JOIN organization_user_membership AS membership ON
+					membership.user_id = user.id
+				INNER JOIN organization ON
+					organization.id = membership.organization_id
 				WHERE
 					organization.external_id = @OrganizationId",
 				new
@@ -84,13 +84,13 @@ namespace HuokanServer.Models.Repository.UserRepository
 		{
 			dynamic result = await dbConnection.QueryFirstAsync(@"
 				SELECT
-					COUNT(*) AS count
+					COUNT(*) AS 'count'
 				FROM
 					user
-				INNER JOIN organization_membership AS membership
-					ON membership.user_id = user.id
-				INNER JOIN organization
-					ON organization.id = membership.organization_id
+				INNER JOIN organization_membership AS membership ON
+					membership.user_id = user.id
+				INNER JOIN organization ON
+					organization.id = membership.organization_id
 				WHERE
 					user.external_id = @UserId AND
 					organization.external_id = @OrganizationId",

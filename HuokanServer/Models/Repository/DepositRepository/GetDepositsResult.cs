@@ -1,6 +1,6 @@
 namespace HuokanServer.Models.Repository.DepositRepository
 {
-	public record GetDepositsResult
+	public record BackedDeposit
 	{
 		public int Id { get; init; }
 		public int Endorsements { get; init; }

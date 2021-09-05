@@ -82,10 +82,10 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					organization.created_at
 				FROM
 					organization
-				INNER JOIN organization_user_membership AS membership
-					ON membership.organization_id = organization.id
-				INNER JOIN user
-					ON user.id = membership.user_id
+				INNER JOIN organization_user_membership AS membership ON
+					membership.organization_id = organization.id
+				INNER JOIN user ON
+					user.id = membership.user_id
 				WHERE
 					user.external_id = @UserId",
 				new
