@@ -27,12 +27,12 @@ namespace HuokanServer.Models.Discord
 		{
 			if (token.ExpiresAt <= DateTime.UtcNow)
 			{
-				return await RefreshToken(userId, token);
+				return await ForceRefreshToken(userId, token);
 			}
 			return token.Token;
 		}
 
-		public async Task<string> RefreshToken(Guid userId, UserDiscordToken token)
+		public async Task<string> ForceRefreshToken(Guid userId, UserDiscordToken token)
 		{
 			TokenResponse response = await _oAuth2.RefreshToken(token.RefreshToken);
 			token = token with
