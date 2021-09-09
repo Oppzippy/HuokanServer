@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using HuokanServer.Models.Discord;
 using HuokanServer.Models.OAuth2;
 using HuokanServer.Models.Repository.ApiKeyRepository;
+using HuokanServer.Models.Repository.UserDiscordTokenRepository;
 using HuokanServer.Models.Repository.UserRepository;
 using IdentityModel.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace HuokanServer.Controllers.Auth
+namespace HuokanServer.Controllers.v1.Authorization.Discord
 {
 	[ApiController]
 	[Route("/authorization/discord/[action]")]
@@ -20,13 +22,15 @@ namespace HuokanServer.Controllers.Auth
 		private readonly IDiscordUserFactory _discordUserFactory;
 		private readonly UserRepository _userRepository;
 		private readonly ApiKeyRepository _apiKeyRepository;
+		private readonly UserDiscordTokenRepository _userDiscordTokenRepository;
 
 		public DiscordAuthorizationController(
 			ApplicationSettings settings,
 			IOAuth2Factory oAuth2Factory,
 			IDiscordUserFactory discordUserFactory,
 			UserRepository userRepository,
-			ApiKeyRepository apiKeyRepository
+			ApiKeyRepository apiKeyRepository,
+			UserDiscordTokenRepository userDiscordTokenRepository
 		)
 		{
 			_settings = settings;
@@ -34,6 +38,7 @@ namespace HuokanServer.Controllers.Auth
 			_discordUserFactory = discordUserFactory;
 			_userRepository = userRepository;
 			_apiKeyRepository = apiKeyRepository;
+			_userDiscordTokenRepository = userDiscordTokenRepository;
 		}
 
 		[HttpGet]
@@ -51,31 +56,41 @@ namespace HuokanServer.Controllers.Auth
 		}
 
 		[HttpGet]
-		public async Task<AuthorizeResponse> Authorize([FromQuery(Name = "code")] string code)
+		public async Task<DiscordAuthorizeResponse> Authorize([FromQuery(Name = "code")] string code)
 		{
 			TokenResponse token = await _oAuthClient.GetToken(code, "");
-			IDiscordUser discordUser = _discordUserFactory.Create(token.AccessToken);
+			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
 			{
 				DiscordUserId = discordUser.Id,
 			});
-			BackedUser userWithNewToken = await _userRepository.UpdateDiscordToken(user.Id, token.AccessToken);
+			await _userDiscordTokenRepository.SetDiscordToken(user.Id, new UserDiscordToken()
+			{
+				Token = token.AccessToken,
+				RefreshToken = token.RefreshToken,
+				ExpiresAt = DateTime.UtcNow.AddSeconds(token.ExpiresIn),
+			});
 			string apiKey = await _apiKeyRepository.CreateApiKey(new ApiKey()
 			{
-				UserId = userWithNewToken.Id,
+				UserId = user.Id,
 				ExpiresAt = DateTime.UtcNow.AddDays(7),
 				CreatedAt = DateTime.UtcNow,
 			});
 
-			return new AuthorizeResponse()
+			return new DiscordAuthorizeResponse()
 			{
 				ApiKey = apiKey,
 			};
 		}
 
-		public record AuthorizeResponse
+		[HttpGet]
+		[Authorize(Policy = "User")]
+		public async Task JoinOrganizations()
 		{
-			public string ApiKey { get; init; }
+			BackedUser user = HttpContext.Features.Get<BackedUser>();
+			IDiscordUser discordUser = await _discordUserFactory.Create(user.Id);
+			List<ulong> guildIds = discordUser.GuildIds;
+			await _userRepository.SetDiscordOrganizations(user.Id, guildIds);
 		}
 	}
 }

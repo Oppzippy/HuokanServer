@@ -20,11 +20,19 @@ CREATE TABLE guild (
 	UNIQUE(organization_id, 'name', realm, is_not_deleted)
 );
 
+CREATE TABLE user_discord_token (
+	id SERIAL PRIMARY KEY,
+	user_id INTEGER UNIQUE NOT NULL REFERENCES user(id),
+	token TEXT NULL,
+	refresh_token TEXT NULL,
+	expires_at TIMESTAMP NOT NULL,
+	created_at TIMESTAMP NOT NULL
+);
+
 CREATE TABLE user (
 	id SERIAL PRIMARY KEY,
 	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	discord_user_id NUMERIC NOT NULL,
-	discord_token TEXT NULL,
 	created_at TIMESTAMP NOT NULL,
 	UNIQUE(organization_id, discord_user_id)
 );

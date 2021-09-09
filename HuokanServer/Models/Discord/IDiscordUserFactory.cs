@@ -1,7 +1,11 @@
+using System;
+using System.Threading.Tasks;
+
 namespace HuokanServer.Models.Discord
 {
 	public interface IDiscordUserFactory
 	{
-		IDiscordUser Create(string oauthToken);
+		Task<IDiscordUser> Create(Guid userId);
+		Task<IDiscordUser> Create(string token);
 	}
 }

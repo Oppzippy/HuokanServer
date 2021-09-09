@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using HuokanServer.Models.Repository.OrganizationRepository;
 
 namespace HuokanServer.Models.Repository.UserRepository
 {
@@ -17,7 +16,6 @@ namespace HuokanServer.Models.Repository.UserRepository
 				SELECT
 					external_id AS id,
 					discord_user_id,
-					discord_token,
 					created_at
 				FROM
 					user
@@ -47,7 +45,6 @@ namespace HuokanServer.Models.Repository.UserRepository
 				SELECT
 					external_id AS id,
 					discord_user_id,
-					discord_token,
 					created_at
 				FROM
 					user
@@ -63,7 +60,6 @@ namespace HuokanServer.Models.Repository.UserRepository
 				SELECT
 					user.external_id AS id,
 					user.discord_user_id,
-					user.discord_token,
 					user.created_at
 				FROM
 					user
@@ -111,7 +107,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 				VALUES
 					(@DiscordUserId, @CreatedAt)
 				RETURNING
-					external_id AS id, discord_user_id, discord_token, created_at",
+					external_id AS id, discord_user_id, created_at",
 				new
 				{
 					DiscordUserId = user.DiscordUserId,
@@ -120,23 +116,47 @@ namespace HuokanServer.Models.Repository.UserRepository
 			);
 		}
 
-		public async Task<BackedUser> UpdateDiscordToken(Guid userId, string discordToken)
+		public async Task SetDiscordOrganizations(Guid userId, List<ulong> guildIds)
 		{
-			return await dbConnection.QueryFirstAsync<BackedUser>(@"
-				UPDATE
-					user
-				SET
-					discord_token = @DiscordToken
+			using IDbTransaction transaction = dbConnection.BeginTransaction();
+			await dbConnection.ExecuteAsync(@"
+				DELETE FROM
+					organization_user_membership AS membership
+				USING
+					organization
 				WHERE
-					external_id = @UserId
-				RETURNING
-					external_id AS id, discord_user_id, discord_token, created_at",
+					membership.organization_id = organization.id AND
+					membership.user_id = @UserId AND
+					organization.discord_guild_id != ANY(@GuildIds::NUMERIC ARRAY) AND
+					organization.discord_guild_id IS NOT NULL",
 				new
 				{
 					UserId = userId,
-					DiscordToken = discordToken,
+					GuildIds = guildIds,
 				}
 			);
+			await dbConnection.ExecuteAsync(@"
+				INSERT INTO organization_user_membership (
+					organization_id,
+					user_id
+				) VALUES (
+					SELECT
+						organization.id,
+						@UserId
+					FROM
+						organization
+					WHERE
+						discord_guild_id = ANY(@GuildIds::NUMERIC ARRAY)
+				)
+				ON CONFLICT (organization_id, user_id) DO NOTHING",
+				new
+				{
+					UserId = userId,
+					GuildIds = guildIds,
+				},
+				transaction
+			);
+			transaction.Commit();
 		}
 	}
 }
