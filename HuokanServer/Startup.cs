@@ -1,8 +1,11 @@
 using System.Data;
+using System.Net.Http;
 using HuokanServer.Authorization;
 using HuokanServer.Middleware;
+using HuokanServer.Models.Discord;
+using HuokanServer.Models.OAuth2;
+using HuokanServer.Models.Repository;
 using HuokanServer.Models.Repository.UserPermissionRepository;
-using HuokanServer.Models.Repository.UserRepository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +29,17 @@ namespace HuokanServer
 		public void ConfigureServices(IServiceCollection services)
 		{
 			var connectionString = Configuration.GetConnectionString("Postgres");
-			services.AddScoped<IDbConnection>((sp) => new NpgsqlConnection(connectionString));
+			// TODO make sure connection pooling is working
+			services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(connectionString));
+			services.AddTransient<HttpClient>();
+			services.AddSingleton<ApplicationSettings>(new ApplicationSettings()
+			{
+				DiscordClientId = "todo",
+				DiscordClientSecret = "todo",
+				DiscordRedirectUri = "todo",
+			});
+			services.AddModels();
+
 			services.AddAuthorization(options =>
 			{
 				options.AddPolicy("OrganizationAdministrator", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_ADMINISTRATOR)));

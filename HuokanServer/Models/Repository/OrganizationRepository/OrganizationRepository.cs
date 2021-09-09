@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using HuokanServer.Models.Repository.UserRepository;
 
 namespace HuokanServer.Models.Repository.OrganizationRepository
 {
-	public class OrganizationRepository : DbRepositoryBase
+	public class OrganizationRepository : DbRepositoryBase, IOrganizationRepository
 	{
 		public OrganizationRepository(IDbConnection dbConnection) : base(dbConnection) { }
 

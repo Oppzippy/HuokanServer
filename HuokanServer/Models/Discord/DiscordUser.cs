@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Entities;
 
 namespace HuokanServer.Models.Discord
 {
@@ -33,6 +34,11 @@ namespace HuokanServer.Models.Discord
 			{
 				return _discord.Guilds.Keys.ToList();
 			}
+		}
+
+		public async Task<DiscordMember> GuildMember(ulong guildId)
+		{
+			return await _discord.GetGuildMemberAsync(guildId, Id);
 		}
 	}
 }

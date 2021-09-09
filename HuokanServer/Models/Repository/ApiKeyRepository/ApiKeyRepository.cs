@@ -7,7 +7,7 @@ using Dapper;
 
 namespace HuokanServer.Models.Repository.ApiKeyRepository
 {
-	public class ApiKeyRepository : DbRepositoryBase
+	public class ApiKeyRepository : DbRepositoryBase, IApiKeyRepository
 	{
 		private const int API_KEY_SIZE_IN_BYTES = 32;
 

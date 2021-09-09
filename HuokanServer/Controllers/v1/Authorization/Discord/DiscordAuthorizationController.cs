@@ -20,17 +20,17 @@ namespace HuokanServer.Controllers.v1.Authorization.Discord
 		private readonly ApplicationSettings _settings;
 		private readonly IOAuth2 _oAuthClient;
 		private readonly IDiscordUserFactory _discordUserFactory;
-		private readonly UserRepository _userRepository;
-		private readonly ApiKeyRepository _apiKeyRepository;
-		private readonly UserDiscordTokenRepository _userDiscordTokenRepository;
+		private readonly IUserRepository _userRepository;
+		private readonly IApiKeyRepository _apiKeyRepository;
+		private readonly IUserDiscordTokenRepository _userDiscordTokenRepository;
 
 		public DiscordAuthorizationController(
 			ApplicationSettings settings,
 			IOAuth2Factory oAuth2Factory,
 			IDiscordUserFactory discordUserFactory,
-			UserRepository userRepository,
-			ApiKeyRepository apiKeyRepository,
-			UserDiscordTokenRepository userDiscordTokenRepository
+			IUserRepository userRepository,
+			IApiKeyRepository apiKeyRepository,
+			IUserDiscordTokenRepository userDiscordTokenRepository
 		)
 		{
 			_settings = settings;

@@ -5,7 +5,7 @@ using Dapper;
 
 namespace HuokanServer.Models.Repository.UserDiscordTokenRepository
 {
-	public class UserDiscordTokenRepository : DbRepositoryBase
+	public class UserDiscordTokenRepository : DbRepositoryBase, IUserDiscordTokenRepository
 	{
 		public UserDiscordTokenRepository(IDbConnection dbConnection) : base(dbConnection) { }
 

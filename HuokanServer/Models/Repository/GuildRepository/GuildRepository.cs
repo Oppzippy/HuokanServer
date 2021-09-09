@@ -6,7 +6,7 @@ using Dapper;
 
 namespace HuokanServer.Models.Repository.GuildRepository
 {
-	public class GuildRepository : DbRepositoryBase
+	public class GuildRepository : DbRepositoryBase, IGuildRepository
 	{
 		public GuildRepository(IDbConnection dbConnection) : base(dbConnection) { }
 

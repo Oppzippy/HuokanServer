@@ -13,10 +13,10 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 	[Route("organizations/{organizationId}/guilds")]
 	public class GuildsController : ControllerBase
 	{
-		private GuildRepository _guildRepository;
+		private IGuildRepository _guildRepository;
 		private BackedUser _user;
 
-		public GuildsController(GuildRepository guildRepository)
+		public GuildsController(IGuildRepository guildRepository)
 		{
 			_guildRepository = guildRepository;
 			_user = HttpContext.Features.Get<BackedUser>();

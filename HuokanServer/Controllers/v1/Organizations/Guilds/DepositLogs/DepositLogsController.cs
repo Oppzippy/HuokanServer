@@ -11,10 +11,10 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds.DepositLogs
 	[Route("organizations/{organizationId}/guilds/{guildId}/depositLogs")]
 	public class DepositLogsController : ControllerBase
 	{
-		private readonly DepositRepository _depositRepository;
+		private readonly IDepositRepository _depositRepository;
 		private readonly BackedUser _user;
 
-		public DepositLogsController(DepositRepository depositRepository)
+		public DepositLogsController(IDepositRepository depositRepository)
 		{
 			_depositRepository = depositRepository;
 			_user = HttpContext.Features.Get<BackedUser>();

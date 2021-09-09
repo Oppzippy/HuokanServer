@@ -10,10 +10,10 @@ namespace HuokanServer.Middleware
 	public class ApiKeyMiddleware
 	{
 		private readonly RequestDelegate _next;
-		private readonly ApiKeyRepository _apiKeyRepository;
-		private readonly UserRepository _userRepository;
+		private readonly IApiKeyRepository _apiKeyRepository;
+		private readonly IUserRepository _userRepository;
 
-		public ApiKeyMiddleware(RequestDelegate next, ApiKeyRepository apiKeyRepository, UserRepository userRepository)
+		public ApiKeyMiddleware(RequestDelegate next, IApiKeyRepository apiKeyRepository, IUserRepository userRepository)
 		{
 			_next = next;
 			_apiKeyRepository = apiKeyRepository;

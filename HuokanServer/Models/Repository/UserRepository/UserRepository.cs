@@ -6,7 +6,7 @@ using Dapper;
 
 namespace HuokanServer.Models.Repository.UserRepository
 {
-	public class UserRepository : DbRepositoryBase
+	public class UserRepository : DbRepositoryBase, IUserRepository
 	{
 		public UserRepository(IDbConnection dbConnection) : base(dbConnection) { }
 

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using DSharpPlus.Entities;
 
 namespace HuokanServer.Models.Discord
 {
@@ -6,5 +8,6 @@ namespace HuokanServer.Models.Discord
 	{
 		ulong Id { get; }
 		List<ulong> GuildIds { get; }
+		Task<DiscordMember> GuildMember(ulong guildId);
 	}
 }

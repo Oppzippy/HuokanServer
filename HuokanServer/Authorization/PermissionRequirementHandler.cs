@@ -13,10 +13,10 @@ namespace HuokanServer.Authorization
 	public class PermissionRequirementHandler : AuthorizationHandler<PermissionRequirement>
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor;
-		private readonly OrganizationRepository _organizationRepository;
+		private readonly IOrganizationRepository _organizationRepository;
 		private readonly IUserPermissionRepository _userPermissionRepository;
 
-		public PermissionRequirementHandler(IHttpContextAccessor httpContextAccessor, OrganizationRepository organizationRepository, IUserPermissionRepository userPermissionRepository)
+		public PermissionRequirementHandler(IHttpContextAccessor httpContextAccessor, IOrganizationRepository organizationRepository, IUserPermissionRepository userPermissionRepository)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_organizationRepository = organizationRepository;

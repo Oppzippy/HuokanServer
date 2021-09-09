@@ -13,10 +13,10 @@ namespace HuokanServer.Controllers.v1.Organizations
 	[Route("organizations")]
 	public class OrganizationsController : ControllerBase
 	{
-		private readonly OrganizationRepository _organizationRepository;
+		private readonly IOrganizationRepository _organizationRepository;
 		private readonly BackedUser _user;
 
-		public OrganizationsController(OrganizationRepository organizationRepository)
+		public OrganizationsController(IOrganizationRepository organizationRepository)
 		{
 			_organizationRepository = organizationRepository;
 			_user = HttpContext.Features.Get<BackedUser>();

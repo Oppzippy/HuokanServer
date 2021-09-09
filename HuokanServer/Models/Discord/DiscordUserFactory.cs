@@ -5,9 +5,9 @@ namespace HuokanServer.Models.Discord
 {
 	public class DiscordUserFactory : IDiscordUserFactory
 	{
-		private readonly DiscordUserAuthenticationHandler _discordUserAuthenticationHandler;
+		private readonly IDiscordUserAuthenticationHandler _discordUserAuthenticationHandler;
 
-		public DiscordUserFactory(DiscordUserAuthenticationHandler discordUserAuthenticationHandler)
+		public DiscordUserFactory(IDiscordUserAuthenticationHandler discordUserAuthenticationHandler)
 		{
 			_discordUserAuthenticationHandler = discordUserAuthenticationHandler;
 		}

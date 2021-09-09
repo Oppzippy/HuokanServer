@@ -10,9 +10,9 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds.Deposits
 	[Route("organizations/{organizationId}/guilds/{guildId}/deposits")]
 	public class DepositsController : ControllerBase
 	{
-		private readonly DepositRepository _depositRepository;
+		private readonly IDepositRepository _depositRepository;
 
-		public DepositsController(DepositRepository depositRepository)
+		public DepositsController(IDepositRepository depositRepository)
 		{
 			_depositRepository = depositRepository;
 		}

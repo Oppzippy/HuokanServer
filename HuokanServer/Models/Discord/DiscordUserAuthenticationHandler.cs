@@ -6,12 +6,12 @@ using IdentityModel.Client;
 
 namespace HuokanServer.Models.Discord
 {
-	public class DiscordUserAuthenticationHandler
+	public class DiscordUserAuthenticationHandler : IDiscordUserAuthenticationHandler
 	{
 		private readonly IOAuth2 _oAuth2;
-		private readonly UserDiscordTokenRepository _userDiscordTokenRepository;
+		private readonly IUserDiscordTokenRepository _userDiscordTokenRepository;
 
-		public DiscordUserAuthenticationHandler(ApplicationSettings settings, IOAuth2Factory oAuth2Factory, UserDiscordTokenRepository userDiscordTokenRepository)
+		public DiscordUserAuthenticationHandler(ApplicationSettings settings, IOAuth2Factory oAuth2Factory, IUserDiscordTokenRepository userDiscordTokenRepository)
 		{
 			_oAuth2 = oAuth2Factory.CreateDiscord(settings.DiscordClientId, settings.DiscordClientSecret);
 			_userDiscordTokenRepository = userDiscordTokenRepository;
