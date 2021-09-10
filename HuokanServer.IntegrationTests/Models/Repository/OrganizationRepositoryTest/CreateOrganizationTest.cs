@@ -1,23 +1,18 @@
 using System;
-using HuokanServer.Models.Repository.DepositRepository;
+using System.Threading.Tasks;
+using HuokanServer.IntegrationTests.TestPresets;
 using HuokanServer.Models.Repository.OrganizationRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.Models.Repository
+namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {
-	public class OrganizationRepositoryTest : IClassFixture<DatabaseFixture>
+	[Collection("Database")]
+	public class OrganizationTest : DatabaseTestPreset
 	{
-		private readonly DatabaseFixture _dbFixture;
-
-		public OrganizationRepositoryTest(DatabaseFixture dbFixture)
-		{
-			this._dbFixture = dbFixture;
-		}
-
 		[Fact]
-		public async void TestCreateOrganization()
+		public async Task TestCreate()
 		{
-			var repo = new OrganizationRepository(_dbFixture.DbConnection);
+			var repo = new OrganizationRepository(DbConnection);
 			var organization = await repo.CreateOrganization(new Organization()
 			{
 				DiscordGuildId = 123,
