@@ -1,3 +1,4 @@
 /HuokanServer*/bin
 /HuokanServer*/obj
 /.vs
+/HuokanServer.*Tests/TestResults
