@@ -18,7 +18,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 					discord_user_id,
 					created_at
 				FROM
-					user
+					user_account
 				WHERE
 					external_id = @Id",
 				new
@@ -47,7 +47,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 					discord_user_id,
 					created_at
 				FROM
-					user
+					user_account
 				WHERE
 					discord_user_id = @DiscordUserId",
 				user
@@ -58,13 +58,13 @@ namespace HuokanServer.Models.Repository.UserRepository
 		{
 			return (await dbConnection.QueryAsync<BackedUser>(@"
 				SELECT
-					user.external_id AS id,
-					user.discord_user_id,
-					user.created_at
+					user_account.external_id AS id,
+					user_account.discord_user_id,
+					user_account.created_at
 				FROM
-					user
+					user_account
 				INNER JOIN organization_user_membership AS membership ON
-					membership.user_id = user.id
+					membership.user_id = user_account.id
 				INNER JOIN organization ON
 					organization.id = membership.organization_id
 				WHERE
@@ -82,13 +82,13 @@ namespace HuokanServer.Models.Repository.UserRepository
 				SELECT
 					COUNT(*) AS 'count'
 				FROM
-					user
+					user_account
 				INNER JOIN organization_membership AS membership ON
-					membership.user_id = user.id
+					membership.user_id = user_account.id
 				INNER JOIN organization ON
 					organization.id = membership.organization_id
 				WHERE
-					user.external_id = @UserId AND
+					user_account.external_id = @UserId AND
 					organization.external_id = @OrganizationId",
 				new
 				{
@@ -103,7 +103,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 		{
 			return await dbConnection.QueryFirstAsync<BackedUser>(@"
 				INSERT INTO
-					user (discord_user_id, created_at)
+					user_account (discord_user_id, created_at)
 				VALUES
 					(@DiscordUserId, @CreatedAt)
 				RETURNING
@@ -123,10 +123,11 @@ namespace HuokanServer.Models.Repository.UserRepository
 				DELETE FROM
 					organization_user_membership AS membership
 				USING
-					organization
+					organization, user_account
 				WHERE
 					membership.organization_id = organization.id AND
-					membership.user_id = @UserId AND
+					membership.user_id = user_account.id AND
+					user_account.external_id = @UserId AND
 					organization.discord_guild_id != ANY(@GuildIds::NUMERIC ARRAY) AND
 					organization.discord_guild_id IS NOT NULL",
 				new
@@ -142,7 +143,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 				) VALUES (
 					SELECT
 						organization.id,
-						@UserId
+						(SELECT id FROM user_account WHERE external_id = @UserId)
 					FROM
 						organization
 					WHERE

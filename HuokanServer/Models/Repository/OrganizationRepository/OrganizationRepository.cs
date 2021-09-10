@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -12,10 +13,10 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<BackedOrganization> GetOrganization(Guid organizationId)
 		{
-			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
+			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
-					'name',
+					name,
 					slug,
 					discord_guild_id,
 					created_at
@@ -28,14 +29,15 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					Id = organizationId,
 				}
 			);
+			return org.ToBackedOrganization();
 		}
 
 		public async Task<BackedOrganization> FindOrganization(string slug)
 		{
-			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
+			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
-					'name',
+					name,
 					slug,
 					discord_guild_id,
 					created_at
@@ -48,14 +50,15 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					Slug = slug,
 				}
 			);
+			return org.ToBackedOrganization();
 		}
 
 		public async Task<BackedOrganization> FindOrganization(ulong discordGuildId)
 		{
-			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
+			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
-					'name',
+					name,
 					slug,
 					discord_guild_id,
 					created_at
@@ -65,17 +68,18 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					discord_guild_id = @DiscordGuildId",
 				new
 				{
-					DiscordGuildId = discordGuildId,
+					DiscordGuildId = Convert.ToDecimal(discordGuildId),
 				}
 			);
+			return org.ToBackedOrganization();
 		}
 
 		public async Task<List<BackedOrganization>> FindOrganizationsContainingUser(Guid userId)
 		{
-			return (await dbConnection.QueryAsync<BackedOrganization>(@"
+			IEnumerable<DbBackedOrganization> organizations = await dbConnection.QueryAsync<DbBackedOrganization>(@"
 				SELECT
 					organization.external_id AS id,
-					organization.'name',
+					organization.name,
 					organization.slug,
 					organization.discord_guild_id,
 					organization.created_at
@@ -91,23 +95,47 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 				{
 					UserId = userId,
 				}
-			)).AsList();
+			);
+
+			return organizations.Select(org => org.ToBackedOrganization()).AsList();
 		}
 
 		public async Task<BackedOrganization> CreateOrganization(Organization organization)
 		{
-			return await dbConnection.QueryFirstAsync<BackedOrganization>(@"
-				INSERT INTO organization ('name', slug, discord_guild_id, created_at)
+			DbBackedOrganization organizations = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
+				INSERT INTO organization (name, slug, discord_guild_id, created_at)
 				VALUES (@Name, @Slug, @DiscordGuildId, @CreatedAt)
-				RETURNING external_id AS id, 'name', slug, discord_guild_id, created_at",
+				RETURNING external_id AS id, name, slug, discord_guild_id, created_at",
 				new
 				{
 					Name = organization.Name,
 					Slug = organization.Slug,
-					DiscordGuildId = organization.DiscordGuildId,
+					DiscordGuildId = Convert.ToDecimal(organization.DiscordGuildId),
 					CreatedAt = DateTime.UtcNow,
 				}
 			);
+			return organizations.ToBackedOrganization();
+		}
+
+		private record DbBackedOrganization
+		{
+			public string Name { get; init; }
+			public string Slug { get; init; }
+			public decimal DiscordGuildId { get; init; }
+			public Guid Id { get; init; }
+			public DateTime CreatedAt { get; init; }
+
+			public BackedOrganization ToBackedOrganization()
+			{
+				return new BackedOrganization()
+				{
+					Name = Name,
+					Slug = Slug,
+					DiscordGuildId = Convert.ToUInt64(DiscordGuildId),
+					Id = Id,
+					CreatedAt = CreatedAt,
+				};
+			}
 		}
 	}
 }

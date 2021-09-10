@@ -16,7 +16,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 				SELECT
 					guild.external_id AS id,
 					organization.external_id AS organization_id,
-					guild.'name',
+					guild.name,
 					guild.realm,
 					guild.created_at
 				FROM
@@ -41,7 +41,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 				SELECT
 					guild.external_id AS id,
 					organization.external_id AS organization_id,
-					guild.'name',
+					guild.name,
 					guild.realm,
 					guild.created_at
 				FROM
@@ -53,7 +53,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					is_not_deleted = TRUE";
 			if (guild.Name != null)
 			{
-				query += " AND guild.'name' = @Name";
+				query += " AND guild.name = @Name";
 			}
 			if (guild.Realm != null)
 			{
@@ -69,7 +69,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 				INSERT INTO
 					guild (
 						organization_id,
-						'name',
+						name,
 						realm,
 						created_at
 					)
@@ -81,7 +81,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 						@CreatedAt
 					)
 				RETURNING
-					id, organization_id, 'name', realm, created_at",
+					id, organization_id, name, realm, created_at",
 				new
 				{
 					OrganizationId = guild.OrganizationId,
@@ -99,7 +99,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					guild
 				SET
 					guild.organization_id = (SELECT id FROM organization WHERE external_id = @OrganizationId),
-					guild.'name' = @Name,
+					guild.name = @Name,
 					guild.realm = @Realm,
 				FROM
 					organization
@@ -110,7 +110,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 				RETURNING
 					guild.external_id AS id,
 					organization.external_id AS organization_id,
-					guild.'name',
+					guild.name,
 					guild.realm,
 					guild.created_at",
 				guild

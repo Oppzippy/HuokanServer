@@ -1,5 +1,3 @@
-using System;
-
 namespace HuokanServer.Models.Repository.OrganizationRepository
 {
 	public record Organization

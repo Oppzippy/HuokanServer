@@ -18,5 +18,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\20210807133605_graph.sql" />
     <EmbeddedResource Include="Migrations\20210808030629_deposit_graph.sql" />
+    <EmbeddedResource Include="Migrations\20210819184413_guild.sql" />
   </ItemGroup>
 </Project>

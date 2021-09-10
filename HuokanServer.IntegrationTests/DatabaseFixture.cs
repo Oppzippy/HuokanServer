@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Reflection;
 using Dapper;
 using DbUp;
 using Microsoft.Extensions.Configuration;
@@ -11,26 +10,40 @@ namespace HuokanServer.IntegrationTests
 	public class DatabaseFixture : IDisposable
 	{
 		public IDbConnection DbConnection { get; }
+		private string _connectionString;
 
 		public DatabaseFixture()
 		{
-			var config = new ConfigurationBuilder()
+			// TODO move match names with underscores elsewhere?
+			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+			IConfiguration config = new ConfigurationBuilder()
 				.SetBasePath(AppContext.BaseDirectory)
 				.AddJsonFile("appsettings.IntegrationTest.json")
 				.Build();
-			var connectionString = config.GetConnectionString("Postgres");
-			EnsureDatabase.For.PostgresqlDatabase(connectionString);
-			var upgrader = DeployChanges.To.PostgresqlDatabase(connectionString)
+			_connectionString = config.GetConnectionString("Postgres");
+
+			DbConnection = new NpgsqlConnection(_connectionString);
+			ResetDB();
+		}
+
+		public void ResetDB()
+		{
+			DbConnection.Execute("DROP SCHEMA IF EXISTS public CASCADE");
+			DbConnection.Execute("CREATE SCHEMA public");
+
+
+			EnsureDatabase.For.PostgresqlDatabase(_connectionString);
+			var upgrader = DeployChanges.To.PostgresqlDatabase(_connectionString)
 				.WithScriptsEmbeddedInAssembly(typeof(HuokanServer.Program).Assembly)
 				.LogToConsole()
 				.Build();
 			upgrader.PerformUpgrade();
-			DbConnection = new NpgsqlConnection(connectionString);
 		}
 
 		public void Dispose()
 		{
-			DbConnection.Execute("DROP DATABASE huokan");
+			// DbConnection.Execute("DROP SCHEMA IF EXISTS public CASCADE");
+			// DbConnection.Execute("CREATE SCHEMA public");
 			DbConnection.Dispose();
 		}
 	}
