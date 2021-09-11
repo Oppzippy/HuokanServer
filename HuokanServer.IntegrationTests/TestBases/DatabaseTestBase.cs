@@ -4,15 +4,17 @@ using Dapper;
 using DbUp;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Xunit;
 
-namespace HuokanServer.IntegrationTests.TestPresets
+namespace HuokanServer.IntegrationTests.TestBases
 {
-	public abstract class DatabaseTestPreset : IDisposable
+	[Collection("Database")]
+	public abstract class DatabaseTestBase : IDisposable
 	{
 		public IDbConnection DbConnection { get; }
 		private string _connectionString;
 
-		public DatabaseTestPreset()
+		public DatabaseTestBase()
 		{
 			// TODO move match names with underscores elsewhere?
 			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;

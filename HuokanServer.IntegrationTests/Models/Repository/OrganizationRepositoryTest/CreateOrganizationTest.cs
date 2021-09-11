@@ -1,13 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using HuokanServer.IntegrationTests.TestPresets;
+using HuokanServer.IntegrationTests.TestBases;
 using HuokanServer.Models.Repository.OrganizationRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {
-	[Collection("Database")]
-	public class OrganizationTest : DatabaseTestPreset
+	public class OrganizationTest : DatabaseTestBase
 	{
 		[Fact]
 		public async Task TestCreate()

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 
 namespace HuokanServer.Models.Repository.OrganizationRepository
 {
@@ -34,7 +35,10 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<BackedOrganization> FindOrganization(string slug)
 		{
-			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
+			try
+			{
+
+				DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
 					name,
@@ -45,17 +49,24 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					organization
 				WHERE
 					slug = @Slug",
-				new
-				{
-					Slug = slug,
-				}
-			);
-			return org.ToBackedOrganization();
+					new
+					{
+						Slug = slug,
+					}
+				);
+				return org.ToBackedOrganization();
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new NotFoundException("An organization with the provided slug could not be found.", ex);
+			}
 		}
 
 		public async Task<BackedOrganization> FindOrganization(ulong discordGuildId)
 		{
-			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
+			try
+			{
+				DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
 					name,
@@ -66,12 +77,17 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					organization
 				WHERE
 					discord_guild_id = @DiscordGuildId",
-				new
-				{
-					DiscordGuildId = Convert.ToDecimal(discordGuildId),
-				}
-			);
-			return org.ToBackedOrganization();
+					new
+					{
+						DiscordGuildId = Convert.ToDecimal(discordGuildId),
+					}
+				);
+				return org.ToBackedOrganization();
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new NotFoundException("An organization with the provided discord guild id could not be found.", ex);
+			}
 		}
 
 		public async Task<List<BackedOrganization>> FindOrganizationsContainingUser(Guid userId)
@@ -102,19 +118,30 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<BackedOrganization> CreateOrganization(Organization organization)
 		{
-			DbBackedOrganization organizations = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
-				INSERT INTO organization (name, slug, discord_guild_id, created_at)
-				VALUES (@Name, @Slug, @DiscordGuildId, @CreatedAt)
-				RETURNING external_id AS id, name, slug, discord_guild_id, created_at",
-				new
+			try
+			{
+				DbBackedOrganization organizations = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
+					INSERT INTO organization (name, slug, discord_guild_id, created_at)
+					VALUES (@Name, @Slug, @DiscordGuildId, @CreatedAt)
+					RETURNING external_id AS id, name, slug, discord_guild_id, created_at",
+					new
+					{
+						Name = organization.Name,
+						Slug = organization.Slug,
+						DiscordGuildId = Convert.ToDecimal(organization.DiscordGuildId),
+						CreatedAt = DateTime.UtcNow,
+					}
+				);
+				return organizations.ToBackedOrganization();
+			}
+			catch (PostgresException ex)
+			{
+				if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
 				{
-					Name = organization.Name,
-					Slug = organization.Slug,
-					DiscordGuildId = Convert.ToDecimal(organization.DiscordGuildId),
-					CreatedAt = DateTime.UtcNow,
+					throw new DuplicateItemException("An organization with the supplied slug or discord guild id already exists.", ex);
 				}
-			);
-			return organizations.ToBackedOrganization();
+				throw;
+			}
 		}
 
 		private record DbBackedOrganization

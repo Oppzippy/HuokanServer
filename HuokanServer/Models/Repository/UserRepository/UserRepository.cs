@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -12,7 +13,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task<BackedUser> GetUser(Guid id)
 		{
-			return await dbConnection.QueryFirstAsync<BackedUser>(@"
+			DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
 				SELECT
 					external_id AS id,
 					discord_user_id,
@@ -26,22 +27,27 @@ namespace HuokanServer.Models.Repository.UserRepository
 					Id = id,
 				}
 			);
+			return dbBackedUser.ToBackedUser();
 		}
 
 		public async Task<BackedUser> FindOrCreateUser(User user)
 		{
 			// TODO do this in a transaction
-			BackedUser existingUser = await FindUser(user);
-			if (existingUser != null)
+			try
 			{
-				return existingUser;
+				return await FindUser(user);
 			}
-			return await CreateUser(user);
+			catch (NotFoundException)
+			{
+				return await CreateUser(user);
+			}
 		}
 
 		public async Task<BackedUser> FindUser(User user)
 		{
-			return await dbConnection.QueryFirstAsync<BackedUser>(@"
+			try
+			{
+				DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
 				SELECT
 					external_id AS id,
 					discord_user_id,
@@ -50,13 +56,22 @@ namespace HuokanServer.Models.Repository.UserRepository
 					user_account
 				WHERE
 					discord_user_id = @DiscordUserId",
-				user
-			);
+					new
+					{
+						DiscordUserId = Convert.ToDecimal(user.DiscordUserId),
+					}
+				);
+				return dbBackedUser.ToBackedUser();
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new NotFoundException("The user could not be found.", ex);
+			}
 		}
 
 		public async Task<List<BackedUser>> FindUsersInOrganization(Guid organizationId)
 		{
-			return (await dbConnection.QueryAsync<BackedUser>(@"
+			IEnumerable<DbBackedUser> dbBackedUsers = await dbConnection.QueryAsync<DbBackedUser>(@"
 				SELECT
 					user_account.external_id AS id,
 					user_account.discord_user_id,
@@ -73,7 +88,9 @@ namespace HuokanServer.Models.Repository.UserRepository
 				{
 					OrganizationId = organizationId,
 				}
-			)).AsList();
+			);
+
+			return dbBackedUsers.Select(dbBackedUser => dbBackedUser.ToBackedUser()).AsList();
 		}
 
 		public async Task<bool> IsUserInOrganization(Guid userId, Guid organizationId)
@@ -101,7 +118,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task<BackedUser> CreateUser(User user)
 		{
-			return await dbConnection.QueryFirstAsync<BackedUser>(@"
+			DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
 				INSERT INTO
 					user_account (discord_user_id, created_at)
 				VALUES
@@ -110,14 +127,17 @@ namespace HuokanServer.Models.Repository.UserRepository
 					external_id AS id, discord_user_id, created_at",
 				new
 				{
-					DiscordUserId = user.DiscordUserId,
+					DiscordUserId = Convert.ToDecimal(user.DiscordUserId),
 					CreatedAt = DateTime.UtcNow,
 				}
 			);
+			return dbBackedUser.ToBackedUser();
 		}
 
 		public async Task SetDiscordOrganizations(Guid userId, List<ulong> guildIds)
 		{
+			var decimalGuildIds = guildIds.Select(Convert.ToDecimal).ToList();
+
 			using IDbTransaction transaction = dbConnection.BeginTransaction();
 			await dbConnection.ExecuteAsync(@"
 				DELETE FROM
@@ -133,7 +153,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 				new
 				{
 					UserId = userId,
-					GuildIds = guildIds,
+					GuildIds = decimalGuildIds,
 				}
 			);
 			await dbConnection.ExecuteAsync(@"
@@ -153,11 +173,28 @@ namespace HuokanServer.Models.Repository.UserRepository
 				new
 				{
 					UserId = userId,
-					GuildIds = guildIds,
+					GuildIds = decimalGuildIds,
 				},
 				transaction
 			);
 			transaction.Commit();
+		}
+
+		private record DbBackedUser
+		{
+			public Guid Id { get; init; }
+			public decimal DiscordUserId { get; init; }
+			public DateTime CreatedAt { get; init; }
+
+			public BackedUser ToBackedUser()
+			{
+				return new BackedUser()
+				{
+					Id = Id,
+					DiscordUserId = Convert.ToUInt64(DiscordUserId),
+					CreatedAt = CreatedAt,
+				};
+			}
 		}
 	}
 }

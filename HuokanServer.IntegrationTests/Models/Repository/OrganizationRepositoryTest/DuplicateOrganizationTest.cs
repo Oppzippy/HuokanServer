@@ -1,13 +1,12 @@
-using System;
 using System.Threading.Tasks;
-using HuokanServer.IntegrationTests.TestPresets;
+using HuokanServer.IntegrationTests.TestBases;
+using HuokanServer.Models.Repository;
 using HuokanServer.Models.Repository.OrganizationRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {
-	[Collection("Database")]
-	public class DuplicateOrganizationTest : DatabaseTestPreset
+	public class DuplicateOrganizationTest : DatabaseTestBase
 	{
 		[Theory]
 		[ClassData(typeof(OrganizationDuplicateFieldData))]
@@ -16,7 +15,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 			var repo = new OrganizationRepository(DbConnection);
 			await repo.CreateOrganization(organization1);
 			// TODO create exception for duplicate
-			await Assert.ThrowsAnyAsync<Exception>(() => repo.CreateOrganization(organization2));
+			await Assert.ThrowsAnyAsync<DuplicateItemException>(() => repo.CreateOrganization(organization2));
 		}
 	}
 }
