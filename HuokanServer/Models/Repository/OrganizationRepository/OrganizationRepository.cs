@@ -60,7 +60,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 			}
 			catch (InvalidOperationException ex)
 			{
-				throw new NotFoundException("An organization with the provided slug could not be found.", ex);
+				throw new ItemNotFoundException("An organization with the provided slug could not be found.", ex);
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 			}
 			catch (InvalidOperationException ex)
 			{
-				throw new NotFoundException("An organization with the provided discord guild id could not be found.", ex);
+				throw new ItemNotFoundException("An organization with the provided discord guild id could not be found.", ex);
 			}
 		}
 

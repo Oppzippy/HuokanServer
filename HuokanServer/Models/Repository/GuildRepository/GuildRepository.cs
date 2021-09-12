@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 
 namespace HuokanServer.Models.Repository.GuildRepository
 {
@@ -39,7 +40,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 			}
 			catch (InvalidOperationException ex)
 			{
-				throw new NotFoundException("The specified guild does not exist.", ex);
+				throw new ItemNotFoundException("The specified guild does not exist.", ex);
 			}
 		}
 
@@ -81,57 +82,81 @@ namespace HuokanServer.Models.Repository.GuildRepository
 		public async Task<BackedGuild> CreateGuild(Guild guild)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
-			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
-				INSERT INTO
-					guild (
-						organization_id,
-						name,
-						realm,
-						created_at
-					)
-				VALUES
-					(
-						(SELECT id FROM organization WHERE external_id = @OrganizationId),
-						@Name,
-						@Realm,
-						@CreatedAt
-					)
-				RETURNING
-					external_id AS id, @OrganizationId AS organization_id, name, realm, created_at",
-				new
+			try
+			{
+				return await dbConnection.QueryFirstAsync<BackedGuild>(@"
+					INSERT INTO
+						guild (
+							organization_id,
+							name,
+							realm,
+							created_at
+						)
+					VALUES
+						(
+							(SELECT id FROM organization WHERE external_id = @OrganizationId),
+							@Name,
+							@Realm,
+							@CreatedAt
+						)
+					RETURNING
+						external_id AS id, @OrganizationId AS organization_id, name, realm, created_at",
+					new
+					{
+						OrganizationId = guild.OrganizationId,
+						Name = guild.Name,
+						Realm = guild.Realm,
+						CreatedAt = DateTime.UtcNow,
+					}
+				);
+			}
+			catch (NpgsqlException ex)
+			{
+				if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
 				{
-					OrganizationId = guild.OrganizationId,
-					Name = guild.Name,
-					Realm = guild.Realm,
-					CreatedAt = DateTime.UtcNow,
+					throw new DuplicateItemException("A guild with the supplied name and realm already exists.", ex);
 				}
-			);
+				throw;
+			}
 		}
 
 		public async Task<BackedGuild> UpdateGuild(BackedGuild guild)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
-			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
-				UPDATE
-					guild
-				SET
-					guild.organization_id = (SELECT id FROM organization WHERE external_id = @OrganizationId),
-					guild.name = @Name,
-					guild.realm = @Realm,
-				FROM
-					organization
-				WHERE
-					guild.organization_id = organization.id AND
-					guild.external_id = @Id AND
-					organization.external_id = @OrganizationId
-				RETURNING
-					guild.external_id AS id,
-					organization.external_id AS organization_id,
-					guild.name,
-					guild.realm,
-					guild.created_at",
-				guild
-			);
+			try
+			{
+				return await dbConnection.QueryFirstAsync<BackedGuild>(@"
+					UPDATE
+						guild
+					SET
+						name = @GuildName,
+						realm = @GuildRealm
+					FROM
+						organization
+					WHERE
+						guild.organization_id = organization.id AND
+						organization.external_id = @OrganizationId AND
+						guild.external_id = @GuildId AND
+						guild.deleted_at IS NULL
+					RETURNING
+						guild.external_id AS id,
+						organization.external_id AS organization_id,
+						guild.name,
+						guild.realm,
+						guild.created_at",
+					new
+					{
+						GuildId = guild.Id,
+						GuildName = guild.Name,
+						GuildRealm = guild.Realm,
+						OrganizationId = guild.OrganizationId,
+					}
+				);
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new ItemNotFoundException("The guild does not exist.", ex);
+			}
 		}
 
 		public async Task DeleteGuild(Guid organizationId, Guid guildId)
@@ -158,7 +183,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 			);
 			if (rowsAffected == 0)
 			{
-				throw new NotFoundException("The specified guild does not exist.");
+				throw new ItemNotFoundException("The specified guild does not exist.");
 			}
 		}
 	}

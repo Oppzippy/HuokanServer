@@ -38,7 +38,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 			{
 				return await FindUser(user);
 			}
-			catch (NotFoundException)
+			catch (ItemNotFoundException)
 			{
 				return await CreateUser(user);
 			}
@@ -67,7 +67,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 			}
 			catch (InvalidOperationException ex)
 			{
-				throw new NotFoundException("The user could not be found.", ex);
+				throw new ItemNotFoundException("The user could not be found.", ex);
 			}
 		}
 

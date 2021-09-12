@@ -24,7 +24,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 		[Fact]
 		public async Task TestFindWithNonexistentDiscordId()
 		{
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.FindOrganization(1));
+			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.FindOrganization(1));
 		}
 	}
 }

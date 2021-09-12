@@ -6,20 +6,20 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 {
-	public class DeleteDeletedGuildTest : GuildRepositoryTestBase
+	public class UpdateNonexistentGuildTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestDeleteTwice()
+		public async Task TestUpdateDeletedGuild()
 		{
 			BackedOrganization organization = await CreateOrganization();
 			BackedGuild guild = await Repository.CreateGuild(new Guild()
 			{
-				Name = "Guild Name",
-				Realm = "Realm",
+				Name = "Test",
+				Realm = "test",
 				OrganizationId = organization.Id,
 			});
 			await Repository.DeleteGuild(organization.Id, guild.Id);
-			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.DeleteGuild(organization.Id, guild.Id));
+			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.UpdateGuild(guild));
 		}
 	}
 }

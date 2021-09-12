@@ -24,7 +24,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 		[Fact]
 		public async Task TestFindNonexistentSlug()
 		{
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.FindOrganization("nonexistent-slug"));
+			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.FindOrganization("nonexistent-slug"));
 		}
 	}
 }
