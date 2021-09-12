@@ -10,13 +10,13 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 	public class GetNonexistentGuildTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestGetNonexistentOrganizationAndGuild()
+		public async Task TestGetWithNonexistentOrganizationAndGuild()
 		{
 			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.GetGuild(Guid.Empty, Guid.Empty));
 		}
 
 		[Fact]
-		public async Task TestGetNonexistentGuild()
+		public async Task TestGetWithNonexistentGuild()
 		{
 			BackedOrganization organization = await CreateOrganization();
 			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.GetGuild(organization.Id, Guid.Empty));

@@ -8,7 +8,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 	public class GetOrganizationTest : OrganizationRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestGetOrganization()
+		public async Task TestGet()
 		{
 			BackedOrganization createdOrg = await Repository.CreateOrganization(new Organization()
 			{

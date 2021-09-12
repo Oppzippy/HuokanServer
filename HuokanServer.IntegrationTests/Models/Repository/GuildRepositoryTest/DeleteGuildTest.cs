@@ -9,7 +9,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 	public class DeleteGuildTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestDeleteGuild()
+		public async Task TestDelete()
 		{
 			BackedOrganization organization = await CreateOrganization();
 			BackedGuild guild = await Repository.CreateGuild(new Guild()

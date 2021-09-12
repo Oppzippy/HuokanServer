@@ -11,7 +11,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 	public class GetWrongOrganizationTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestGetGuildWrongOrganizationId()
+		public async Task TestGetWithWrongOrganizationId()
 		{
 			BackedOrganization organization = await CreateOrganization();
 			BackedGuild guild = await Repository.CreateGuild(new Guild()

@@ -9,7 +9,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 	public class FindOrganizationDiscordIdTest : OrganizationRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestFindOrganizaitonDiscordId()
+		public async Task TestFindOrganizaitonByDiscordId()
 		{
 			await Repository.CreateOrganization(new Organization()
 			{
@@ -22,7 +22,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 		}
 
 		[Fact]
-		public async Task TestFindNonexistentOrganizationDiscordId()
+		public async Task TestFindWithNonexistentDiscordId()
 		{
 			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.FindOrganization(1));
 		}

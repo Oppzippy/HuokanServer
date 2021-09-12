@@ -8,7 +8,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 	public class GetGuildTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestGetGuild()
+		public async Task TestGet()
 		{
 			BackedOrganization organization = await CreateOrganization();
 			BackedGuild newlyCreatedGuild = await Repository.CreateGuild(new Guild()

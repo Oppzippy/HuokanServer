@@ -8,7 +8,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 	public class FindOrCreateUserTest : UserRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestCreateUser()
+		public async Task TestNotFoundCreate()
 		{
 			BackedUser newlyCreatedUser = await Repository.FindOrCreateUser(new User()
 			{
@@ -18,7 +18,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 		}
 
 		[Fact]
-		public async Task TestFindUser()
+		public async Task TestFound()
 		{
 			BackedUser newlyCreatedUser = await Repository.CreateUser(new User()
 			{

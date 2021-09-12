@@ -8,7 +8,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 	public class GetUserTest : UserRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestGetUser()
+		public async Task TestGet()
 		{
 			BackedUser newlyCreatedUser = await Repository.CreateUser(new User()
 			{

@@ -9,7 +9,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 	public class FindGuildsFilterNameAndRealm : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestNameFilter()
+		public async Task TestNameAndRealmFilter()
 		{
 			BackedOrganization organization = await CreateOrganization();
 			BackedGuild[] newlyCreatedGuilds = await Task.WhenAll(

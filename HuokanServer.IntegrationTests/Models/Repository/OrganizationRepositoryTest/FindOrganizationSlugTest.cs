@@ -9,7 +9,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 	public class FindOrganizationSlugTest : OrganizationRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestFindOrganizationSlug()
+		public async Task TestFindSlug()
 		{
 			await Repository.CreateOrganization(new Organization()
 			{
@@ -22,7 +22,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepository
 		}
 
 		[Fact]
-		public async Task TestFindNonexistentOrganizationSlug()
+		public async Task TestFindNonexistentSlug()
 		{
 			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.FindOrganization("nonexistent-slug"));
 		}

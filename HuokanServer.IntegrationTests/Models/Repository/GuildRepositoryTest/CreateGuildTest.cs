@@ -9,7 +9,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 	public class CreateGuildTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestCreateGuild()
+		public async Task TestCreate()
 		{
 			BackedOrganization organization = await CreateOrganization();
 
