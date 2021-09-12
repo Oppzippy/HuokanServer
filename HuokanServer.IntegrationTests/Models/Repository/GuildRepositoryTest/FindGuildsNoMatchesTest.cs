@@ -1,19 +1,20 @@
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using HuokanServer.Models.Repository;
 using HuokanServer.Models.Repository.GuildRepository;
 using HuokanServer.Models.Repository.OrganizationRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 {
-	public class DeleteNonexistentGuildTest : GuildRepositoryTestBase
+	public class FindGuildsTest : GuildRepositoryTestBase
 	{
 		[Fact]
-		public async Task TestDeleteNonexistentOrganizationAndGuild()
+		public async Task TestNoMatches()
 		{
 			var repo = new GuildRepository(DbConnection);
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.DeleteGuild(Guid.Empty, Guid.Empty));
+			BackedOrganization organization = await CreateOrganization();
+			List<BackedGuild> guilds = await repo.FindGuilds(organization.Id, new GuildFilter() { });
+			Assert.Empty(guilds);
 		}
 	}
 }

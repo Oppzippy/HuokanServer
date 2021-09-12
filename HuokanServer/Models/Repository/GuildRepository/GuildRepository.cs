@@ -42,7 +42,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 			}
 		}
 
-		public async Task<List<BackedGuild>> FindGuilds(Guild guild)
+		public async Task<List<BackedGuild>> FindGuilds(Guid organizationId, GuildFilter guild)
 		{
 			var query = @"
 				SELECT
@@ -60,14 +60,20 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					is_not_deleted = TRUE";
 			if (guild.Name != null)
 			{
-				query += " AND guild.name = @Name";
+				query += " AND guild.name = @GuildName";
 			}
 			if (guild.Realm != null)
 			{
-				query += " AND guild.realm = @Realm";
+				query += " AND guild.realm = @GuildRealm";
 			}
 
-			return (await dbConnection.QueryAsync<BackedGuild>(query, guild)).AsList();
+			IEnumerable<BackedGuild> guilds = await dbConnection.QueryAsync<BackedGuild>(query, new
+			{
+				OrganizationId = organizationId,
+				GuildName = guild.Name,
+				GuildRealm = guild.Realm,
+			});
+			return guilds.AsList();
 		}
 
 		public async Task<BackedGuild> CreateGuild(Guild guild)
@@ -124,7 +130,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 			);
 		}
 
-		public async Task DeleteGuild(BackedGuild guild)
+		public async Task DeleteGuild(Guid organizationId, Guid guildId)
 		{
 			int rowsAffected = await dbConnection.ExecuteAsync(@"
 				UPDATE
@@ -135,14 +141,13 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					organization
 				WHERE
 					guild.organization_id = organization.id AND
-					guild.external_id = @Id AND
+					guild.external_id = @GuildId AND
 					organization.external_id = @OrganizationId AND
 					guild.deleted_at IS NULL",
 				new
 				{
-					Id = guild.Id,
-					// Ensure guilds transferred to another org can't be deleted
-					OrganizationId = guild.OrganizationId,
+					OrganizationId = organizationId,
+					GuildId = guildId,
 					DeletedAt = DateTime.UtcNow,
 				}
 			);

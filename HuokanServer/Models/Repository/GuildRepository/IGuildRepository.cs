@@ -7,8 +7,8 @@ namespace HuokanServer.Models.Repository.GuildRepository
 	public interface IGuildRepository
 	{
 		Task<BackedGuild> CreateGuild(Guild guild);
-		Task DeleteGuild(BackedGuild guild);
-		Task<List<BackedGuild>> FindGuilds(Guild guild);
+		Task DeleteGuild(Guid organizationId, Guid guildId);
+		Task<List<BackedGuild>> FindGuilds(Guid organizationId, GuildFilter guild);
 		Task<BackedGuild> GetGuild(Guid organizationId, Guid guildId);
 		Task<BackedGuild> UpdateGuild(BackedGuild guild);
 	}

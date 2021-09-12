@@ -19,7 +19,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 				Realm = "Test",
 				OrganizationId = organization.Id,
 			});
-			await repo.DeleteGuild(guild);
+			await repo.DeleteGuild(organization.Id, guild.Id);
 			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.GetGuild(organization.Id, guild.Id));
 		}
 	}

@@ -20,11 +20,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 				Realm = "Test",
 				OrganizationId = organization.Id,
 			});
-			BackedGuild guildWithWrongOrganizationId = guild with
-			{
-				OrganizationId = Guid.Empty,
-			};
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.DeleteGuild(guildWithWrongOrganizationId));
+			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.DeleteGuild(Guid.Empty, guild.Id));
 		}
 	}
 }

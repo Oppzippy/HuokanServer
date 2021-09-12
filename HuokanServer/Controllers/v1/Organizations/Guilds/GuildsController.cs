@@ -30,9 +30,8 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 			[FromQuery(Name = "realm")] string guildRealm
 		)
 		{
-			List<BackedGuild> guilds = await _guildRepository.FindGuilds(new Guild()
+			List<BackedGuild> guilds = await _guildRepository.FindGuilds(organizationId, new GuildFilter()
 			{
-				OrganizationId = organizationId,
 				Name = guildName,
 				Realm = guildRealm,
 			});
@@ -88,8 +87,7 @@ namespace HuokanServer.Controllers.v1.Organizations.Guilds
 		[Authorize(Policy = "OrganizationAdministrator")]
 		public async Task DeleteGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromRoute(Name = "guildId")] Guid guildId)
 		{
-			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
-			await _guildRepository.DeleteGuild(guild);
+			await _guildRepository.DeleteGuild(organizationId, guildId);
 		}
 	}
 }
