@@ -12,27 +12,34 @@ namespace HuokanServer.Models.Repository.GuildRepository
 
 		public async Task<BackedGuild> GetGuild(Guid organizationId, Guid guildId)
 		{
-			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
-				SELECT
-					guild.external_id AS id,
-					organization.external_id AS organization_id,
-					guild.name,
-					guild.realm,
-					guild.created_at
-				FROM
-					guild
-				INNER JOIN organization ON
-					guild.organization_id = organization.id
-				WHERE
-					organization.external_id = @OrganizationId AND
-					guild.external_id = @GuildId
-					guild.is_not_deleted = TRUE",
-				new
-				{
-					OrganizationId = organizationId,
-					GuildId = guildId,
-				}
-			);
+			try
+			{
+				return await dbConnection.QueryFirstAsync<BackedGuild>(@"
+					SELECT
+						guild.external_id AS id,
+						organization.external_id AS organization_id,
+						guild.name,
+						guild.realm,
+						guild.created_at
+					FROM
+						guild
+					INNER JOIN organization ON
+						guild.organization_id = organization.id
+					WHERE
+						organization.external_id = @OrganizationId AND
+						guild.external_id = @GuildId AND
+						guild.is_not_deleted = TRUE",
+					new
+					{
+						OrganizationId = organizationId,
+						GuildId = guildId,
+					}
+				);
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new NotFoundException("The specified guild does not exist.", ex);
+			}
 		}
 
 		public async Task<List<BackedGuild>> FindGuilds(Guild guild)
@@ -81,7 +88,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 						@CreatedAt
 					)
 				RETURNING
-					id, organization_id, name, realm, created_at",
+					external_id AS id, @OrganizationId AS organization_id, name, realm, created_at",
 				new
 				{
 					OrganizationId = guild.OrganizationId,
@@ -119,17 +126,18 @@ namespace HuokanServer.Models.Repository.GuildRepository
 
 		public async Task DeleteGuild(BackedGuild guild)
 		{
-			await dbConnection.ExecuteAsync(@"
+			int rowsAffected = await dbConnection.ExecuteAsync(@"
 				UPDATE
 					guild
 				SET
-					guild.deleted_at = @DeletedAt
+					deleted_at = @DeletedAt
 				FROM
 					organization
 				WHERE
 					guild.organization_id = organization.id AND
 					guild.external_id = @Id AND
-					organization.external_id = @OrganizationId",
+					organization.external_id = @OrganizationId AND
+					guild.deleted_at IS NULL",
 				new
 				{
 					Id = guild.Id,
@@ -138,6 +146,10 @@ namespace HuokanServer.Models.Repository.GuildRepository
 					DeletedAt = DateTime.UtcNow,
 				}
 			);
+			if (rowsAffected == 0)
+			{
+				throw new NotFoundException("The specified guild does not exist.");
+			}
 		}
 	}
 }
