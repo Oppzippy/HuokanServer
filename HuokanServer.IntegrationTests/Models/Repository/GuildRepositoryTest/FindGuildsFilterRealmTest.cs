@@ -6,7 +6,7 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 {
-	public class FindGuildsFilterNameTest : GuildRepositoryTestBase
+	public class FindGuildsFilterRealmTest : GuildRepositoryTestBase
 	{
 		[Fact]
 		public async Task TestNameFilter()
@@ -28,11 +28,11 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 			);
 			List<BackedGuild> guilds = await Repository.FindGuilds(organization.Id, new GuildFilter()
 			{
-				Name = "Guild two",
+				Realm = "Realm one",
 			});
 
 			Assert.Single(guilds);
-			Assert.Equal(newlyCreatedGuilds[1], guilds[0]);
+			Assert.Equal(newlyCreatedGuilds[0], guilds[0]);
 		}
 	}
 }
