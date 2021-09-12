@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 
 namespace HuokanServer.Models.Repository.UserRepository
 {
@@ -101,10 +102,10 @@ namespace HuokanServer.Models.Repository.UserRepository
 			using IDbConnection dbConnection = GetDbConnection();
 			dynamic result = await dbConnection.QueryFirstAsync(@"
 				SELECT
-					COUNT(*) AS 'count'
+					COUNT(*) AS ""count""
 				FROM
 					user_account
-				INNER JOIN organization_membership AS membership ON
+				INNER JOIN organization_user_membership AS membership ON
 					membership.user_id = user_account.id
 				INNER JOIN organization ON
 					organization.id = membership.organization_id
@@ -163,29 +164,75 @@ namespace HuokanServer.Models.Repository.UserRepository
 					GuildIds = decimalGuildIds,
 				}
 			);
-			await dbConnection.ExecuteAsync(@"
-				INSERT INTO organization_user_membership (
-					organization_id,
-					user_id
-				) VALUES (
-					SELECT
-						organization.id,
-						(SELECT id FROM user_account WHERE external_id = @UserId)
-					FROM
-						organization
-					WHERE
-						discord_guild_id = ANY(@GuildIds::NUMERIC ARRAY)
-				)
-				ON CONFLICT (organization_id, user_id) DO NOTHING",
-				new
+			try
+			{
+				await dbConnection.ExecuteAsync(@"
+					INSERT INTO organization_user_membership (
+						organization_id,
+						user_id
+					) (
+						SELECT
+							organization.id,
+							(SELECT id FROM user_account WHERE external_id = @UserId)
+						FROM
+							organization
+						WHERE
+							discord_guild_id = ANY(@GuildIds::NUMERIC ARRAY)
+					)
+					ON CONFLICT (organization_id, user_id) DO NOTHING",
+					new
+					{
+						UserId = userId,
+						GuildIds = decimalGuildIds,
+					},
+					transaction
+				);
+			}
+			catch (NpgsqlException ex)
+			{
+				if (ex.SqlState == PostgresErrorCodes.NotNullViolation)
 				{
-					UserId = userId,
-					GuildIds = decimalGuildIds,
-				},
-				transaction
-			);
+					throw new ItemNotFoundException("The specified user does not exist.", ex);
+				}
+				throw;
+			}
 			transaction.Commit();
 		}
+
+		public async Task AddUserToOrganization(Guid userId, Guid organizationId)
+		{
+			using IDbConnection dbConnection = GetDbConnection();
+			try
+			{
+				await dbConnection.ExecuteAsync(@"
+					INSERT INTO organization_user_membership (
+						organization_id,
+						user_id
+					) VALUES (
+						(SELECT id FROM organization WHERE external_id = @OrganizationId),
+						(SELECT id FROM user_account WHERE external_id = @UserId)
+					)",
+					new
+					{
+						OrganizationId = organizationId,
+						UserId = userId,
+					}
+				);
+			}
+			catch (NpgsqlException ex)
+			{
+				switch (ex.SqlState)
+				{
+					case PostgresErrorCodes.UniqueViolation:
+						throw new DuplicateItemException("The specified user is already in that organization.", ex);
+					case PostgresErrorCodes.NotNullViolation:
+						throw new ItemNotFoundException("The user or organization does not exist.", ex);
+					default:
+						throw;
+				}
+			}
+		}
+
 
 		private record DbBackedUser
 		{

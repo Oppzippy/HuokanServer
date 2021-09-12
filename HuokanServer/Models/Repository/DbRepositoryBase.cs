@@ -1,5 +1,4 @@
 using System.Data;
-using Npgsql;
 
 namespace HuokanServer.Models.Repository
 {
@@ -14,7 +13,9 @@ namespace HuokanServer.Models.Repository
 
 		protected IDbConnection GetDbConnection()
 		{
-			return _dbConnectionFactory.Create();
+			IDbConnection connection = _dbConnectionFactory.Create();
+			connection.Open();
+			return connection;
 		}
 	}
 }

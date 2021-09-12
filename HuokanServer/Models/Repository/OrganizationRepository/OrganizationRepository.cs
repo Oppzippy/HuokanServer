@@ -107,10 +107,10 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 					organization
 				INNER JOIN organization_user_membership AS membership ON
 					membership.organization_id = organization.id
-				INNER JOIN user ON
-					user.id = membership.user_id
+				INNER JOIN user_account ON
+					user_account.id = membership.user_id
 				WHERE
-					user.external_id = @UserId",
+					user_account.external_id = @UserId",
 				new
 				{
 					UserId = userId,

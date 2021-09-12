@@ -6,6 +6,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 {
 	public interface IUserRepository
 	{
+		Task AddUserToOrganization(Guid userId, Guid organizationId);
 		Task<BackedUser> CreateUser(User user);
 		Task<BackedUser> FindOrCreateUser(User user);
 		Task<BackedUser> FindUser(User user);
