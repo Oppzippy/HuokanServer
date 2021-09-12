@@ -14,6 +14,7 @@ namespace HuokanServer.Models.Repository
 	{
 		public static IServiceCollection AddModels(this IServiceCollection services)
 		{
+			services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
 			// Discord
 			services.AddTransient<IDiscordUserFactory, DiscordUserFactory>();
 			services.AddTransient<IDiscordUserAuthenticationHandler, DiscordUserAuthenticationHandler>();
