@@ -10,10 +10,11 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 {
 	public class OrganizationRepository : DbRepositoryBase, IOrganizationRepository
 	{
-		public OrganizationRepository(IDbConnection dbConnection) : base(dbConnection) { }
+		public OrganizationRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
 		public async Task<BackedOrganization> GetOrganization(Guid organizationId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
@@ -35,6 +36,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<BackedOrganization> FindOrganization(string slug)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			try
 			{
 
@@ -64,6 +66,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<BackedOrganization> FindOrganization(ulong discordGuildId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			try
 			{
 				DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
@@ -92,6 +95,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<List<BackedOrganization>> FindOrganizationsContainingUser(Guid userId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			IEnumerable<DbBackedOrganization> organizations = await dbConnection.QueryAsync<DbBackedOrganization>(@"
 				SELECT
 					organization.external_id AS id,
@@ -118,6 +122,7 @@ namespace HuokanServer.Models.Repository.OrganizationRepository
 
 		public async Task<BackedOrganization> CreateOrganization(Organization organization)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			try
 			{
 				DbBackedOrganization organizations = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"

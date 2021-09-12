@@ -5,13 +5,12 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 {
-	public class FindOrCreateUserTest : DatabaseTestBase
+	public class FindOrCreateUserTest : UserRepositoryTestBase
 	{
 		[Fact]
 		public async Task TestCreateUser()
 		{
-			var repo = new UserRepository(DbConnection);
-			BackedUser newlyCreatedUser = await repo.FindOrCreateUser(new User()
+			BackedUser newlyCreatedUser = await Repository.FindOrCreateUser(new User()
 			{
 				DiscordUserId = 412,
 			});
@@ -21,12 +20,11 @@ namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 		[Fact]
 		public async Task TestFindUser()
 		{
-			var repo = new UserRepository(DbConnection);
-			BackedUser newlyCreatedUser = await repo.CreateUser(new User()
+			BackedUser newlyCreatedUser = await Repository.CreateUser(new User()
 			{
 				DiscordUserId = 100,
 			});
-			BackedUser user = await repo.FindOrCreateUser(new User()
+			BackedUser user = await Repository.FindOrCreateUser(new User()
 			{
 				DiscordUserId = 100,
 			});

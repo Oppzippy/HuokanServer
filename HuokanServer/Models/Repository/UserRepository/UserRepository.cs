@@ -9,10 +9,11 @@ namespace HuokanServer.Models.Repository.UserRepository
 {
 	public class UserRepository : DbRepositoryBase, IUserRepository
 	{
-		public UserRepository(IDbConnection dbConnection) : base(dbConnection) { }
+		public UserRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
 		public async Task<BackedUser> GetUser(Guid id)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
 				SELECT
 					external_id AS id,
@@ -45,6 +46,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task<BackedUser> FindUser(User user)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			try
 			{
 				DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
@@ -71,6 +73,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task<List<BackedUser>> FindUsersInOrganization(Guid organizationId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			IEnumerable<DbBackedUser> dbBackedUsers = await dbConnection.QueryAsync<DbBackedUser>(@"
 				SELECT
 					user_account.external_id AS id,
@@ -95,6 +98,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task<bool> IsUserInOrganization(Guid userId, Guid organizationId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			dynamic result = await dbConnection.QueryFirstAsync(@"
 				SELECT
 					COUNT(*) AS 'count'
@@ -118,6 +122,7 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task<BackedUser> CreateUser(User user)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
 				INSERT INTO
 					user_account (discord_user_id, created_at)
@@ -136,9 +141,11 @@ namespace HuokanServer.Models.Repository.UserRepository
 
 		public async Task SetDiscordOrganizations(Guid userId, List<ulong> guildIds)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
+			using IDbTransaction transaction = dbConnection.BeginTransaction();
+
 			var decimalGuildIds = guildIds.Select(Convert.ToDecimal).ToList();
 
-			using IDbTransaction transaction = dbConnection.BeginTransaction();
 			await dbConnection.ExecuteAsync(@"
 				DELETE FROM
 					organization_user_membership AS membership

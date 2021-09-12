@@ -12,8 +12,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 		[Fact]
 		public async Task TestDeleteNonexistentOrganizationAndGuild()
 		{
-			var repo = new GuildRepository(DbConnection);
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.DeleteGuild(Guid.Empty, Guid.Empty));
+			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.DeleteGuild(Guid.Empty, Guid.Empty));
 		}
 	}
 }

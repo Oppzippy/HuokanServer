@@ -6,13 +6,12 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {
-	public class OrganizationTest : DatabaseTestBase
+	public class OrganizationTest : OrganizationRepositoryTestBase
 	{
 		[Fact]
 		public async Task TestCreate()
 		{
-			var repo = new OrganizationRepository(DbConnection);
-			var organization = await repo.CreateOrganization(new Organization()
+			var organization = await Repository.CreateOrganization(new Organization()
 			{
 				DiscordGuildId = 123,
 				Name = "Test Organization",

@@ -5,17 +5,16 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 {
-	public class GetUserTest : DatabaseTestBase
+	public class GetUserTest : UserRepositoryTestBase
 	{
 		[Fact]
 		public async Task TestGetUser()
 		{
-			var repo = new UserRepository(DbConnection);
-			BackedUser newlyCreatedUser = await repo.CreateUser(new User()
+			BackedUser newlyCreatedUser = await Repository.CreateUser(new User()
 			{
 				DiscordUserId = 123,
 			});
-			BackedUser user = await repo.GetUser(newlyCreatedUser.Id);
+			BackedUser user = await Repository.GetUser(newlyCreatedUser.Id);
 			Assert.NotNull(user);
 		}
 	}

@@ -1,13 +1,20 @@
 using System.Data;
+using Npgsql;
 
 namespace HuokanServer.Models.Repository
 {
 	public abstract class DbRepositoryBase
 	{
-		protected readonly IDbConnection dbConnection;
-		public DbRepositoryBase(IDbConnection dbConnection)
+		private readonly IDbConnectionFactory _dbConnectionFactory;
+
+		public DbRepositoryBase(IDbConnectionFactory dbConnectionFactory)
 		{
-			this.dbConnection = dbConnection;
+			_dbConnectionFactory = dbConnectionFactory;
+		}
+
+		protected IDbConnection GetDbConnection()
+		{
+			return _dbConnectionFactory.Create();
 		}
 	}
 }

@@ -5,5 +5,6 @@ namespace HuokanServer
 		public string DiscordClientId { get; init; }
 		public string DiscordClientSecret { get; init; }
 		public string DiscordRedirectUri { get; init; }
+		public string DbConnectionString { get; init; }
 	}
 }

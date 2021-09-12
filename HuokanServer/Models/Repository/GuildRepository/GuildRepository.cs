@@ -8,10 +8,11 @@ namespace HuokanServer.Models.Repository.GuildRepository
 {
 	public class GuildRepository : DbRepositoryBase, IGuildRepository
 	{
-		public GuildRepository(IDbConnection dbConnection) : base(dbConnection) { }
+		public GuildRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
 		public async Task<BackedGuild> GetGuild(Guid organizationId, Guid guildId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			try
 			{
 				return await dbConnection.QueryFirstAsync<BackedGuild>(@"
@@ -44,6 +45,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 
 		public async Task<List<BackedGuild>> FindGuilds(Guid organizationId, GuildFilter guild)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			var query = @"
 				SELECT
 					guild.external_id AS id,
@@ -78,6 +80,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 
 		public async Task<BackedGuild> CreateGuild(Guild guild)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
 				INSERT INTO
 					guild (
@@ -107,6 +110,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 
 		public async Task<BackedGuild> UpdateGuild(BackedGuild guild)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			return await dbConnection.QueryFirstAsync<BackedGuild>(@"
 				UPDATE
 					guild
@@ -132,6 +136,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 
 		public async Task DeleteGuild(Guid organizationId, Guid guildId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			int rowsAffected = await dbConnection.ExecuteAsync(@"
 				UPDATE
 					guild

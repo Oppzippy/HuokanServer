@@ -29,7 +29,7 @@ namespace HuokanServer
 		public void ConfigureServices(IServiceCollection services)
 		{
 			var connectionString = Configuration.GetConnectionString("Postgres");
-			// TODO make sure connection pooling is working
+			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 			services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(connectionString));
 			services.AddTransient<HttpClient>();
 			services.AddSingleton<ApplicationSettings>(new ApplicationSettings()

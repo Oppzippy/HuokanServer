@@ -9,10 +9,11 @@ namespace HuokanServer.Models.Repository.DepositRepository
 {
 	public class DepositRepository : DbRepositoryBase, IDepositRepository
 	{
-		public DepositRepository(IDbConnection dbConnection) : base(dbConnection) { }
+		public DepositRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
 		public async Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			var results = await dbConnection.QueryAsync<BackedDeposit>(@"
 				WITH RECURSIVE node AS (
 					(
@@ -89,6 +90,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		private async Task<List<int>> FindDepositSequenceStart(Guid organizationId, Guid guildId, Deposit firstDeposit)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			var rows = await dbConnection.QueryAsync<FindDepositSequenceStartResult>(@"
 				SELECT
 					graph_node.id
@@ -127,6 +129,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		private async Task<List<List<int>>> FindDepositSequenceRest(Guid organizationId, Guid guildId, List<Deposit> deposits, List<int> depositIds)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			// TODO we probably don't need to verify organization id and guild id since this won't change from parent to child
 			// and we're only looking at children of nodes from the correct organization/guild
 			var sequencesByLatestId = new Dictionary<int, List<int>>();
@@ -186,6 +189,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		private async Task CreateEndorsements(Guid userId, List<int> nodeIds)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			using var transaction = dbConnection.BeginTransaction();
 			foreach (var nodeId in nodeIds)
 			{
@@ -212,6 +216,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		private async Task ImportSequence(Guid organizationId, Guid guildId, List<Deposit> deposits, List<int> sequence)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			using IDbTransaction transaction = dbConnection.BeginTransaction();
 			int? prevNodeId = null;
 			foreach (var deposit in deposits.GetRange(sequence.Count, sequence.Count - deposits.Count))
@@ -232,6 +237,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		private async Task<bool> DoesOrganizationContainGuild(Guid organizationId, Guid guildId, IDbTransaction transaction)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			dynamic result = await dbConnection.QueryFirstAsync(@"
 				SELECT
 					COUNT(*) AS 'count'
@@ -254,6 +260,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		private async Task<CreateDepositResult> CreateDeposit(CreateDepositsArgs args)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			return await dbConnection.QueryFirstAsync<CreateDepositResult>(@"
 				WITH gn AS (
 					INSERT INTO graph_node (graph_id, created_at)

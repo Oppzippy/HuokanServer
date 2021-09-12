@@ -6,27 +6,25 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {
-	public class FindOrganizationSlugTest : DatabaseTestBase
+	public class FindOrganizationSlugTest : OrganizationRepositoryTestBase
 	{
 		[Fact]
 		public async Task TestFindOrganizationSlug()
 		{
-			var repo = new OrganizationRepository(DbConnection);
-			await repo.CreateOrganization(new Organization()
+			await Repository.CreateOrganization(new Organization()
 			{
 				DiscordGuildId = 1,
 				Name = "Organization",
 				Slug = "organization-slug",
 			});
-			BackedOrganization org = await repo.FindOrganization("organization-slug");
+			BackedOrganization org = await Repository.FindOrganization("organization-slug");
 			Assert.NotNull(org);
 		}
 
 		[Fact]
 		public async Task TestFindNonexistentOrganizationSlug()
 		{
-			OrganizationRepository repo = new OrganizationRepository(DbConnection);
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.FindOrganization("nonexistent-slug"));
+			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.FindOrganization("nonexistent-slug"));
 		}
 	}
 }

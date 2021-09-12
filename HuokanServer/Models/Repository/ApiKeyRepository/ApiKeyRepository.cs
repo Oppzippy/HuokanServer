@@ -11,10 +11,11 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 	{
 		private const int API_KEY_SIZE_IN_BYTES = 32;
 
-		public ApiKeyRepository(IDbConnection dbConnection) : base(dbConnection) { }
+		public ApiKeyRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
 		public async Task<BackedApiKey> FindApiKey(string apiKey)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			var hash = HashApiKey(apiKey);
 			return await dbConnection.QueryFirstAsync<BackedApiKey>(@"
                 SELECT
@@ -34,6 +35,7 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 
 		public async Task<string> CreateApiKey(ApiKey apiKey)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			var base64 = GenerateApiKey(API_KEY_SIZE_IN_BYTES);
 			var hash = HashApiKey(base64);
 

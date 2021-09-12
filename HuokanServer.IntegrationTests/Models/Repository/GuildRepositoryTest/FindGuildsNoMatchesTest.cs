@@ -11,9 +11,8 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 		[Fact]
 		public async Task TestNoMatches()
 		{
-			var repo = new GuildRepository(DbConnection);
 			BackedOrganization organization = await CreateOrganization();
-			List<BackedGuild> guilds = await repo.FindGuilds(organization.Id, new GuildFilter() { });
+			List<BackedGuild> guilds = await Repository.FindGuilds(organization.Id, new GuildFilter() { });
 			Assert.Empty(guilds);
 		}
 	}

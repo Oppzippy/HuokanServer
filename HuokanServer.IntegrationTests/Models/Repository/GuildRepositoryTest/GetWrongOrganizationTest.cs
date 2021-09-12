@@ -13,15 +13,14 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 		[Fact]
 		public async Task TestGetGuildWrongOrganizationId()
 		{
-			var repo = new GuildRepository(DbConnection);
 			BackedOrganization organization = await CreateOrganization();
-			BackedGuild guild = await repo.CreateGuild(new Guild()
+			BackedGuild guild = await Repository.CreateGuild(new Guild()
 			{
 				Name = "Guild",
 				Realm = "Realm",
 				OrganizationId = organization.Id,
 			});
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.GetGuild(Guid.Empty, guild.Id));
+			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.GetGuild(Guid.Empty, guild.Id));
 		}
 	}
 }

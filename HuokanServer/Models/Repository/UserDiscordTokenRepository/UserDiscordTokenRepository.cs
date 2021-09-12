@@ -7,10 +7,11 @@ namespace HuokanServer.Models.Repository.UserDiscordTokenRepository
 {
 	public class UserDiscordTokenRepository : DbRepositoryBase, IUserDiscordTokenRepository
 	{
-		public UserDiscordTokenRepository(IDbConnection dbConnection) : base(dbConnection) { }
+		public UserDiscordTokenRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
 		public async Task<UserDiscordToken> GetDiscordToken(Guid userId)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			return await dbConnection.QueryFirstAsync<UserDiscordToken>(@"
                 SELECT
                     user.external_id,
@@ -34,6 +35,7 @@ namespace HuokanServer.Models.Repository.UserDiscordTokenRepository
 
 		public async Task SetDiscordToken(Guid userId, UserDiscordToken token)
 		{
+			using IDbConnection dbConnection = GetDbConnection();
 			await dbConnection.QueryFirstAsync(@"
                 INSERT INTO user_discord_token (
                     user_id,

@@ -12,25 +12,24 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 		[Fact]
 		public async Task TestDoesntFindDeletedGuilds()
 		{
-			var repo = new GuildRepository(DbConnection);
 			BackedOrganization organization = await CreateOrganization();
 			BackedGuild[] newlyCreatedGuilds = await Task.WhenAll(
-				repo.CreateGuild(new Guild()
+				Repository.CreateGuild(new Guild()
 				{
 					Name = "Guild one",
 					Realm = "Realm",
 					OrganizationId = organization.Id,
 				}),
-				repo.CreateGuild(new Guild()
+				Repository.CreateGuild(new Guild()
 				{
 					Name = "Guild two",
 					Realm = "Realm",
 					OrganizationId = organization.Id,
 				})
 			);
-			await repo.DeleteGuild(organization.Id, newlyCreatedGuilds[1].Id);
-			List<BackedGuild> guilds = await repo.FindGuilds(organization.Id, new GuildFilter() { });
-			Assert.Equal(1, guilds.Count);
+			await Repository.DeleteGuild(organization.Id, newlyCreatedGuilds[1].Id);
+			List<BackedGuild> guilds = await Repository.FindGuilds(organization.Id, new GuildFilter() { });
+			Assert.Single(guilds);
 			Assert.Equal(newlyCreatedGuilds[0], guilds[0]);
 		}
 	}

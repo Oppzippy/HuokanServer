@@ -11,16 +11,15 @@ namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 		[Fact]
 		public async Task TestGetDeletedGuild()
 		{
-			var repo = new GuildRepository(DbConnection);
 			BackedOrganization organization = await CreateOrganization();
-			BackedGuild guild = await repo.CreateGuild(new Guild()
+			BackedGuild guild = await Repository.CreateGuild(new Guild()
 			{
 				Name = "Test",
 				Realm = "Test",
 				OrganizationId = organization.Id,
 			});
-			await repo.DeleteGuild(organization.Id, guild.Id);
-			await Assert.ThrowsAnyAsync<NotFoundException>(() => repo.GetGuild(organization.Id, guild.Id));
+			await Repository.DeleteGuild(organization.Id, guild.Id);
+			await Assert.ThrowsAnyAsync<NotFoundException>(() => Repository.GetGuild(organization.Id, guild.Id));
 		}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using Dapper;
 using DbUp;
+using HuokanServer.Models.Repository;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Xunit;
@@ -9,10 +10,9 @@ using Xunit;
 namespace HuokanServer.IntegrationTests.TestBases
 {
 	[Collection("Database")]
-	public abstract class DatabaseTestBase : IDisposable
+	public abstract class DatabaseTestBase
 	{
-		public IDbConnection DbConnection { get; }
-		private string _connectionString;
+		protected IDbConnectionFactory ConnectionFactory { get; }
 
 		public DatabaseTestBase()
 		{
@@ -22,31 +22,29 @@ namespace HuokanServer.IntegrationTests.TestBases
 				.SetBasePath(AppContext.BaseDirectory)
 				.AddJsonFile("appsettings.IntegrationTest.json")
 				.Build();
-			_connectionString = config.GetConnectionString("Postgres");
+			ConnectionFactory = new DbConnectionFactory(config.GetConnectionString("Postgres"));
 
-			DbConnection = new NpgsqlConnection(_connectionString);
 			ResetDB();
 		}
 
 		private void ResetDB()
 		{
-			DbConnection.Execute("DROP SCHEMA IF EXISTS public CASCADE");
-			DbConnection.Execute("CREATE SCHEMA public");
+			using IDbConnection dbConnection = GetDbConnection();
+			dbConnection.Execute("DROP SCHEMA IF EXISTS public CASCADE");
+			dbConnection.Execute("CREATE SCHEMA public");
 
 
-			EnsureDatabase.For.PostgresqlDatabase(_connectionString);
-			var upgrader = DeployChanges.To.PostgresqlDatabase(_connectionString)
+			EnsureDatabase.For.PostgresqlDatabase(ConnectionFactory.ConnectionString);
+			var upgrader = DeployChanges.To.PostgresqlDatabase(ConnectionFactory.ConnectionString)
 				.WithScriptsEmbeddedInAssembly(typeof(HuokanServer.Program).Assembly)
 				.LogToConsole()
 				.Build();
 			upgrader.PerformUpgrade();
 		}
 
-		public void Dispose()
+		protected IDbConnection GetDbConnection()
 		{
-			// DbConnection.Execute("DROP SCHEMA IF EXISTS public CASCADE");
-			// DbConnection.Execute("CREATE SCHEMA public");
-			DbConnection.Dispose();
+			return ConnectionFactory.Create();
 		}
 	}
 }
