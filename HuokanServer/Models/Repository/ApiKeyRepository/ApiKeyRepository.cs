@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 
 namespace HuokanServer.Models.Repository.ApiKeyRepository
 {
@@ -17,20 +18,30 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 		{
 			using IDbConnection dbConnection = GetDbConnection();
 			var hash = HashApiKey(apiKey);
-			return await dbConnection.QueryFirstAsync<BackedApiKey>(@"
-                SELECT
-                    user.external_id AS id
-                FROM
-                    unexpired_api_key
-				INNER JOIN user ON
-					unexpired_api_key.user_id = user.id
-                WHERE
-                    unexpired_api_key.hashed_key = @HashedKey",
-				new
-				{
-					HashedKey = hash,
-				}
-			);
+			try
+			{
+				// When the select user_account.external_id isn't in a subquery, AS id
+				// causes it to be read as an INTEGER. I'm not sure why this is an issue here,
+				// but the subquery properly makes it read as a uuid.
+				return await dbConnection.QueryFirstAsync<BackedApiKey>(@"
+					SELECT
+						(SELECT user_account.external_id) AS id
+					FROM
+						unexpired_api_key
+					INNER JOIN user_account ON
+						unexpired_api_key.user_id = user_account.id
+					WHERE
+						unexpired_api_key.key_hash = @KeyHash",
+					new
+					{
+						KeyHash = hash,
+					}
+				);
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new ItemNotFoundException("The specified api key does not exist.", ex);
+			}
 		}
 
 		public async Task<string> CreateApiKey(ApiKey apiKey)
@@ -39,26 +50,37 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 			var base64 = GenerateApiKey(API_KEY_SIZE_IN_BYTES);
 			var hash = HashApiKey(base64);
 
-			await dbConnection.ExecuteAsync(@"
-                INSERT INTO api_key (
-                    key_hash,
-                    user_id,
-                    created_at,
-                    expires_at
-                ) VALUES (
-                    @KeyHash,
-                    (SELECT id FROM user WHERE external_id = @UserId),
-                    @CreatedAt
-                    @ExpiresAt
-                )",
-				new
+			try
+			{
+				await dbConnection.ExecuteAsync(@"
+					INSERT INTO api_key (
+						key_hash,
+						user_id,
+						created_at,
+						expires_at
+					) VALUES (
+						@KeyHash,
+						(SELECT id FROM user_account WHERE external_id = @UserId),
+						@CreatedAt,
+						@ExpiresAt
+					)",
+					new
+					{
+						KeyHash = hash,
+						UserId = apiKey.UserId,
+						CreatedAt = apiKey.CreatedAt.ToUniversalTime(),
+						ExpiresAt = apiKey.ExpiresAt.ToUniversalTime(),
+					}
+				);
+			}
+			catch (NpgsqlException ex)
+			{
+				if (ex.SqlState == PostgresErrorCodes.NotNullViolation)
 				{
-					KeyHash = hash,
-					UserId = apiKey.UserId,
-					CreatedAt = apiKey.CreatedAt,
-					ExpiresAt = apiKey.ExpiresAt,
+					throw new ItemNotFoundException("The specified users does not exist.", ex);
 				}
-			);
+				throw;
+			}
 
 			return base64;
 		}

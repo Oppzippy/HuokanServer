@@ -40,13 +40,13 @@ CREATE TABLE user_discord_token (
 CREATE TABLE api_key (
 	id SERIAL PRIMARY KEY,
 	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
-	hashed_key TEXT NOT NULL UNIQUE,
+	key_hash TEXT NOT NULL UNIQUE,
 	user_id INTEGER NOT NULL REFERENCES user_account(id),
 	created_at TIMESTAMP NOT NULL,
 	expires_at TIMESTAMP NULL
 );
 
-CREATE VIEW unexpired_api_key AS SELECT * FROM api_key WHERE expires_at IS NULL OR expires_at < NOW() AT TIME ZONE 'UTC';
+CREATE VIEW unexpired_api_key AS SELECT * FROM api_key WHERE expires_at IS NULL OR NOW() < expires_at AT TIME ZONE 'UTC';
 
 CREATE TABLE organization_user_membership (
 	id SERIAL PRIMARY KEY,
