@@ -15,7 +15,6 @@ namespace HuokanServer.IntegrationTests.Models.Repository.ApiKeyRepositoryTest
 			string newlyCreatedKey = await Repository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
-				CreatedAt = DateTime.UtcNow,
 				ExpiresAt = DateTime.UtcNow.AddMinutes(1),
 			});
 			BackedApiKey apiKey = await Repository.FindApiKey(newlyCreatedKey);

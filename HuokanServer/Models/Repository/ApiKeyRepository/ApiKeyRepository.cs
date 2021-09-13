@@ -68,7 +68,7 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 					{
 						KeyHash = hash,
 						UserId = apiKey.UserId,
-						CreatedAt = apiKey.CreatedAt.ToUniversalTime(),
+						CreatedAt = DateTime.UtcNow,
 						ExpiresAt = apiKey.ExpiresAt.ToUniversalTime(),
 					}
 				);

@@ -15,7 +15,6 @@ namespace HuokanServer.IntegrationTests.Models.Repository.ApiKeyRepositoryTest
 				() => Repository.CreateApiKey(new ApiKey()
 				{
 					UserId = Guid.Empty,
-					CreatedAt = DateTime.UtcNow,
 					ExpiresAt = DateTime.UtcNow.AddDays(7),
 				})
 			);

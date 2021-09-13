@@ -74,7 +74,6 @@ namespace HuokanServer.Controllers.v1.Authorization.Discord
 			{
 				UserId = user.Id,
 				ExpiresAt = DateTime.UtcNow.AddDays(7),
-				CreatedAt = DateTime.UtcNow,
 			});
 
 			return new DiscordAuthorizeResponse()

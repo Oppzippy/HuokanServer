@@ -6,5 +6,6 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 	{
 		public Guid Id { get; init; }
 		public string KeyHash { get; init; }
+		public DateTime CreatedAt { get; init; }
 	}
 }
