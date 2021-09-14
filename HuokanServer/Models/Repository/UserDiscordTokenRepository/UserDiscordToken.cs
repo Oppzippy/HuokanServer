@@ -6,7 +6,6 @@ namespace HuokanServer.Models.Repository.UserDiscordTokenRepository
 	{
 		public string Token { get; init; }
 		public string RefreshToken { get; init; }
-		public DateTime CreatedAt { get; init; }
 		public DateTime ExpiresAt { get; init; }
 	}
 }
