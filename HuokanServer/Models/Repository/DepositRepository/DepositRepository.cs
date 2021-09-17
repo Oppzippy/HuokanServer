@@ -39,11 +39,11 @@ namespace HuokanServer.Models.Repository.DepositRepository
 					UNION
 					(
 						SELECT 
-							ge.end_node_id AS id,
-							(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = ge.end_node_id) AS endorsements
-						FROM graph_node AS gn
-						INNER JOIN graph_edge AS ge ON ge.start_node_id = gn.id
-						INNER JOIN node AS d ON d.node_id = gn.id
+							graph_edge.end_node_id AS id,
+							(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = graph_edge.end_node_id) AS endorsements
+						FROM graph_node
+						INNER JOIN graph_edge ON graph_edge.start_node_id = graph_node.id
+						INNER JOIN node ON node.id = graph_node.id
 						ORDER BY endorsements DESC
 						LIMIT 1
 					)
@@ -64,16 +64,14 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 		public async Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits)
 		{
-			var sequences = await FindDepositSequence(organizationId, guildId, deposits);
-			var maxLength = sequences.Max(sequence => sequence.Count);
-			var matchedSequences = sequences.Where(sequence => sequence.Count == maxLength);
-
-			foreach (var sequence in matchedSequences)
+			List<List<int>> sequences = await FindDepositSequence(organizationId, guildId, deposits);
+			if (sequences.Any())
 			{
-				await Task.WhenAll(
-					CreateEndorsements(userId, sequence),
-					ImportSequence(organizationId, guildId, deposits, sequence)
-				);
+				await ImportMergeIntoExistingSequences(organizationId, guildId, userId, deposits, sequences);
+			}
+			else
+			{
+				await ImportSequence(organizationId, guildId, deposits, null);
 			}
 		}
 
@@ -83,8 +81,8 @@ namespace HuokanServer.Models.Repository.DepositRepository
 			{
 				return new List<List<int>>();
 			}
-			var depositIds = await FindDepositSequenceStart(organizationId, guildId, deposits[0]);
-			var sequences = await FindDepositSequenceRest(organizationId, guildId, deposits, depositIds);
+			List<int> depositIds = await FindDepositSequenceStart(organizationId, guildId, deposits[0]);
+			List<List<int>> sequences = await FindDepositSequenceRest(organizationId, guildId, deposits, depositIds);
 			return sequences;
 		}
 
@@ -133,13 +131,14 @@ namespace HuokanServer.Models.Repository.DepositRepository
 			// TODO we probably don't need to verify organization id and guild id since this won't change from parent to child
 			// and we're only looking at children of nodes from the correct organization/guild
 			var sequencesByLatestId = new Dictionary<int, List<int>>();
-			foreach (var depositId in depositIds)
+			foreach (int depositId in depositIds)
 			{
 				sequencesByLatestId[depositId] = new List<int> { depositId };
 			}
 			for (int i = 1; i < deposits.Count; i++)
 			{
-				var deposit = deposits[i];
+				Deposit deposit = deposits[i];
+				// TODO don't use dynamic
 				var nextDeposits = (await dbConnection.QueryAsync(@"
 					SELECT
 						graph_node.id,
@@ -190,8 +189,8 @@ namespace HuokanServer.Models.Repository.DepositRepository
 		private async Task CreateEndorsements(Guid userId, List<int> nodeIds)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
-			using var transaction = dbConnection.BeginTransaction();
-			foreach (var nodeId in nodeIds)
+			using IDbTransaction transaction = dbConnection.BeginTransaction();
+			foreach (int nodeId in nodeIds)
 			{
 				await dbConnection.ExecuteAsync(@"
 					INSERT INTO deposit_node_endorsement
@@ -214,23 +213,37 @@ namespace HuokanServer.Models.Repository.DepositRepository
 			transaction.Commit();
 		}
 
-		private async Task ImportSequence(Guid organizationId, Guid guildId, List<Deposit> deposits, List<int> sequence)
+		private async Task ImportMergeIntoExistingSequences(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits, List<List<int>> sequences)
+		{
+			int maxLength = sequences.Max(sequence => sequence.Count);
+			IEnumerable<List<int>> matchedSequences = sequences.Where(sequence => sequence.Count == maxLength);
+
+			foreach (List<int> sequence in matchedSequences)
+			{
+				List<Deposit> newDeposits = deposits.GetRange(sequence.Count, sequence.Count - deposits.Count);
+				await Task.WhenAll(
+					CreateEndorsements(userId, sequence),
+					ImportSequence(organizationId, guildId, newDeposits, sequence.Last())
+				);
+			}
+		}
+
+		private async Task ImportSequence(Guid organizationId, Guid guildId, List<Deposit> deposits, int? parentNodeId)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
 			using IDbTransaction transaction = dbConnection.BeginTransaction();
-			int? prevNodeId = null;
-			foreach (var deposit in deposits.GetRange(sequence.Count, sequence.Count - deposits.Count))
+			foreach (Deposit deposit in deposits)
 			{
-				var result = await CreateDeposit(new CreateDepositsArgs
+				CreateDepositResult result = await CreateDeposit(new CreateDepositsArgs
 				{
-					ParentNodeId = prevNodeId,
+					ParentNodeId = parentNodeId,
 					GuildId = guildId,
 					CharacterName = deposit.CharacterName,
 					DepositInCopper = deposit.DepositInCopper,
 					GuildBankCopper = deposit.GuildBankCopper,
 					CreatedAt = DateTime.UtcNow,
 				});
-				prevNodeId = result.Id;
+				parentNodeId = result.Id;
 			}
 			transaction.Commit();
 		}

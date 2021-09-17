@@ -82,14 +82,26 @@ namespace HuokanServer.Models.Repository.GuildRepository
 		public async Task<BackedGuild> CreateGuild(Guild guild)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
+			using IDbTransaction transaction = dbConnection.BeginTransaction();
 			try
 			{
-				return await dbConnection.QueryFirstAsync<BackedGuild>(@"
+				// TODO don't use dynamic
+				dynamic guildBankGraph = await dbConnection.QueryFirstAsync(@"
+					INSERT INTO graph (
+						id
+					) VALUES (
+						default
+					)
+					RETURNING id",
+					transaction: transaction
+				);
+				BackedGuild backedGuild = await dbConnection.QueryFirstAsync<BackedGuild>(@"
 					INSERT INTO
 						guild (
 							organization_id,
 							name,
 							realm,
+							guild_bank_graph_id,
 							created_at
 						)
 					VALUES
@@ -97,6 +109,7 @@ namespace HuokanServer.Models.Repository.GuildRepository
 							(SELECT id FROM organization WHERE external_id = @OrganizationId),
 							@Name,
 							@Realm,
+							@GuildBankGraphId,
 							@CreatedAt
 						)
 					RETURNING
@@ -106,9 +119,12 @@ namespace HuokanServer.Models.Repository.GuildRepository
 						OrganizationId = guild.OrganizationId,
 						Name = guild.Name,
 						Realm = guild.Realm,
+						GuildBankGraphId = guildBankGraph.id,
 						CreatedAt = DateTime.UtcNow,
 					}
 				);
+				transaction.Commit();
+				return backedGuild;
 			}
 			catch (NpgsqlException ex)
 			{
