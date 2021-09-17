@@ -13,9 +13,7 @@ namespace HuokanServer.Models.Repository
 
 		protected IDbConnection GetDbConnection()
 		{
-			IDbConnection connection = _dbConnectionFactory.Create();
-			connection.Open();
-			return connection;
+			return _dbConnectionFactory.Create();
 		}
 	}
 }

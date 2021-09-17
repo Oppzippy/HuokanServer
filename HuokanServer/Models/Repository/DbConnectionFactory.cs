@@ -20,7 +20,10 @@ namespace HuokanServer.Models.Repository
 
 		public IDbConnection Create()
 		{
-			return new NpgsqlConnection(ConnectionString);
+			NpgsqlConnection dbConnection = new NpgsqlConnection(ConnectionString);
+			// TODO use OpenAsync?
+			dbConnection.Open();
+			return dbConnection;
 		}
 	}
 }

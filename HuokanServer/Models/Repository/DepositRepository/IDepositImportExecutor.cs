@@ -1,0 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace HuokanServer.Models.Repository.DepositRepository
+{
+	public interface IDepositImportExecutor
+	{
+		Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits);
+	}
+}

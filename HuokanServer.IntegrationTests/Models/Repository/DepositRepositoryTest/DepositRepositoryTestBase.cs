@@ -14,7 +14,7 @@ namespace HuokanServer.IntegrationTests.Models.Repository.DepositRepositoryTest
 		{
 			get
 			{
-				return new DepositRepository(ConnectionFactory);
+				return new DepositRepository(ConnectionFactory, new DepositImportExecutorFactory(ConnectionFactory));
 			}
 		}
 
