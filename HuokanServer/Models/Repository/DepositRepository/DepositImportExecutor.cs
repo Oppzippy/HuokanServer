@@ -161,9 +161,9 @@ namespace HuokanServer.Models.Repository.DepositRepository
 				}
 				foreach (var nextDeposit in nextDeposits)
 				{
-					sequencesByLatestId[nextDeposit.Id] = sequencesByLatestId[nextDeposit.PrevId];
-					sequencesByLatestId[nextDeposit.Id].Add(nextDeposit.Id);
-					sequencesByLatestId.Remove(nextDeposit.PrevId);
+					sequencesByLatestId[nextDeposit.id] = sequencesByLatestId[nextDeposit.prev_id];
+					sequencesByLatestId[nextDeposit.id].Add(nextDeposit.id);
+					sequencesByLatestId.Remove(nextDeposit.prev_id);
 				}
 			}
 			return sequencesByLatestId.Values.AsList();
@@ -178,7 +178,7 @@ namespace HuokanServer.Models.Repository.DepositRepository
 						(node_id, user_id, created_at)
 					VALUES (
 						@NodeId,
-						(SELECT id FROM user WHERE external_id = @UserId),
+						(SELECT id FROM user_account WHERE external_id = @UserId),
 						@CreatedAt
 					)
 					ON CONFLICT (node_id, user_id) DO NOTHING",
@@ -200,11 +200,9 @@ namespace HuokanServer.Models.Repository.DepositRepository
 
 			foreach (List<int> sequence in matchedSequences)
 			{
-				List<Deposit> newDeposits = deposits.GetRange(sequence.Count, sequence.Count - deposits.Count);
-				await Task.WhenAll(
-					CreateEndorsements(userId, sequence),
-					ImportSequence(guildId, newDeposits, sequence.Last())
-				);
+				List<Deposit> newDeposits = deposits.GetRange(sequence.Count, deposits.Count - sequence.Count);
+				await CreateEndorsements(userId, sequence);
+				await ImportSequence(guildId, newDeposits, sequence.Last());
 			}
 		}
 

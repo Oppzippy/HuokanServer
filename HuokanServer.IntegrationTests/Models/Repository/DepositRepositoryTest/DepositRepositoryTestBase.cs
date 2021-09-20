@@ -37,12 +37,12 @@ namespace HuokanServer.IntegrationTests.Models.Repository.DepositRepositoryTest
 			});
 		}
 
-		public async Task<BackedUser> CreateUser(Guid organizationId)
+		public async Task<BackedUser> CreateUser(Guid organizationId, ulong discordUserId = 1)
 		{
 			var userRepository = new UserRepository(ConnectionFactory);
 			BackedUser user = await userRepository.CreateUser(new User()
 			{
-				DiscordUserId = 1,
+				DiscordUserId = discordUserId,
 			});
 			await userRepository.AddUserToOrganization(user.Id, organizationId);
 			return user;
