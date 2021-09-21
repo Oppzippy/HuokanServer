@@ -15,21 +15,28 @@ namespace HuokanServer.Models.Repository.UserRepository
 		public async Task<BackedUser> GetUser(Guid id)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
-			DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
-				SELECT
-					external_id AS id,
-					discord_user_id,
-					created_at
-				FROM
-					user_account
-				WHERE
-					external_id = @Id",
-				new
-				{
-					Id = id,
-				}
-			);
-			return dbBackedUser.ToBackedUser();
+			try
+			{
+				DbBackedUser dbBackedUser = await dbConnection.QueryFirstAsync<DbBackedUser>(@"
+					SELECT
+						external_id AS id,
+						discord_user_id,
+						created_at
+					FROM
+						user_account
+					WHERE
+						external_id = @Id",
+					new
+					{
+						Id = id,
+					}
+				);
+				return dbBackedUser.ToBackedUser();
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new ItemNotFoundException("The specified user does not exist.", ex);
+			}
 		}
 
 		public async Task<BackedUser> FindOrCreateUser(User user)

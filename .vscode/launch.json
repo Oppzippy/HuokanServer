@@ -10,7 +10,7 @@
 			"request": "launch",
 			"preLaunchTask": "build",
 			"launchBrowser": {
-				"enabled": true
+				"enabled": false
 			},
 			// If you have changed target frameworks, make sure to update the program path.
 			"program": "${workspaceFolder}/HuokanServer/bin/Debug/net5.0/HuokanServer.dll",

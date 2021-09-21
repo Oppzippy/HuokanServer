@@ -14,20 +14,28 @@ namespace HuokanServer.Controllers.v1.Organizations
 	public class OrganizationsController : ControllerBase
 	{
 		private readonly IOrganizationRepository _organizationRepository;
-		private readonly BackedUser _user;
+		private BackedUser _user
+		{
+			get
+			{
+				return HttpContext.Features.Get<BackedUser>();
+			}
+		}
 
 		public OrganizationsController(IOrganizationRepository organizationRepository)
 		{
 			_organizationRepository = organizationRepository;
-			_user = HttpContext.Features.Get<BackedUser>();
 		}
 
 		[HttpGet]
 		[Authorize(Policy = "User")]
-		public async Task<IEnumerable<ApiOrganization>> GetOrganizations()
+		public async Task<GetOrganizationsResponse> GetOrganizations()
 		{
 			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user.Id);
-			return organizations.Select(ApiOrganization.From);
+			return new GetOrganizationsResponse()
+			{
+				Organizations = organizations.Select(ApiOrganization.From)
+			};
 		}
 
 		[HttpPost]

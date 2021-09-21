@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using HuokanServer.Models.Repository;
 using HuokanServer.Models.Repository.ApiKeyRepository;
 using HuokanServer.Models.Repository.UserRepository;
 using Microsoft.AspNetCore.Http;
@@ -23,29 +24,17 @@ namespace HuokanServer.Middleware
 		public async Task InvokeAsync(HttpContext context)
 		{
 			StringValues apiKey;
-			if (!context.Request.Headers.TryGetValue("X-API-Key", out apiKey))
+			if (context.Request.Headers.TryGetValue("X-API-Key", out apiKey))
 			{
-				context.Response.StatusCode = 401;
-				await context.Response.WriteAsJsonAsync(new ApiKeyErrorResponse()
+				try
 				{
-					Error = "No API key was provided."
-				});
-				return;
+					BackedApiKey apiKeyInfo = await _apiKeyRepository.FindApiKey(apiKey.First());
+					BackedUser user = await _userRepository.GetUser(apiKeyInfo.UserId);
+					context.Features.Set<BackedUser>(user);
+					context.Features.Set<BackedApiKey>(apiKeyInfo);
+				}
+				catch (ItemNotFoundException) { }
 			}
-			BackedApiKey apiKeyInfo = await _apiKeyRepository.FindApiKey(apiKey.First());
-			if (apiKeyInfo == null)
-			{
-				context.Response.StatusCode = 401;
-				await context.Response.WriteAsJsonAsync(new ApiKeyErrorResponse()
-				{
-					Error = "Invalid API key."
-				});
-				return;
-			}
-
-			BackedUser user = await _userRepository.GetUser(apiKeyInfo.UserId);
-			context.Features.Set<BackedUser>(user);
-			context.Features.Set<BackedApiKey>(apiKeyInfo);
 			await _next(context);
 		}
 

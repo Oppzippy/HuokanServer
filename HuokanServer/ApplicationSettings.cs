@@ -4,7 +4,8 @@ namespace HuokanServer
 	{
 		public string DiscordClientId { get; init; }
 		public string DiscordClientSecret { get; init; }
-		public string DiscordRedirectUri { get; init; }
+		public string BaseUrl { get; init; }
+		public string DiscordRedirectUrl { get; set; }
 		public string DbConnectionString { get; init; }
 	}
 }

@@ -6,5 +6,6 @@ namespace HuokanServer.Models.Repository.UserPermissionRepository
 		ORGANIZATION_ADMINISTRATOR,
 		ORGANIZATION_MODERATOR,
 		ORGANIZATION_MEMBER,
+		USER,
 	}
 }

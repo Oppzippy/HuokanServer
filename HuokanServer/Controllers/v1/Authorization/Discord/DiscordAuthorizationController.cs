@@ -42,12 +42,13 @@ namespace HuokanServer.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
-		public RedirectResult Redirects([FromQuery(Name = "organization")] string organization)
+		public RedirectResult Redirect()
 		{
 			var queryParams = new Dictionary<string, string>()
 			{
 				{"client_id", _settings.DiscordClientId},
-				{"redirect_uri", _settings.DiscordRedirectUri},
+				// TODO get this url from somewhere else
+				{"redirect_uri", _settings.DiscordRedirectUrl},
 				{"response_type", "code"},
 				{"scope", "identify guilds"}
 			};
@@ -58,7 +59,8 @@ namespace HuokanServer.Controllers.v1.Authorization.Discord
 		[HttpGet]
 		public async Task<DiscordAuthorizeResponse> Authorize([FromQuery(Name = "code")] string code)
 		{
-			TokenResponse token = await _oAuthClient.GetToken(code, "");
+			// TODO get this url from somewhere else
+			TokenResponse token = await _oAuthClient.GetToken(code, _settings.DiscordRedirectUrl);
 			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
 			{

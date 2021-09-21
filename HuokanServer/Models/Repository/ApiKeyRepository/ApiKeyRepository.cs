@@ -25,7 +25,10 @@ namespace HuokanServer.Models.Repository.ApiKeyRepository
 				// but the subquery properly makes it read as a uuid.
 				return await dbConnection.QueryFirstAsync<BackedApiKey>(@"
 					SELECT
-						(SELECT user_account.external_id) AS id
+						unexpired_api_key.external_id AS id,
+						(SELECT user_account.external_id) AS user_id,
+						unexpired_api_key.created_at,
+						unexpired_api_key.expires_at
 					FROM
 						unexpired_api_key
 					INNER JOIN user_account ON

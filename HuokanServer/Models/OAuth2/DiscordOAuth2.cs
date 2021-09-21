@@ -48,7 +48,7 @@ namespace HuokanServer.Models.OAuth2
 			});
 			if (response.IsError)
 			{
-				throw new OAuth2Exception(response.Error);
+				throw new OAuth2Exception(response.Error, response.Exception);
 			}
 			return response;
 		}
