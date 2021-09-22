@@ -27,13 +27,13 @@ namespace HuokanServer.Models.Repository.UserPermissionRepository
 		public async Task<bool> IsOrganizationAdministrator(BackedOrganization organization)
 		{
 			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return IsGlobalAdministrator() || member.IsOwner || member.Permissions.HasPermission(Permissions.Administrator);
+			return IsGlobalAdministrator() || member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.Administrator);
 		}
 
 		public async Task<bool> IsOrganizationModerator(BackedOrganization organization)
 		{
 			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return IsGlobalAdministrator() || member.IsOwner || member.Permissions.HasPermission(Permissions.ManageGuild);
+			return IsGlobalAdministrator() || member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.ManageGuild);
 		}
 
 		public async Task<bool> IsOrganizationMember(BackedOrganization organization)

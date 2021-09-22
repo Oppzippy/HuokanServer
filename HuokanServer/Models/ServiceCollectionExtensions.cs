@@ -1,5 +1,6 @@
 using HuokanServer.Models.Discord;
 using HuokanServer.Models.OAuth2;
+using HuokanServer.Models.Permissions;
 using HuokanServer.Models.Repository.ApiKeyRepository;
 using HuokanServer.Models.Repository.DepositRepository;
 using HuokanServer.Models.Repository.GuildRepository;
@@ -21,6 +22,8 @@ namespace HuokanServer.Models.Repository
 			services.AddTransient<IDiscordUserAuthenticationHandler, DiscordUserAuthenticationHandler>();
 			// OAuth2
 			services.AddTransient<IOAuth2Factory, OAuth2Factory>();
+			// Permissions
+			services.AddTransient<IPermissionResolver, PermissionResolver>();
 			// Repository
 			services.AddTransient<IApiKeyRepository, ApiKeyRepository.ApiKeyRepository>();
 			services.AddTransient<IDepositRepository, DepositRepository.DepositRepository>();

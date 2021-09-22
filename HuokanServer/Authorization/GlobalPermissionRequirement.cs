@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HuokanServer.Authorization
 {
-	public class PermissionRequirement : IAuthorizationRequirement
+	public class GlobalPermissionRequirement : IAuthorizationRequirement
 	{
-		public Permission RequiredPermission { get; }
+		public GlobalPermission RequiredPermission { get; }
 
-		public PermissionRequirement(Permission requiredPermission)
+		public GlobalPermissionRequirement(GlobalPermission requiredPermission)
 		{
 			RequiredPermission = requiredPermission;
 		}

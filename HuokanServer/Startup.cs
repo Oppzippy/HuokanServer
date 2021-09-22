@@ -32,6 +32,27 @@ namespace HuokanServer
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			RunDatabaseMigrations();
+
+			services.AddApplicationSettings(Configuration);
+			services.AddModels();
+			services.AddTransient<HttpClient>();
+			services.AddHttpContextAccessor();
+
+			services.AddAuthentication("ApiKey")
+				.AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
+			services.AddAuthorizationPolicies();
+
+			services.AddControllers();
+
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "HuokanServer", Version = "v1" });
+			});
+		}
+
+		private void RunDatabaseMigrations()
+		{
 			string connectionString = Configuration.GetConnectionString("Postgres");
 			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 			EnsureDatabase.For.PostgresqlDatabase(connectionString);
@@ -40,38 +61,6 @@ namespace HuokanServer
 				.LogToConsole()
 				.Build();
 			upgrader.PerformUpgrade();
-
-			services.AddTransient<HttpClient>();
-			services.AddHttpContextAccessor();
-
-			IConfigurationSection applicationSettings = Configuration.GetSection("Application");
-			services.AddSingleton<ApplicationSettings>(new ApplicationSettings()
-			{
-				DbConnectionString = connectionString,
-				BaseUrl = applicationSettings["BaseUrl"],
-				DiscordClientId = applicationSettings["DiscordClientId"],
-				DiscordClientSecret = applicationSettings["DiscordClientSecret"],
-				DiscordRedirectUrl = applicationSettings["BaseUrl"] + "/authorization/discord/authorize",
-			});
-			services.AddModels();
-
-			services.AddAuthentication("ApiKey")
-				.AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
-			services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
-			services.AddAuthorization(options =>
-			{
-				options.AddPolicy("OrganizationAdministrator", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_ADMINISTRATOR)));
-				options.AddPolicy("OrganizationModerator", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_MODERATOR)));
-				options.AddPolicy("OrganizationMember", policy => policy.AddRequirements(new PermissionRequirement(Permission.ORGANIZATION_MEMBER)));
-				options.AddPolicy("User", policy => policy.AddRequirements(new PermissionRequirement(Permission.USER)));
-			});
-
-			services.AddControllers();
-
-			services.AddSwaggerGen(c =>
-			{
-				c.SwaggerDoc("v1", new OpenApiInfo { Title = "HuokanServer", Version = "v1" });
-			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,7 +74,6 @@ namespace HuokanServer
 			}
 
 			app.UseRouting();
-			// app.UseMiddleware<ApiKeyMiddleware>();
 			app.UseAuthentication();
 			app.UseAuthorization();
 

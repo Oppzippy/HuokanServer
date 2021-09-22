@@ -1,11 +1,9 @@
 namespace HuokanServer.Models.Repository.UserPermissionRepository
 {
-	public enum Permission
+	public enum OrganizationPermission
 	{
-		GLOBAL_ADMINISTRATOR,
 		ORGANIZATION_ADMINISTRATOR,
 		ORGANIZATION_MODERATOR,
 		ORGANIZATION_MEMBER,
-		USER,
 	}
 }
