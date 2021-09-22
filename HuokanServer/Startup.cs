@@ -1,22 +1,15 @@
-using System.Data;
 using System.Net.Http;
 using DbUp;
 using DbUp.Engine;
 using HuokanServer.Authentication;
 using HuokanServer.Authorization;
-using HuokanServer.Middleware;
-using HuokanServer.Models.Discord;
-using HuokanServer.Models.OAuth2;
 using HuokanServer.Models.Repository;
-using HuokanServer.Models.Repository.UserPermissionRepository;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 
 namespace HuokanServer
 {
