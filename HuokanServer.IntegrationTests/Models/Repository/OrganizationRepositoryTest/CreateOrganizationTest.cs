@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest

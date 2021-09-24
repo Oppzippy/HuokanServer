@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HuokanServer.Models.Repository.DepositRepository;
-using HuokanServer.Models.Repository.GuildRepository;
-using HuokanServer.Models.Repository.UserRepository;
+using HuokanServer.DataAccess.Repository.DepositRepository;
+using HuokanServer.DataAccess.Repository.GuildRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.DepositRepositoryTest

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using HuokanServer.Models.Repository;
-using HuokanServer.Models.Repository.GuildRepository;
-using HuokanServer.Models.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository;
+using HuokanServer.DataAccess.Repository.GuildRepository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest

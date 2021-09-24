@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HuokanServer.Models.Repository;
-using HuokanServer.Models.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest

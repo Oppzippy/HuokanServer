@@ -1,9 +1,9 @@
 using System.Net.Http;
 using DbUp;
 using DbUp.Engine;
-using HuokanServer.Authentication;
-using HuokanServer.Authorization;
-using HuokanServer.Models.Repository;
+using HuokanServer.DataAccess.Repository;
+using HuokanServer.Web.Authentication;
+using HuokanServer.Web.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +28,7 @@ namespace HuokanServer
 			RunDatabaseMigrations();
 
 			services.AddApplicationSettings(Configuration);
-			services.AddModels();
+			services.AddDataAccess();
 			services.AddTransient<HttpClient>();
 			services.AddHttpContextAccessor();
 

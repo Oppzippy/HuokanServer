@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.UserDiscordTokenRepository;
-using HuokanServer.Models.Repository.UserRepository;
+using HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.UserDiscordTokenRepositoryTest
 {

@@ -1,5 +1,5 @@
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.GuildRepository;
-using HuokanServer.Models.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository.GuildRepository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.GuildRepositoryTest
 {

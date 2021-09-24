@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using Dapper;
 using DbUp;
-using HuokanServer.Models.Repository;
+using HuokanServer.DataAccess.Repository;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Xunit;

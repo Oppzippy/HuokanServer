@@ -1,5 +1,5 @@
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.UserRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest
 {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.UserRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.UserRepositoryTest

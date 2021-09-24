@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using HuokanServer.IntegrationTests.TestBases;
-using HuokanServer.Models.Repository.DepositRepository;
-using HuokanServer.Models.Repository.GuildRepository;
-using HuokanServer.Models.Repository.OrganizationRepository;
-using HuokanServer.Models.Repository.UserRepository;
+using HuokanServer.DataAccess.Repository.DepositRepository;
+using HuokanServer.DataAccess.Repository.GuildRepository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.DepositRepositoryTest
 {

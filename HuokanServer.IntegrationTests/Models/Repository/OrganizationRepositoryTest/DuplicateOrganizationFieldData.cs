@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using HuokanServer.Models.Repository.OrganizationRepository;
+using HuokanServer.DataAccess.Repository.OrganizationRepository;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.OrganizationRepositoryTest
 {

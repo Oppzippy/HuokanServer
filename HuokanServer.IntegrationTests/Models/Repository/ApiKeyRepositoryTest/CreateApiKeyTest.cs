@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using HuokanServer.Models.Repository.ApiKeyRepository;
-using HuokanServer.Models.Repository.UserRepository;
+using HuokanServer.DataAccess.Repository.ApiKeyRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.Models.Repository.ApiKeyRepositoryTest
