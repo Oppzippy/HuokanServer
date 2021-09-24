@@ -2,11 +2,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
+using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
-using Microsoft.AspNetCore.Authorization;
+using HuokanServer.Web.Filters;
+using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds.DepositLogs
+namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 {
 	[Route("organizations/{organizationId}/guilds/{guildId}/depositLogs")]
 	public class DepositLogsController : ControllerBase
@@ -21,7 +23,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds.DepositLogs
 		}
 
 		[HttpPost]
-		[Authorize(Policy = "OrganizationMember")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
 		public async Task ImportDepositLog(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId,

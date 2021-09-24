@@ -26,11 +26,11 @@ namespace HuokanServer.DataAccess.Permissions
 
 			switch (permission)
 			{
-				case OrganizationPermission.ORGANIZATION_ADMINISTRATOR:
+				case OrganizationPermission.ADMINISTRATOR:
 					return await userPermissionRepository.IsOrganizationAdministrator(organization);
-				case OrganizationPermission.ORGANIZATION_MODERATOR:
+				case OrganizationPermission.MODERATOR:
 					return await userPermissionRepository.IsOrganizationModerator(organization);
-				case OrganizationPermission.ORGANIZATION_MEMBER:
+				case OrganizationPermission.MEMBER:
 					return await userPermissionRepository.IsOrganizationMember(organization);
 				default:
 					return false;

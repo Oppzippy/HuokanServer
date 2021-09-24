@@ -1,4 +1,4 @@
-namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
+namespace HuokanServer.Web.Models
 {
 	public record DiscordAuthorizeResponse
 	{

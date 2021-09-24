@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds.DepositLogs
+namespace HuokanServer.Web.Models
 {
 	public record DepositLog
 	{

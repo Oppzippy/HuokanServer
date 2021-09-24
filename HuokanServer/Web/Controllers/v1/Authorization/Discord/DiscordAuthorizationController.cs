@@ -5,9 +5,11 @@ using HuokanServer.DataAccess.Discord;
 using HuokanServer.DataAccess.OAuth2;
 using HuokanServer.DataAccess.Repository.ApiKeyRepository;
 using HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;
+using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
+using HuokanServer.Web.Filters;
+using HuokanServer.Web.Models;
 using IdentityModel.Client;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -85,7 +87,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
-		[Authorize(Policy = "User")]
+		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
 		public async Task JoinOrganizations()
 		{
 			BackedUser user = HttpContext.Features.Get<BackedUser>();

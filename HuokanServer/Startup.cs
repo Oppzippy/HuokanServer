@@ -2,8 +2,8 @@ using System.Net.Http;
 using DbUp;
 using DbUp.Engine;
 using HuokanServer.DataAccess.Repository;
-using HuokanServer.Web.Authentication;
-using HuokanServer.Web.Authorization;
+using HuokanServer.Web.Filters;
+using HuokanServer.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -31,10 +31,7 @@ namespace HuokanServer
 			services.AddDataAccess();
 			services.AddTransient<HttpClient>();
 			services.AddHttpContextAccessor();
-
-			services.AddAuthentication("ApiKey")
-				.AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
-			services.AddAuthorizationPolicies();
+			services.AddFilters();
 
 			services.AddControllers();
 
@@ -67,7 +64,7 @@ namespace HuokanServer
 			}
 
 			app.UseRouting();
-			app.UseAuthentication();
+			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

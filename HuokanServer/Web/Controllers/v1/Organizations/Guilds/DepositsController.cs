@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
-using Microsoft.AspNetCore.Authorization;
+using HuokanServer.DataAccess.Repository.UserPermissionRepository;
+using HuokanServer.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds.Deposits
+namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 {
 	[Route("organizations/{organizationId}/guilds/{guildId}/deposits")]
 	public class DepositsController : ControllerBase
@@ -18,7 +19,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds.Deposits
 		}
 
 		[HttpGet]
-		[Authorize(Policy = "OrganizationModerator")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MODERATOR)]
 		public async Task<List<BackedDeposit>> GetDeposits(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId

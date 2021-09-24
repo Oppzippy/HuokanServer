@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.GuildRepository;
+using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
-using Microsoft.AspNetCore.Authorization;
+using HuokanServer.Web.Filters;
+using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
@@ -23,7 +25,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		}
 
 		[HttpGet]
-		[Authorize(Policy = "OrganizationMember")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
 		public async Task<IEnumerable<ApiGuild>> GetGuilds(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromQuery(Name = "name")] string guildName,
@@ -40,7 +42,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpGet]
 		[Route("{guildId}")]
-		[Authorize(Policy = "OrganizationMember")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
 		public async Task<ApiGuild> GetGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildID")] Guid guildId
@@ -51,7 +53,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		}
 
 		[HttpPost]
-		[Authorize(Policy = "OrganizationAdministrator")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
 		public async Task<ApiGuild> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] ApiGuild guildInfo)
 		{
 			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
@@ -65,7 +67,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpPatch]
 		[Route("{guildId}")]
-		[Authorize(Policy = "OrganizationAdministrator")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
 		public async Task<ApiGuild> UpdateGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId,
@@ -84,7 +86,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpDelete]
 		[Route("{guildId}")]
-		[Authorize(Policy = "OrganizationAdministrator")]
+		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
 		public async Task DeleteGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromRoute(Name = "guildId")] Guid guildId)
 		{
 			await _guildRepository.DeleteGuild(organizationId, guildId);

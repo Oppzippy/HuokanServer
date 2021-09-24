@@ -2,7 +2,7 @@ using System;
 using HuokanServer.DataAccess.Repository.GuildRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
+namespace HuokanServer.Web.Models
 {
 	public record ApiGuild
 	{

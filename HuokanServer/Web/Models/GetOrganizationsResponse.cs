@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations
+namespace HuokanServer.Web.Models
 {
 	public record GetOrganizationsResponse
 	{

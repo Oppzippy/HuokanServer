@@ -2,7 +2,7 @@ using System;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations
+namespace HuokanServer.Web.Models
 {
 	public record ApiOrganization
 	{
