@@ -20,7 +20,7 @@ namespace HuokanServer.IntegrationTests.TestBases
 			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 			IConfiguration config = new ConfigurationBuilder()
 				.SetBasePath(AppContext.BaseDirectory)
-				.AddJsonFile("appsettings.IntegrationTest.json")
+				.AddJsonFile("appsettings.json")
 				.Build();
 			ConnectionFactory = new DbConnectionFactory(config.GetConnectionString("Postgres"));
 
