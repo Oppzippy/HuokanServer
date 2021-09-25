@@ -27,7 +27,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		public async Task ImportDepositLog(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId,
-			[FromBody] DepositLog depositLog
+			[FromBody] DepositLogModel depositLog
 		)
 		{
 			await _depositRepository.Import(

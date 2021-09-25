@@ -59,7 +59,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
-		public async Task<DiscordAuthorizeResponse> Authorize([FromQuery(Name = "code")] string code)
+		public async Task<AuthorizationModel> Authorize([FromQuery(Name = "code")] string code)
 		{
 			// TODO get this url from somewhere else
 			TokenResponse token = await _oAuthClient.GetToken(code, _settings.DiscordRedirectUrl);
@@ -80,7 +80,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 				ExpiresAt = DateTime.UtcNow.AddDays(7),
 			});
 
-			return new DiscordAuthorizeResponse()
+			return new AuthorizationModel()
 			{
 				ApiKey = apiKey,
 			};

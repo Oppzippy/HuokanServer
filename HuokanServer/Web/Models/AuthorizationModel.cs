@@ -1,6 +1,6 @@
 namespace HuokanServer.Web.Models
 {
-	public record DiscordAuthorizeResponse
+	public record AuthorizationModel
 	{
 		public string ApiKey { get; init; }
 	}

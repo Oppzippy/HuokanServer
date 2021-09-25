@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Web.Models
 {
-	public record DepositLogEntry
+	public record DepositLogEntryModel
 	{
 		[BindRequired]
 		public string CharacterName { get; init; }

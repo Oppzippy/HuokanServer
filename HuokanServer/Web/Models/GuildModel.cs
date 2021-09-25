@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Web.Models
 {
-	public record ApiGuild
+	public record GuildModel
 	{
 		public Guid Id { get; init; }
 		[BindRequired]
@@ -12,9 +12,9 @@ namespace HuokanServer.Web.Models
 		[BindRequired]
 		public string Realm { get; init; }
 
-		public static ApiGuild From(BackedGuild backedGuild)
+		public static GuildModel From(BackedGuild backedGuild)
 		{
-			return new ApiGuild()
+			return new GuildModel()
 			{
 				Id = backedGuild.Id,
 				Name = backedGuild.Name,

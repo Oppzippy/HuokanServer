@@ -26,7 +26,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpGet]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
-		public async Task<IEnumerable<ApiGuild>> GetGuilds(
+		public async Task<IEnumerable<GuildModel>> GetGuilds(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromQuery(Name = "name")] string guildName,
 			[FromQuery(Name = "realm")] string guildRealm
@@ -37,24 +37,24 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 				Name = guildName,
 				Realm = guildRealm,
 			});
-			return guilds.Select(ApiGuild.From);
+			return guilds.Select(GuildModel.From);
 		}
 
 		[HttpGet]
 		[Route("{guildId}")]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
-		public async Task<ApiGuild> GetGuild(
+		public async Task<GuildModel> GetGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildID")] Guid guildId
 		)
 		{
 			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
-			return ApiGuild.From(guild);
+			return GuildModel.From(guild);
 		}
 
 		[HttpPost]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
-		public async Task<ApiGuild> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] ApiGuild guildInfo)
+		public async Task<GuildModel> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] GuildModel guildInfo)
 		{
 			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
 			{
@@ -62,16 +62,16 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 				Name = guildInfo.Name,
 				Realm = guildInfo.Realm,
 			});
-			return ApiGuild.From(newGuild);
+			return GuildModel.From(newGuild);
 		}
 
 		[HttpPatch]
 		[Route("{guildId}")]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
-		public async Task<ApiGuild> UpdateGuild(
+		public async Task<GuildModel> UpdateGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId,
-			[FromBody] ApiGuild guildInfo
+			[FromBody] GuildModel guildInfo
 		)
 		{
 			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
@@ -81,7 +81,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 				Realm = guildInfo.Realm,
 			};
 			BackedGuild updatedGuild = await _guildRepository.UpdateGuild(modifiedGuild);
-			return ApiGuild.From(updatedGuild);
+			return GuildModel.From(updatedGuild);
 		}
 
 		[HttpDelete]

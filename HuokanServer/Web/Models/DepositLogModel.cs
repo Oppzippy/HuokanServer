@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Web.Models
 {
-	public record DepositLog
+	public record DepositLogModel
 	{
 		[BindRequired]
-		public List<DepositLogEntry> Log { get; init; }
+		public List<DepositLogEntryModel> Log { get; init; }
 		[BindRequired]
 		public DateTime CapturedAt { get; init; }
 	}

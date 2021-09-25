@@ -31,21 +31,21 @@ namespace HuokanServer.Web.Controllers.v1.Organizations
 
 		[HttpGet]
 		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
-		public async Task<GetOrganizationsResponse> GetOrganizations()
+		public async Task<OrganizationCollectionModel> GetOrganizations()
 		{
 			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user.Id);
-			return new GetOrganizationsResponse()
+			return new OrganizationCollectionModel()
 			{
-				Organizations = organizations.Select(ApiOrganization.From)
+				Organizations = organizations.Select(OrganizationModel.From)
 			};
 		}
 
 		[HttpPost]
 		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
-		public async Task<ApiOrganization> CreateOrganization([FromBody] ApiOrganization apiOrganization)
+		public async Task<OrganizationModel> CreateOrganization([FromBody] OrganizationModel apiOrganization)
 		{
 			BackedOrganization newOrganization = await _organizationRepository.CreateOrganization(apiOrganization.ToOrganization());
-			return ApiOrganization.From(newOrganization);
+			return OrganizationModel.From(newOrganization);
 		}
 	}
 }

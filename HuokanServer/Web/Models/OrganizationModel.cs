@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Web.Models
 {
-	public record ApiOrganization
+	public record OrganizationModel
 	{
 		public Guid Id { get; init; }
 		[BindRequired]
@@ -15,9 +15,9 @@ namespace HuokanServer.Web.Models
 		public ulong DiscordGuildId { get; init; }
 		public DateTime CreatedAt { get; init; }
 
-		public static ApiOrganization From(BackedOrganization backedOrganization)
+		public static OrganizationModel From(BackedOrganization backedOrganization)
 		{
-			return new ApiOrganization()
+			return new OrganizationModel()
 			{
 				Id = backedOrganization.Id,
 				Name = backedOrganization.Name,
