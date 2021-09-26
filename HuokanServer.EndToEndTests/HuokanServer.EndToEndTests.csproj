@@ -29,6 +29,8 @@
   </Target>
 
   <ItemGroup>
+    <ProjectReference Include="..\HuokanServer.IntegrationTests\HuokanServer.IntegrationTests.csproj" />
+    <ProjectReference Include="..\HuokanServer.UnitTests\HuokanServer.UnitTests.csproj" />
     <ProjectReference Include="..\HuokanServer\HuokanServer.csproj" />
   </ItemGroup>
 

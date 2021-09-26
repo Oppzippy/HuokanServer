@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.Web.Filters;
+using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
@@ -20,12 +22,13 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpGet]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MODERATOR)]
-		public async Task<List<BackedDeposit>> GetDeposits(
+		public async Task<IEnumerable<DepositModel>> GetDeposits(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId
 		)
 		{
-			return await _depositRepository.GetDeposits(organizationId, guildId);
+			List<BackedDeposit> deposits = await _depositRepository.GetDeposits(organizationId, guildId);
+			return deposits.Select(DepositModel.From);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-using System;
+using System.Net;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Permissions;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
@@ -27,7 +27,7 @@ namespace HuokanServer.Web.Filters
 			if (user == null)
 			{
 				// Not logged in
-				context.Result = new UnauthorizedResult();
+				context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
 				return;
 			}
 			if (await _permissionResolver.DoesUserHaveGlobalPermission(user, RequiredPermission))
@@ -35,7 +35,7 @@ namespace HuokanServer.Web.Filters
 				// Logged in and authorized
 				return;
 			}
-			context.Result = new ForbidResult();
+			context.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
 		}
 	}
 }

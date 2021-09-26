@@ -65,7 +65,6 @@ namespace HuokanServer
 
 			app.UseRouting();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
-			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
 			{

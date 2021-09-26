@@ -4,7 +4,6 @@ using Dapper;
 using DbUp;
 using HuokanServer.DataAccess.Repository;
 using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.TestBases

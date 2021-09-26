@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Permissions;
 using HuokanServer.DataAccess.Repository;
@@ -30,7 +31,7 @@ namespace HuokanServer.Web.Filters
 			if (user == null)
 			{
 				// Not logged in
-				context.Result = new UnauthorizedResult();
+				context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
 				return;
 			}
 			try
@@ -47,7 +48,7 @@ namespace HuokanServer.Web.Filters
 			catch (FormatException) { }
 			catch (ItemNotFoundException) { }
 
-			context.Result = new ForbidResult();
+			context.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
 		}
 
 		private Guid GetOrganizationIdFromRoute(HttpContext httpContext)

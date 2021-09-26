@@ -24,19 +24,47 @@ namespace HuokanServer.Web.Middleware
 
 		public async Task InvokeAsync(HttpContext context)
 		{
-			if (context.Request.Headers.TryGetValue("X-API-Key", out StringValues apiKey))
+			string apiKey = GetApiKey(context);
+			if (apiKey != null)
 			{
 				try
 				{
-					BackedApiKey apiKeyInfo = await _apiKeyRepository.FindApiKey(apiKey.First());
+					BackedApiKey apiKeyInfo = await _apiKeyRepository.FindApiKey(apiKey);
 					BackedUser user = await _userRepository.GetUser(apiKeyInfo.UserId);
 					context.Features.Set<BackedUser>(user);
 					context.Features.Set<BackedApiKey>(apiKeyInfo);
 				}
-				catch (InvalidOperationException) { } // API key header is set with no values
 				catch (ItemNotFoundException) { } // API key or user not found
 			}
 			await _next(context);
+		}
+
+		private string GetApiKey(HttpContext context)
+		{
+			return GetApiKeyFromAuthorizationHeader(context) ?? GetApiKeyFromAuthorizationHeader(context);
+		}
+
+		private string GetApiKeyFromXApiKeyHeader(HttpContext context)
+		{
+			if (context.Request.Headers.TryGetValue("X-API-Key", out StringValues apiKeyValues) && apiKeyValues.Count >= 1)
+			{
+				return apiKeyValues.First();
+			}
+			return null;
+		}
+
+		private string GetApiKeyFromAuthorizationHeader(HttpContext context)
+		{
+			if (context.Request.Headers.TryGetValue("Authorization", out StringValues apiKeyValues) && apiKeyValues.Count >= 1)
+			{
+				string authorization = apiKeyValues.First();
+				const string bearerPrefix = "bearer ";
+				if (authorization.ToLower().StartsWith(bearerPrefix))
+				{
+					return authorization.Substring(bearerPrefix.Length).Trim();
+				}
+			}
+			return null;
 		}
 	}
 }
