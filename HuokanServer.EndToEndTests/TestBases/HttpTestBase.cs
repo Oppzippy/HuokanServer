@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.ApiKeyRepository;
+using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.IntegrationTests.TestBases;
 using IdentityModel.Client;
@@ -42,11 +43,13 @@ namespace HuokanServer.EndToEndTests.TestBases
 		public async Task<HttpClient> GetAdminHttpClient()
 		{
 			var userRepository = new UserRepository(ConnectionFactory);
+			var globalUserPermissionRepository = new GlobalUserPermissionRepository(ConnectionFactory);
 			var apiKeyRepository = new ApiKeyRepository(ConnectionFactory);
 			BackedUser user = await userRepository.CreateUser(new User()
 			{
 				DiscordUserId = 1,
 			});
+			await globalUserPermissionRepository.SetIsAdministrator(user.Id, true);
 			string apiKey = await apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,

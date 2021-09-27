@@ -31,7 +31,8 @@ namespace HuokanServer.DataAccess.Repository
 			services.AddTransient<IGuildRepository, GuildRepository.GuildRepository>();
 			services.AddTransient<IOrganizationRepository, OrganizationRepository.OrganizationRepository>();
 			services.AddTransient<IUserDiscordTokenRepository, UserDiscordTokenRepository.UserDiscordTokenRepository>();
-			services.AddTransient<IUserPermissionRepositoryFactory, UserPermissionRepositoryFactory>();
+			services.AddTransient<IGlobalUserPermissionRepository, GlobalUserPermissionRepository>();
+			services.AddTransient<IOrganizationUserPermissionRepositoryFactory, OrganizationUserPermissionRepositoryFactory>();
 			services.AddTransient<IUserRepository, UserRepository.UserRepository>();
 
 			return services;

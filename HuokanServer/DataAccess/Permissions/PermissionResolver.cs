@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Discord;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
@@ -9,42 +8,46 @@ namespace HuokanServer.DataAccess.Permissions
 {
 	public class PermissionResolver : IPermissionResolver
 	{
-		private readonly IUserPermissionRepositoryFactory _userPermissionRepositoryFactory;
+		private readonly IOrganizationUserPermissionRepositoryFactory _organizationUserPermissionRepositoryFactory;
 		private readonly IDiscordUserFactory _discordUserFactory;
+		private readonly IGlobalUserPermissionRepository _globalUserPermissionRepository;
 
-		public PermissionResolver(IUserPermissionRepositoryFactory userPermissionRepositoryFactory, IDiscordUserFactory discordUserFactory)
+		public PermissionResolver(IOrganizationUserPermissionRepositoryFactory userPermissionRepositoryFactory, IDiscordUserFactory discordUserFactory, IGlobalUserPermissionRepository globalUserPermissionRepository)
 		{
-			_userPermissionRepositoryFactory = userPermissionRepositoryFactory;
+			_organizationUserPermissionRepositoryFactory = userPermissionRepositoryFactory;
 			_discordUserFactory = discordUserFactory;
+			_globalUserPermissionRepository = globalUserPermissionRepository;
 		}
 
 		public async Task<bool> DoesUserHaveOrganizationPermission(BackedUser user, BackedOrganization organization, OrganizationPermission permission)
 		{
-			IUserPermissionRepository userPermissionRepository = _userPermissionRepositoryFactory.CreateDiscord(
+			IOrganizationUserPermissionRepository userPermissionRepository = _organizationUserPermissionRepositoryFactory.CreateDiscord(
 				await _discordUserFactory.Create(user.Id)
 			);
 
 			switch (permission)
 			{
 				case OrganizationPermission.ADMINISTRATOR:
-					return await userPermissionRepository.IsOrganizationAdministrator(organization);
+					return await userPermissionRepository.IsAdministrator(organization);
 				case OrganizationPermission.MODERATOR:
-					return await userPermissionRepository.IsOrganizationModerator(organization);
+					return await userPermissionRepository.IsModerator(organization);
 				case OrganizationPermission.MEMBER:
-					return await userPermissionRepository.IsOrganizationMember(organization);
+					return await userPermissionRepository.IsMember(organization);
 				default:
 					return false;
 			}
 		}
 
-		public Task<bool> DoesUserHaveGlobalPermission(BackedUser user, GlobalPermission permission)
+		public async Task<bool> DoesUserHaveGlobalPermission(BackedUser user, GlobalPermission permission)
 		{
 			switch (permission)
 			{
 				case GlobalPermission.USER:
-					return Task.FromResult(user != null);
+					return user != null;
+				case GlobalPermission.ADMINISTRATOR:
+					return await _globalUserPermissionRepository.IsAdministrator(user.Id);
 				default:
-					return Task.FromResult(false);
+					return false;
 			}
 		}
 	}

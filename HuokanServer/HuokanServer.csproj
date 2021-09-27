@@ -19,9 +19,6 @@
     <EmbeddedResource Include="Migrations\20210807133605_graph.sql" />
     <EmbeddedResource Include="Migrations\20210808030629_deposit_graph.sql" />
     <EmbeddedResource Include="Migrations\20210819184413_guild.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DataAccess\" />
+    <EmbeddedResource Include="Migrations\20210927050830_permission.sql" />
   </ItemGroup>
 </Project>
