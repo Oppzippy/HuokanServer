@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Web.Models
 {
-	public record OrganizationCollectionModel
+	public record GuildCollectionModel
 	{
 		[BindRequired]
 		[Required]
-		public List<OrganizationModel> Organizations { get; init; }
+		public List<GuildModel> Guilds { get; init; }
 	}
 }

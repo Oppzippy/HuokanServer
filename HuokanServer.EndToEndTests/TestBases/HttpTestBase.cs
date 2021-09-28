@@ -40,15 +40,9 @@ namespace HuokanServer.EndToEndTests.TestBases
 			_host.Dispose();
 		}
 
-		public async Task<(HttpClient httpClient, BackedUser user)> GetHttpClient()
+		public async Task<HttpClient> GetHttpClient(BackedUser user)
 		{
-			var userRepository = new UserRepository(ConnectionFactory);
 			var apiKeyRepository = new ApiKeyRepository(ConnectionFactory);
-			BackedUser user = await userRepository.CreateUser(new User()
-			{
-				DiscordUserId = 1,
-			});
-
 			string apiKey = await apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
@@ -58,16 +52,25 @@ namespace HuokanServer.EndToEndTests.TestBases
 			var client = new HttpClient();
 			client.SetBearerToken(apiKey);
 
-			return (client, user);
+			return client;
 		}
 
-		public async Task<(HttpClient httpClient, BackedUser user)> GetAdminHttpClient()
+		public async Task<BackedUser> CreateUser(ulong id = 1)
 		{
-			(HttpClient client, BackedUser user) = await GetHttpClient();
+			var userRepository = new UserRepository(ConnectionFactory);
+			BackedUser user = await userRepository.CreateUser(new User()
+			{
+				DiscordUserId = id,
+			});
+			return user;
+		}
+
+		public async Task<BackedUser> CreateAdminUser(ulong id = 2)
+		{
+			BackedUser user = await CreateUser(id);
 			var globalUserPermissionRepository = new GlobalUserPermissionRepository(ConnectionFactory);
 			await globalUserPermissionRepository.SetIsAdministrator(user.Id, true);
-
-			return (client, user);
+			return user;
 		}
 	}
 }

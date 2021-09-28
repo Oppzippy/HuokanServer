@@ -26,7 +26,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpGet]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
-		public async Task<IEnumerable<GuildModel>> GetGuilds(
+		public async Task<GuildCollectionModel> GetGuilds(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromQuery(Name = "name")] string guildName,
 			[FromQuery(Name = "realm")] string guildRealm
@@ -37,7 +37,10 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 				Name = guildName,
 				Realm = guildRealm,
 			});
-			return guilds.Select(GuildModel.From);
+			return new GuildCollectionModel()
+			{
+				Guilds = guilds.Select(GuildModel.From).ToList(),
+			};
 		}
 
 		[HttpGet]

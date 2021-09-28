@@ -36,7 +36,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations
 			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user.Id);
 			return new OrganizationCollectionModel()
 			{
-				Organizations = organizations.Select(OrganizationModel.From)
+				Organizations = organizations.Select(OrganizationModel.From).ToList()
 			};
 		}
 

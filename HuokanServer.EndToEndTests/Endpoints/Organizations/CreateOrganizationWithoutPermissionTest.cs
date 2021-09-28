@@ -19,7 +19,8 @@ namespace HuokanServer.EndToEndTests.Endpoints.Organizations
 		[Fact]
 		public async Task TestCreateOrganization()
 		{
-			(HttpClient client, BackedUser user) = await GetHttpClient();
+			BackedUser user = await CreateUser();
+			HttpClient client = await GetHttpClient(user);
 			HttpResponseMessage response = await client.PostAsJsonAsync($"{BaseUrl}/organizations", new OrganizationModel()
 			{
 				Name = "Organization 1",
