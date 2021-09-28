@@ -40,16 +40,15 @@ namespace HuokanServer.EndToEndTests.TestBases
 			_host.Dispose();
 		}
 
-		public async Task<HttpClient> GetAdminHttpClient()
+		public async Task<(HttpClient httpClient, BackedUser user)> GetHttpClient()
 		{
 			var userRepository = new UserRepository(ConnectionFactory);
-			var globalUserPermissionRepository = new GlobalUserPermissionRepository(ConnectionFactory);
 			var apiKeyRepository = new ApiKeyRepository(ConnectionFactory);
 			BackedUser user = await userRepository.CreateUser(new User()
 			{
 				DiscordUserId = 1,
 			});
-			await globalUserPermissionRepository.SetIsAdministrator(user.Id, true);
+
 			string apiKey = await apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
@@ -58,7 +57,17 @@ namespace HuokanServer.EndToEndTests.TestBases
 
 			var client = new HttpClient();
 			client.SetBearerToken(apiKey);
-			return client;
+
+			return (client, user);
+		}
+
+		public async Task<(HttpClient httpClient, BackedUser user)> GetAdminHttpClient()
+		{
+			(HttpClient client, BackedUser user) = await GetHttpClient();
+			var globalUserPermissionRepository = new GlobalUserPermissionRepository(ConnectionFactory);
+			await globalUserPermissionRepository.SetIsAdministrator(user.Id, true);
+
+			return (client, user);
 		}
 	}
 }
