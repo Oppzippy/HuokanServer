@@ -9,20 +9,18 @@ using Microsoft.Extensions.Primitives;
 
 namespace HuokanServer.Web.Middleware
 {
-	public class ApiKeyAuthenticationMiddleware
+	public class ApiKeyAuthenticationMiddleware : IMiddleware
 	{
-		private readonly RequestDelegate _next;
 		private readonly IApiKeyRepository _apiKeyRepository;
 		private readonly IUserRepository _userRepository;
 
-		public ApiKeyAuthenticationMiddleware(RequestDelegate next, IApiKeyRepository apiKeyRepository, IUserRepository userRepository)
+		public ApiKeyAuthenticationMiddleware(IApiKeyRepository apiKeyRepository, IUserRepository userRepository)
 		{
-			_next = next;
 			_apiKeyRepository = apiKeyRepository;
 			_userRepository = userRepository;
 		}
 
-		public async Task InvokeAsync(HttpContext context)
+		public async Task InvokeAsync(HttpContext context, RequestDelegate next)
 		{
 			string apiKey = GetApiKey(context);
 			if (apiKey != null)
@@ -36,7 +34,7 @@ namespace HuokanServer.Web.Middleware
 				}
 				catch (ItemNotFoundException) { } // API key or user not found
 			}
-			await _next(context);
+			await next(context);
 		}
 
 		private string GetApiKey(HttpContext context)

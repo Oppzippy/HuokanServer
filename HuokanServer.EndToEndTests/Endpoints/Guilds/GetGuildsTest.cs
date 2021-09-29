@@ -12,7 +12,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds
 		[Fact]
 		public async Task TestGetGuilds()
 		{
-			var guilds = await HttpClient.GetFromJsonAsync<GuildCollectionModel>($"{BaseUrl}/organizations/{Organization.Id}/guilds");
+			GuildCollectionModel guilds = await HttpClient.GetFromJsonAsync<GuildCollectionModel>($"{BaseUrl}/organizations/{Organization.Id}/guilds");
 			Assert.Single(guilds.Guilds);
 			Assert.Equal(Guild.Id, guilds.Guilds.First().Id);
 		}

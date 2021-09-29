@@ -32,6 +32,8 @@ namespace HuokanServer
 			services.AddTransient<HttpClient>();
 			services.AddHttpContextAccessor();
 			services.AddFilters();
+			services.AddTransient<ApiKeyAuthenticationMiddleware>();
+			services.AddTransient<ItemNotFound404Middleware>();
 
 			services.AddControllers();
 
@@ -63,8 +65,10 @@ namespace HuokanServer
 				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HuokanServer v1"));
 			}
 
+
 			app.UseRouting();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
+			app.UseMiddleware<ItemNotFound404Middleware>();
 
 			app.UseEndpoints(endpoints =>
 			{
