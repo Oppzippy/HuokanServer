@@ -3,26 +3,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
-using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HuokanServer.Web.Controllers.v1.Organizations
 {
 	[ApiController]
 	[Route("organizations")]
-	public class OrganizationsController : ControllerBase
+	public class OrganizationsController : LoggedInControllerBase
 	{
 		private readonly IOrganizationRepository _organizationRepository;
-		private BackedUser _user
-		{
-			get
-			{
-				return HttpContext.Features.Get<BackedUser>();
-			}
-		}
 
 		public OrganizationsController(IOrganizationRepository organizationRepository)
 		{
@@ -33,7 +24,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations
 		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
 		public async Task<OrganizationCollectionModel> GetOrganizations()
 		{
-			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(_user.Id);
+			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(User.Id);
 			return new OrganizationCollectionModel()
 			{
 				Organizations = organizations.Select(OrganizationModel.From).ToList()

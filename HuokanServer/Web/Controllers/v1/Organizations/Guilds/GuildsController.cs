@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.GuildRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
-using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +12,13 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 {
 	[ApiController]
 	[Route("organizations/{organizationId}/guilds")]
-	public class GuildsController : ControllerBase
+	public class GuildsController : LoggedInControllerBase
 	{
 		private IGuildRepository _guildRepository;
-		private BackedUser _user;
 
 		public GuildsController(IGuildRepository guildRepository)
 		{
 			_guildRepository = guildRepository;
-			_user = HttpContext.Features.Get<BackedUser>();
 		}
 
 		[HttpGet]

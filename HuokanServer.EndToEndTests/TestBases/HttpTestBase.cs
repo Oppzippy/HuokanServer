@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.ApiKeyRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
+using HuokanServer.EndToEndTests.Mocks;
 using HuokanServer.IntegrationTests.TestBases;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace HuokanServer.EndToEndTests.TestBases
@@ -29,6 +31,10 @@ namespace HuokanServer.EndToEndTests.TestBases
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();
+					webBuilder.ConfigureServices(services =>
+					{
+						services.AddMocks();
+					});
 				})
 				.Build();
 			Task.WaitAll(_host.StartAsync());
