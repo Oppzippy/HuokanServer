@@ -23,8 +23,8 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds
 					Realm = "TestRealm",
 				}
 			);
-			var guild = await response.Content.ReadFromJsonAsync<GuildModel>();
 			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+			var guild = await response.Content.ReadFromJsonAsync<GuildModel>();
 			Assert.NotNull(guild.Id);
 			Assert.Equal("Test Guild", guild.Name);
 			Assert.Equal("TestRealm", guild.Realm);
