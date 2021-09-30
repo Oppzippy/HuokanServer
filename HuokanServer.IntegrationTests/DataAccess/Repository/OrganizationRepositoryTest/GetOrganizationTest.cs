@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
-using HuokanServer.IntegrationTests.TestBases;
 using Xunit;
 
 namespace HuokanServer.IntegrationTests.DataAccess.Repository.OrganizationRepositoryTest

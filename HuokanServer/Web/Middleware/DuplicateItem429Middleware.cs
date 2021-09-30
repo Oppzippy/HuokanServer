@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HuokanServer.Web.Middleware
 {
-	public class ItemNotFound404Middleware : IMiddleware
+	public class DuplicateItem429Middleware : IMiddleware
 	{
 		public async Task InvokeAsync(HttpContext context, RequestDelegate next)
 		{
@@ -13,10 +13,10 @@ namespace HuokanServer.Web.Middleware
 			{
 				await next(context);
 			}
-			catch (ItemNotFoundException)
+			catch (DuplicateItemException)
 			{
 				// TODO log
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+				context.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
 			}
 		}
 	}

@@ -23,7 +23,7 @@ namespace HuokanServer.Web.Models
 			{
 				Id = backedGuild.Id,
 				Name = backedGuild.Name,
-				Realm = backedGuild.Name,
+				Realm = backedGuild.Realm,
 			};
 		}
 	}

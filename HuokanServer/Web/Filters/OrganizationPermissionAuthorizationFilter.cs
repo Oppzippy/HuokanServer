@@ -48,7 +48,7 @@ namespace HuokanServer.Web.Filters
 			catch (FormatException) { }
 			catch (ItemNotFoundException) { }
 
-			context.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
+			context.Result = new StatusCodeResult((int)HttpStatusCode.NotFound);
 		}
 
 		private Guid GetOrganizationIdFromRoute(HttpContext httpContext)

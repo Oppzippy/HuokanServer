@@ -15,7 +15,9 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 		public async Task<BackedOrganization> GetOrganization(Guid organizationId)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
-			DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
+			try
+			{
+				DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
 				SELECT
 					external_id AS id,
 					name,
@@ -26,12 +28,17 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 					organization
 				WHERE
 					external_id = @Id",
-				new
-				{
-					Id = organizationId,
-				}
-			);
-			return org.ToBackedOrganization();
+					new
+					{
+						Id = organizationId,
+					}
+				);
+				return org.ToBackedOrganization();
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new ItemNotFoundException("The specified organization does not exist.", ex);
+			}
 		}
 
 		public async Task<BackedOrganization> FindOrganization(string slug)

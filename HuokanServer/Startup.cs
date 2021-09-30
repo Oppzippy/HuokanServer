@@ -34,6 +34,7 @@ namespace HuokanServer
 			services.AddFilters();
 			services.AddTransient<ApiKeyAuthenticationMiddleware>();
 			services.AddTransient<ItemNotFound404Middleware>();
+			services.AddTransient<DuplicateItem429Middleware>();
 
 			services.AddControllers();
 
@@ -69,6 +70,7 @@ namespace HuokanServer
 			app.UseRouting();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 			app.UseMiddleware<ItemNotFound404Middleware>();
+			app.UseMiddleware<DuplicateItem429Middleware>();
 
 			app.UseEndpoints(endpoints =>
 			{
