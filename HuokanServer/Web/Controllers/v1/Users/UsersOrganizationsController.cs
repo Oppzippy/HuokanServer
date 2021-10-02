@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HuokanServer.Web.Controllers.v1.Users
 {
 	[ApiController]
-	[Route("users/{userId}/organizations")]
+	[Route("users/{userId:guid}/organizations")]
 	public class UsersOrganizationsController : LoggedInControllerBase
 	{
 		private readonly OrganizationRepository _organizationRepository;
@@ -23,7 +23,7 @@ namespace HuokanServer.Web.Controllers.v1.Users
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<OrganizationCollectionModel>> GetOrganizations([FromRoute] Guid userId)
+		public async Task<ActionResult<OrganizationCollectionModel>> GetOrganizations([FromRoute(Name = "userId")] Guid userId)
 		{
 			if (userId == User.Id)
 			{

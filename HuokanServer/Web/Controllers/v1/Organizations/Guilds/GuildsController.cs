@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 {
 	[ApiController]
-	[Route("organizations/{organizationId}/guilds")]
+	[Route("organizations/{organizationId:guid}/guilds")]
 	public class GuildsController : LoggedInControllerBase
 	{
 		private IGuildRepository _guildRepository;
@@ -41,7 +41,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		}
 
 		[HttpGet]
-		[Route("{guildId}")]
+		[Route("{guildId:guid}")]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
 		public async Task<GuildModel> GetGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
@@ -66,7 +66,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		}
 
 		[HttpPatch]
-		[Route("{guildId}")]
+		[Route("{guildId:guid}")]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
 		public async Task<GuildModel> UpdateGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
@@ -85,7 +85,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		}
 
 		[HttpDelete]
-		[Route("{guildId}")]
+		[Route("{guildId:guid}")]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
 		public async Task DeleteGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromRoute(Name = "guildId")] Guid guildId)
 		{
