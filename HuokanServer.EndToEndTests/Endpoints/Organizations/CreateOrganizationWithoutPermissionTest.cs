@@ -28,7 +28,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Organizations
 				DiscordGuildId = 1,
 			});
 
-			Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+			Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
 			var organizationRepository = new OrganizationRepository(ConnectionFactory);
 			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => organizationRepository.FindOrganization("organization-1"));

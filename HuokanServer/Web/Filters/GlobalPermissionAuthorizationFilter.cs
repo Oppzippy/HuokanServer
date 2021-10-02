@@ -35,7 +35,7 @@ namespace HuokanServer.Web.Filters
 				// Logged in and authorized
 				return;
 			}
-			context.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
+			context.Result = new StatusCodeResult((int)HttpStatusCode.NotFound);
 		}
 	}
 }

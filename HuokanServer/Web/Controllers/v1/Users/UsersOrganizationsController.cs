@@ -13,10 +13,10 @@ namespace HuokanServer.Web.Controllers.v1.Users
 	[Route("users/{userId:guid}/organizations")]
 	public class UsersOrganizationsController : LoggedInControllerBase
 	{
-		private readonly OrganizationRepository _organizationRepository;
-		private readonly PermissionResolver _permissionResolver;
+		private readonly IOrganizationRepository _organizationRepository;
+		private readonly IPermissionResolver _permissionResolver;
 
-		public UsersOrganizationsController(OrganizationRepository organizationRepository, PermissionResolver permissionResolver)
+		public UsersOrganizationsController(IOrganizationRepository organizationRepository, IPermissionResolver permissionResolver)
 		{
 			_organizationRepository = organizationRepository;
 			_permissionResolver = permissionResolver;
