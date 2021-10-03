@@ -3,8 +3,17 @@ name: Test and Release
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: huokan_test
+          POSTGRES_USER: huokan
+          POSTGRES_PASSWORD: huokan
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
@@ -13,6 +22,6 @@ jobs:
       # - name: Unit Tests
       #   run: ./UnitTest.sh
       - name: Integration Tests
-        run: ./IntegrationTest.sh
+        run: bash IntegrationTest.sh
       - name: End to End Tests
-        run: ./EndToEndTest.sh
+        run: bash EndToEndTest.sh
