@@ -62,12 +62,15 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryT
 
 			Assert.Equal(1, deposits[0].DepositInCopper);
 			Assert.Equal("Advertiser-Illidan", deposits[0].CharacterName);
+			Assert.Equal(2, deposits[0].Endorsements);
 
 			Assert.Equal(2, deposits[1].DepositInCopper);
 			Assert.Equal("Advertiser2-Illidan", deposits[1].CharacterName);
+			Assert.Equal(2, deposits[1].Endorsements);
 
 			Assert.Equal(2, deposits[2].DepositInCopper);
 			Assert.Equal("Advertiser2-Illidan", deposits[2].CharacterName);
+			Assert.Equal(1, deposits[2].Endorsements);
 		}
 	}
 }

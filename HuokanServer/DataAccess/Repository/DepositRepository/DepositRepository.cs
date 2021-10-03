@@ -21,6 +21,29 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 		public async Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId)
 		{
 			using IDbConnection dbConnection = GetDbConnection();
+			// Throw exception if the guild does not exist
+			try
+			{
+				await dbConnection.QueryFirstAsync(@"
+				SELECT 1
+				FROM
+					organization
+				INNER JOIN guild ON
+					guild.organization_id = organization.id
+				WHERE
+					guild.external_id = @GuildId AND
+					organization.external_id = @OrganizationId",
+					new
+					{
+						OrganizationId = organizationId,
+						GuildId = guildId,
+					}
+				);
+			}
+			catch (InvalidOperationException ex)
+			{
+				throw new ItemNotFoundException("The guild does not exist.", ex);
+			}
 			var results = await dbConnection.QueryAsync<BackedDeposit>(@"
 				WITH RECURSIVE node AS (
 					(

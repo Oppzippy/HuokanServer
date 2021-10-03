@@ -37,7 +37,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 			}
 			else
 			{
-				await ImportSequence(guildId, deposits, null);
+				await ImportAndEndorseSequence(guildId, userId, deposits, null);
 			}
 
 			_transaction.Commit();
@@ -202,12 +202,19 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 			{
 				List<Deposit> newDeposits = deposits.GetRange(sequence.Count, deposits.Count - sequence.Count);
 				await CreateEndorsements(userId, sequence);
-				await ImportSequence(guildId, newDeposits, sequence.Last());
+				await ImportAndEndorseSequence(guildId, userId, newDeposits, sequence.Last());
 			}
 		}
 
-		private async Task ImportSequence(Guid guildId, List<Deposit> deposits, int? parentNodeId)
+		private async Task ImportAndEndorseSequence(Guid guildId, Guid userId, List<Deposit> deposits, int? parentNodeId)
 		{
+			List<int> nodeIds = await ImportSequence(guildId, deposits, parentNodeId);
+			await CreateEndorsements(userId, nodeIds);
+		}
+
+		private async Task<List<int>> ImportSequence(Guid guildId, List<Deposit> deposits, int? parentNodeId)
+		{
+			var nodeIds = new List<int>();
 			foreach (Deposit deposit in deposits)
 			{
 				CreateDepositResult result = await CreateDeposit(new CreateDepositsArgs
@@ -220,7 +227,9 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					CreatedAt = DateTime.UtcNow,
 				});
 				parentNodeId = result.Id;
+				nodeIds.Add(result.Id);
 			}
+			return nodeIds;
 		}
 
 		private async Task<CreateDepositResult> CreateDeposit(CreateDepositsArgs args)
