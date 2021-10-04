@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 {
 	[ApiController]
-	[Route("/authorization/discord/[action]")]
+	[Route("authorization/discord")]
 	public class DiscordAuthorizationController : ControllerBase
 	{
 		private readonly ApplicationSettings _settings;
@@ -44,6 +44,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
+		[Route("redirect")]
 		public RedirectResult Redirect()
 		{
 			var queryParams = new Dictionary<string, string>()
@@ -59,6 +60,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
+		[Route("authorize")]
 		public async Task<AuthorizationModel> Authorize([FromQuery(Name = "code")] string code)
 		{
 			// TODO get this url from somewhere else
@@ -87,6 +89,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
+		[Route("joinOrganizations")]
 		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
 		public async Task JoinOrganizations()
 		{

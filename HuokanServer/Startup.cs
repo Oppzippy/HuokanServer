@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using DbUp;
 using DbUp.Engine;
 using HuokanServer.DataAccess.Repository;
@@ -40,7 +43,29 @@ namespace HuokanServer
 
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new OpenApiInfo { Title = "HuokanServer", Version = "v1" });
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
+
+				var apiKeySecurityScheme = new OpenApiSecurityScheme()
+				{
+					Name = "X-API-Key",
+					In = ParameterLocation.Header,
+					Type = SecuritySchemeType.ApiKey,
+				};
+				var bearerSecurityScheme = new OpenApiSecurityScheme()
+				{
+					Description = "Provided as an alternative to X-API-Key for SDK generators that don't properly support custom headers for auth.",
+					Name = "Authorization",
+					Scheme = "Bearer",
+					In = ParameterLocation.Header,
+					Type = SecuritySchemeType.ApiKey,
+				};
+
+				c.AddSecurityDefinition("ApiKeyAuth", apiKeySecurityScheme);
+				c.AddSecurityDefinition("BearerAuth", bearerSecurityScheme);
+
+				string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+				c.IncludeXmlComments(xmlPath);
 			});
 		}
 
@@ -63,9 +88,8 @@ namespace HuokanServer
 			{
 				app.UseDeveloperExceptionPage();
 				app.UseSwagger();
-				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HuokanServer v1"));
+				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Huokan v1"));
 			}
-
 
 			app.UseRouting();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
