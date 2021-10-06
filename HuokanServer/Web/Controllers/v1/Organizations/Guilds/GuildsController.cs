@@ -45,7 +45,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
 		public async Task<GuildModel> GetGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
-			[FromRoute(Name = "guildID")] Guid guildId
+			[FromRoute(Name = "guildId")] Guid guildId
 		)
 		{
 			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
