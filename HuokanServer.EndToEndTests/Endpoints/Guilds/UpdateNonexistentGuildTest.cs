@@ -16,7 +16,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds
 		{
 			HttpResponseMessage response = await HttpClient.PatchAsJsonAsync(
 				$"{BaseUrl}/organizations/{Organization.Id}/guilds/{Guid.Empty}",
-				new GuildModel()
+				new GuildPartialModel()
 				{
 					Name = "Test",
 					Realm = "Test",

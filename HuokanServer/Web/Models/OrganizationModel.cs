@@ -5,43 +5,25 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HuokanServer.Web.Models
 {
-	public record OrganizationModel
+	public record OrganizationModel : OrganizationPartialModel
 	{
-		public Guid? Id { get; init; }
+		[BindRequired]
+		[Required]
+		public Guid Id { get; init; }
 
 		[BindRequired]
 		[Required]
-		public string Name { get; init; }
+		public DateTime CreatedAt { get; init; }
 
-		[BindRequired]
-		[Required]
-		public string Slug { get; init; }
-
-		[BindRequired]
-		[Required]
-		public ulong DiscordGuildId { get; init; }
-
-		public DateTime? CreatedAt { get; init; }
-
-		public static OrganizationModel From(BackedOrganization backedOrganization)
+		public static OrganizationModel From(BackedOrganization organization)
 		{
 			return new OrganizationModel()
 			{
-				Id = backedOrganization.Id,
-				Name = backedOrganization.Name,
-				Slug = backedOrganization.Slug,
-				DiscordGuildId = backedOrganization.DiscordGuildId,
-				CreatedAt = backedOrganization.CreatedAt,
-			};
-		}
-
-		public Organization ToOrganization()
-		{
-			return new Organization()
-			{
-				Name = Name,
-				Slug = Slug,
-				DiscordGuildId = DiscordGuildId,
+				Id = organization.Id,
+				Name = organization.Name,
+				Slug = organization.Slug,
+				DiscordGuildId = organization.DiscordGuildId,
+				CreatedAt = organization.CreatedAt,
 			};
 		}
 	}

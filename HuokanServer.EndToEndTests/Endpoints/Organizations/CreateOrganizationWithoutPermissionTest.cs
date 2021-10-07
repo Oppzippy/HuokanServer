@@ -21,7 +21,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Organizations
 		{
 			BackedUser user = await CreateUser();
 			HttpClient client = await GetHttpClient(user);
-			HttpResponseMessage response = await client.PostAsJsonAsync($"{BaseUrl}/organizations", new OrganizationModel()
+			HttpResponseMessage response = await client.PostAsJsonAsync($"{BaseUrl}/organizations", new OrganizationPartialModel()
 			{
 				Name = "Organization 1",
 				Slug = "organization-1",

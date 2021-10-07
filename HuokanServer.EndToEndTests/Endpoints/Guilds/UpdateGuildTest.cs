@@ -13,7 +13,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds
 		[Fact]
 		public async Task TestUpdateGuild()
 		{
-			var guildPartial = new GuildModel()
+			var guildPartial = new GuildPartialModel()
 			{
 				Name = "Updated Name",
 				Realm = "Updated Realm",

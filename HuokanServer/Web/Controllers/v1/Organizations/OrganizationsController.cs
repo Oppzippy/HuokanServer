@@ -33,7 +33,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations
 
 		[HttpPost]
 		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
-		public async Task<OrganizationModel> CreateOrganization([FromBody] OrganizationModel apiOrganization)
+		public async Task<OrganizationModel> CreateOrganization([FromBody] OrganizationPartialModel apiOrganization)
 		{
 			BackedOrganization newOrganization = await _organizationRepository.CreateOrganization(apiOrganization.ToOrganization());
 			return OrganizationModel.From(newOrganization);

@@ -54,7 +54,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 
 		[HttpPost]
 		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
-		public async Task<GuildModel> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] GuildModel guildInfo)
+		public async Task<GuildModel> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] GuildPartialModel guildInfo)
 		{
 			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
 			{
@@ -71,7 +71,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 		public async Task<GuildModel> UpdateGuild(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "guildId")] Guid guildId,
-			[FromBody] GuildModel guildInfo
+			[FromBody] GuildPartialModel guildInfo
 		)
 		{
 			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
