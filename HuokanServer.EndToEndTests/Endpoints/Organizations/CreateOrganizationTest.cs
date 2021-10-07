@@ -30,7 +30,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Organizations
 			OrganizationModel organization = await response.Content.ReadFromJsonAsync<OrganizationModel>();
 
 			var organizationRepository = new OrganizationRepository(ConnectionFactory);
-			await organizationRepository.GetOrganization((Guid)organization.Id);
+			await organizationRepository.GetOrganization(organization.Id);
 		}
 	}
 }
