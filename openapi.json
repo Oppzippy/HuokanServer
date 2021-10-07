@@ -239,17 +239,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GuildModel"
+                "$ref": "#/components/schemas/GuildPartialModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GuildModel"
+                "$ref": "#/components/schemas/GuildPartialModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GuildModel"
+                "$ref": "#/components/schemas/GuildPartialModel"
               }
             }
           }
@@ -354,17 +354,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GuildModel"
+                "$ref": "#/components/schemas/GuildPartialModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GuildModel"
+                "$ref": "#/components/schemas/GuildPartialModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GuildModel"
+                "$ref": "#/components/schemas/GuildPartialModel"
               }
             }
           }
@@ -459,17 +459,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrganizationModel"
+                "$ref": "#/components/schemas/OrganizationPartialModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrganizationModel"
+                "$ref": "#/components/schemas/OrganizationPartialModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/OrganizationModel"
+                "$ref": "#/components/schemas/OrganizationPartialModel"
               }
             }
           }
@@ -718,16 +718,32 @@
       },
       "GuildModel": {
         "required": [
+          "id",
           "name",
           "realm"
         ],
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string"
+          },
+          "realm": {
+            "type": "string"
+          },
           "id": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GuildPartialModel": {
+        "required": [
+          "name",
+          "realm"
+        ],
+        "type": "object",
+        "properties": {
           "name": {
             "type": "string"
           },
@@ -754,17 +770,14 @@
       },
       "OrganizationModel": {
         "required": [
+          "createdAt",
           "discordGuildId",
+          "id",
           "name",
           "slug"
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
           "name": {
             "type": "string"
           },
@@ -775,10 +788,34 @@
             "type": "integer",
             "format": "int64"
           },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "createdAt": {
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrganizationPartialModel": {
+        "required": [
+          "discordGuildId",
+          "name",
+          "slug"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "discordGuildId": {
+            "type": "integer",
+            "format": "int64"
           }
         },
         "additionalProperties": false
