@@ -25,3 +25,38 @@ jobs:
         run: bash IntegrationTest.sh
       - name: End to End Tests
         run: bash EndToEndTest.sh
+
+  generate_openapi:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/master'
+    services:
+      postgres:
+        image: postgres:alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: huokan_test
+          POSTGRES_USER: huokan
+          POSTGRES_PASSWORD: huokan
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install -g --version 6.2.2 Swashbuckle.AspNetCore.Cli
+
+      - name: Build
+        run: dotnet build HuokanServer
+      - name: Generate openapi.json
+        # cd to EndToEndTests to use the e2e appsettings.json
+        run: (cd HuokanServer.EndToEndTests && swagger tofile --output ../openapi.json ../HuokanServer/bin/Debug/net5.0/HuokanServer.dll v1)
+      - name: Git commit
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "chore: Generate openapi.json"
+          commit_message: "chore: Generate openapi.json"
+          author: GitHub <noreply@github.com>
+          delete-branch: true
