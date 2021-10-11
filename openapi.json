@@ -10,6 +10,7 @@
         "tags": [
           "DepositLogs"
         ],
+        "operationId": "ImportDepositLog",
         "parameters": [
           {
             "name": "organizationId",
@@ -61,6 +62,7 @@
         "tags": [
           "Deposits"
         ],
+        "operationId": "GetDeposits",
         "parameters": [
           {
             "name": "organizationId",
@@ -110,6 +112,7 @@
         "tags": [
           "DiscordAuthorization"
         ],
+        "operationId": "Redirect",
         "responses": {
           "200": {
             "description": "Success"
@@ -122,6 +125,7 @@
         "tags": [
           "DiscordAuthorization"
         ],
+        "operationId": "Authorize",
         "parameters": [
           {
             "name": "code",
@@ -155,11 +159,12 @@
         }
       }
     },
-    "/authorization/discord/joinOrganizations": {
+    "/authorization/discord/refreshOrganizations": {
       "get": {
         "tags": [
           "DiscordAuthorization"
         ],
+        "operationId": "RefreshOrganizations",
         "responses": {
           "200": {
             "description": "Success"
@@ -172,6 +177,7 @@
         "tags": [
           "Guilds"
         ],
+        "operationId": "GetGuilds",
         "parameters": [
           {
             "name": "organizationId",
@@ -224,6 +230,7 @@
         "tags": [
           "Guilds"
         ],
+        "operationId": "CreateGuild",
         "parameters": [
           {
             "name": "organizationId",
@@ -283,6 +290,7 @@
         "tags": [
           "Guilds"
         ],
+        "operationId": "GetGuild",
         "parameters": [
           {
             "name": "organizationId",
@@ -330,6 +338,7 @@
         "tags": [
           "Guilds"
         ],
+        "operationId": "UpdateGuild",
         "parameters": [
           {
             "name": "organizationId",
@@ -396,6 +405,7 @@
         "tags": [
           "Guilds"
         ],
+        "operationId": "DeleteGuild",
         "parameters": [
           {
             "name": "organizationId",
@@ -428,6 +438,7 @@
         "tags": [
           "Organizations"
         ],
+        "operationId": "GetOrganizations",
         "responses": {
           "200": {
             "description": "Success",
@@ -455,6 +466,7 @@
         "tags": [
           "Organizations"
         ],
+        "operationId": "CreateOrganization",
         "requestBody": {
           "content": {
             "application/json": {
@@ -503,6 +515,7 @@
         "tags": [
           "Users"
         ],
+        "operationId": "GetMe",
         "responses": {
           "200": {
             "description": "Success",
@@ -532,6 +545,7 @@
         "tags": [
           "Users"
         ],
+        "operationId": "GetUser",
         "parameters": [
           {
             "name": "userId",
@@ -572,6 +586,7 @@
         "tags": [
           "UsersOrganizations"
         ],
+        "operationId": "GetOrganizations",
         "parameters": [
           {
             "name": "userId",
