@@ -23,7 +23,7 @@ namespace HuokanServer.Web.Controllers.v1.Users
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<OrganizationCollectionModel>> GetOrganizations([FromRoute(Name = "userId")] Guid userId)
+		public async Task<ActionResult<OrganizationCollectionModel>> GetOrganizationsContainingUser([FromRoute(Name = "userId")] Guid userId)
 		{
 			if (userId == User.Id)
 			{
