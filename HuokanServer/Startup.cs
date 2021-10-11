@@ -45,6 +45,8 @@ namespace HuokanServer
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
 
+				c.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
+
 				var apiKeySecurityScheme = new OpenApiSecurityScheme()
 				{
 					Name = "X-API-Key",

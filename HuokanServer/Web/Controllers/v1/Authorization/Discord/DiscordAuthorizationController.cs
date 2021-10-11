@@ -50,7 +50,6 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 			var queryParams = new Dictionary<string, string>()
 			{
 				{"client_id", _settings.DiscordClientId},
-				// TODO get this url from somewhere else
 				{"redirect_uri", _settings.DiscordRedirectUrl},
 				{"response_type", "code"},
 				{"scope", "identify guilds"}
@@ -63,7 +62,6 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		[Route("authorize")]
 		public async Task<AuthorizationModel> Authorize([FromQuery(Name = "code")] string code)
 		{
-			// TODO get this url from somewhere else
 			TokenResponse token = await _oAuthClient.GetToken(code, _settings.DiscordRedirectUrl);
 			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
@@ -89,9 +87,9 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		}
 
 		[HttpGet]
-		[Route("joinOrganizations")]
+		[Route("refreshOrganizations")]
 		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
-		public async Task JoinOrganizations()
+		public async Task RefreshOrganizations()
 		{
 			BackedUser user = HttpContext.Features.Get<BackedUser>();
 			IDiscordUser discordUser = await _discordUserFactory.Create(user.Id);
