@@ -1,0 +1,29 @@
+name: Generate TypeScript SDK
+
+on: [push]
+
+jobs:
+  generate_sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Generate SDK
+        run: |
+          docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
+            -i /local/openapi.json \
+            -g typescript-fetch \
+            -c /local/OpenAPI/openapi-generator-config.yml \
+            -o /local/huokanclient-ts
+          sudo chown -R $USER:$USER huokanclient-ts
+
+      - name: NPM Publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          registry: ${{ secrets.NPM_REGISTRY }}
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./huokanclient-ts/package.json
+          access: restricted
