@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using DbUp;
 using DbUp.Engine;
 using HuokanServer.DataAccess.Repository;
@@ -44,8 +45,8 @@ namespace HuokanServer
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
-
 				c.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
+				c.CustomSchemaIds(schema => Regex.Replace(schema.Name, "Model$", ""));
 
 				var apiKeySecurityScheme = new OpenApiSecurityScheme()
 				{
