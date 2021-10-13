@@ -11,12 +11,12 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Users
 {
 	[ApiController]
 	[Route("organizations/{organizationId:guid}/users/{userId:guid}/permissions")]
-	public class OrganizationUserPermissionController : LoggedInControllerBase
+	public class OrganizationUserPermissionsController : LoggedInControllerBase
 	{
 		private readonly IPermissionResolver _permissionResolver;
 		private readonly IOrganizationRepository _organizationRepository;
 
-		public OrganizationUserPermissionController(IPermissionResolver permissionResolver, IOrganizationRepository organizationRepository)
+		public OrganizationUserPermissionsController(IPermissionResolver permissionResolver, IOrganizationRepository organizationRepository)
 		{
 			_permissionResolver = permissionResolver;
 			_organizationRepository = organizationRepository;

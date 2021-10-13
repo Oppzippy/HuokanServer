@@ -10,11 +10,11 @@ namespace HuokanServer.Web.Controllers.v1.Users
 {
 	[ApiController]
 	[Route("users")]
-	public class UserController : LoggedInControllerBase
+	public class UsersController : LoggedInControllerBase
 	{
 		private readonly IUserRepository _userRepository;
 
-		public UserController(IUserRepository userRepository)
+		public UsersController(IUserRepository userRepository)
 		{
 			_userRepository = userRepository;
 		}

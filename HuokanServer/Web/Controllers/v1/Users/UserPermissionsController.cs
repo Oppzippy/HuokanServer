@@ -10,11 +10,11 @@ namespace HuokanServer.Web.Controllers.v1.Users
 {
 	[ApiController]
 	[Route("users/{userId:guid}/permissions")]
-	public class UserPermissionController : LoggedInControllerBase
+	public class UserPermissionsController : LoggedInControllerBase
 	{
 		private readonly IPermissionResolver _permissionResolver;
 
-		public UserPermissionController(IPermissionResolver permissionResolver)
+		public UserPermissionsController(IPermissionResolver permissionResolver)
 		{
 			_permissionResolver = permissionResolver;
 		}
