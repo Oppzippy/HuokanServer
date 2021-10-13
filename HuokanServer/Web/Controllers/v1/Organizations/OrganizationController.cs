@@ -11,11 +11,11 @@ namespace HuokanServer.Web.Controllers.v1.Organizations
 {
 	[ApiController]
 	[Route("organizations")]
-	public class OrganizationsController : LoggedInControllerBase
+	public class OrganizationController : LoggedInControllerBase
 	{
 		private readonly IOrganizationRepository _organizationRepository;
 
-		public OrganizationsController(IOrganizationRepository organizationRepository)
+		public OrganizationController(IOrganizationRepository organizationRepository)
 		{
 			_organizationRepository = organizationRepository;
 		}

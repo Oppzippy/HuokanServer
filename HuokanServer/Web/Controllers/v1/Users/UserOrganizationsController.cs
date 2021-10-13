@@ -11,12 +11,12 @@ namespace HuokanServer.Web.Controllers.v1.Users
 {
 	[ApiController]
 	[Route("users/{userId:guid}/organizations")]
-	public class UsersOrganizationsController : LoggedInControllerBase
+	public class UserOrganizationsController : LoggedInControllerBase
 	{
 		private readonly IOrganizationRepository _organizationRepository;
 		private readonly IPermissionResolver _permissionResolver;
 
-		public UsersOrganizationsController(IOrganizationRepository organizationRepository, IPermissionResolver permissionResolver)
+		public UserOrganizationsController(IOrganizationRepository organizationRepository, IPermissionResolver permissionResolver)
 		{
 			_organizationRepository = organizationRepository;
 			_permissionResolver = permissionResolver;
@@ -31,7 +31,7 @@ namespace HuokanServer.Web.Controllers.v1.Users
 				List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);
 				return OrganizationCollectionModel.From(organizations);
 			}
-			if (await _permissionResolver.DoesUserHaveGlobalPermission(User, GlobalPermission.ADMINISTRATOR))
+			if (await _permissionResolver.DoesUserHaveGlobalPermission(User.Id, GlobalPermission.ADMINISTRATOR))
 			{
 				// A user that isn't me
 				List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);

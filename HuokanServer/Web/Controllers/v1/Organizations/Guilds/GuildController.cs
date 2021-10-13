@@ -12,11 +12,11 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 {
 	[ApiController]
 	[Route("organizations/{organizationId:guid}/guilds")]
-	public class GuildsController : LoggedInControllerBase
+	public class GuildController : LoggedInControllerBase
 	{
 		private IGuildRepository _guildRepository;
 
-		public GuildsController(IGuildRepository guildRepository)
+		public GuildController(IGuildRepository guildRepository)
 		{
 			_guildRepository = guildRepository;
 		}

@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
 {
 	[Route("organizations/{organizationId:guid}/guilds/{guildId:guid}/deposits")]
-	public class DepositsController : LoggedInControllerBase
+	public class DepositController : LoggedInControllerBase
 	{
 		private readonly IDepositRepository _depositRepository;
 
-		public DepositsController(IDepositRepository depositRepository)
+		public DepositController(IDepositRepository depositRepository)
 		{
 			_depositRepository = depositRepository;
 		}

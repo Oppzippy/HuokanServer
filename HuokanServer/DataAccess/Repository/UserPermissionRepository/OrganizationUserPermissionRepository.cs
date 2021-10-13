@@ -18,28 +18,22 @@ namespace HuokanServer.DataAccess.Repository.UserPermissionRepository
 			_discordUser = discordUser;
 		}
 
-		public bool IsGlobalAdministrator()
-		{
-			// TODO check database for this
-			return _discordUser.Id == 191587255557554177u; // Oppzippy#2963
-		}
-
 		public async Task<bool> IsAdministrator(BackedOrganization organization)
 		{
 			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return IsGlobalAdministrator() || member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.Administrator);
+			return member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.Administrator);
 		}
 
 		public async Task<bool> IsModerator(BackedOrganization organization)
 		{
 			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return IsGlobalAdministrator() || member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.ManageGuild);
+			return member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.ManageGuild);
 		}
 
 		public async Task<bool> IsMember(BackedOrganization organization)
 		{
 			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return IsGlobalAdministrator() || member != null;
+			return member != null;
 		}
 
 		private async Task<DiscordMember> GetCurrentUserGuildMember(ulong guildId)
