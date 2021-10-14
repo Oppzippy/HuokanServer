@@ -65,6 +65,8 @@ jobs:
             -c /local/OpenAPI/typescript.yml \
             -o /local/huokanclient-ts
           sudo chown -R $USER:$USER huokanclient-ts
+      - name: Run typescript sdk modifications
+        run: bash OpenAPI/typescript-modifications.sh
 
       - name: NPM Publish
         uses: JS-DevTools/npm-publish@v1
