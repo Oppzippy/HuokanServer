@@ -44,10 +44,11 @@ namespace HuokanServer
 
 			services.AddCors(options =>
 			{
-				options.AddDefaultPolicy(builder =>
+				options.AddPolicy("AllowAll", builder =>
 				{
-					// TODO configure CORS
 					builder.AllowAnyOrigin();
+					builder.AllowAnyHeader();
+					builder.AllowAnyMethod();
 				});
 			});
 
@@ -101,10 +102,10 @@ namespace HuokanServer
 				app.UseDeveloperExceptionPage();
 				app.UseSwagger();
 				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Huokan v1"));
+				app.UseCors("AllowAll");
 			}
 
 			app.UseRouting();
-			app.UseCors();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 			app.UseMiddleware<ItemNotFound404Middleware>();
 			app.UseMiddleware<DuplicateItem429Middleware>();

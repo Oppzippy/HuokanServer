@@ -8,7 +8,6 @@ using HuokanServer.EndToEndTests.Mocks;
 using HuokanServer.IntegrationTests.TestBases;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace HuokanServer.EndToEndTests.TestBases
@@ -19,7 +18,7 @@ namespace HuokanServer.EndToEndTests.TestBases
 		{
 			get
 			{
-				return "http://localhost:5000";
+				return "http://localhost:53234";
 			}
 		}
 
@@ -31,6 +30,7 @@ namespace HuokanServer.EndToEndTests.TestBases
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();
+					webBuilder.UseUrls(BaseUrl);
 					webBuilder.ConfigureServices(services =>
 					{
 						services.AddMocks();

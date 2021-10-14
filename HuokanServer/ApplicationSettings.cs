@@ -8,7 +8,6 @@ namespace HuokanServer
 		public string DiscordClientId { get; init; }
 		public string DiscordClientSecret { get; init; }
 		public string BaseUrl { get; init; }
-		public string DiscordRedirectUrl { get; set; }
 		public string DbConnectionString { get; init; }
 	}
 
@@ -24,7 +23,6 @@ namespace HuokanServer
 				BaseUrl = applicationSettings["BaseUrl"],
 				DiscordClientId = applicationSettings["DiscordClientId"],
 				DiscordClientSecret = applicationSettings["DiscordClientSecret"],
-				DiscordRedirectUrl = applicationSettings["BaseUrl"] + "/authorization/discord/authorize",
 			});
 			return services;
 		}

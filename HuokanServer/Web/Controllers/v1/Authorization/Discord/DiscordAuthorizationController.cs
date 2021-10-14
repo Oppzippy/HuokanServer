@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Discord;
 using HuokanServer.DataAccess.OAuth2;
@@ -45,12 +46,12 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 
 		[HttpGet]
 		[Route("redirect")]
-		public RedirectResult Redirect()
+		public RedirectResult RedirectToDiscord([Required][FromQuery(Name = "redirectUrl")] string redirectUrl)
 		{
 			var queryParams = new Dictionary<string, string>()
 			{
 				{"client_id", _settings.DiscordClientId},
-				{"redirect_uri", _settings.DiscordRedirectUrl},
+				{"redirect_uri", redirectUrl},
 				{"response_type", "code"},
 				{"scope", "identify guilds"}
 			};
@@ -60,9 +61,12 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 
 		[HttpGet]
 		[Route("authorize")]
-		public async Task<AuthorizationModel> Authorize([FromQuery(Name = "code")] string code)
+		public async Task<AuthorizationModel> Authorize(
+			[Required][FromQuery(Name = "code")] string code,
+			[Required][FromQuery(Name = "redirectUrl")] string redirectUrl
+		)
 		{
-			TokenResponse token = await _oAuthClient.GetToken(code, _settings.DiscordRedirectUrl);
+			TokenResponse token = await _oAuthClient.GetToken(code, redirectUrl);
 			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
 			{

@@ -1,4 +1,4 @@
-npmVersion: 0.0.9
+npmVersion: 0.0.10
 npmName: "@huokan/huokanclient-ts"
 typescriptThreePlus: true
 supportsES6: true
