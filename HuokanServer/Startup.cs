@@ -42,6 +42,15 @@ namespace HuokanServer
 
 			services.AddControllers();
 
+			services.AddCors(options =>
+			{
+				options.AddDefaultPolicy(builder =>
+				{
+					// TODO configure CORS
+					builder.AllowAnyOrigin();
+				});
+			});
+
 			services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
@@ -95,6 +104,7 @@ namespace HuokanServer
 			}
 
 			app.UseRouting();
+			app.UseCors();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 			app.UseMiddleware<ItemNotFound404Middleware>();
 			app.UseMiddleware<DuplicateItem429Middleware>();
