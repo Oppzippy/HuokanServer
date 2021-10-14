@@ -19,12 +19,27 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 5.0.x
+      - name: Build
+        run: dotnet build HuokanServer
       # - name: Unit Tests
       #   run: ./UnitTest.sh
       - name: Integration Tests
         run: bash IntegrationTest.sh
       - name: End to End Tests
         run: bash EndToEndTest.sh
+
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install -g --version 6.2.2 Swashbuckle.AspNetCore.Cli
+
+      - name: Generate openapi.json
+        # cd to EndToEndTests to use the e2e appsettings.json
+        run: (cd HuokanServer.EndToEndTests && swagger tofile --output ../openapi.json ../HuokanServer/bin/Debug/net5.0/HuokanServer.dll v1)
+
+      - name: Upload openapi.json artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: openapi.json
+          path: openapi.json
 
   generate_sdk:
     runs-on: ubuntu-latest
@@ -41,21 +56,14 @@ jobs:
           POSTGRES_PASSWORD: huokan
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
 
-      - name: Install Swashbuckle CLI
-        run: dotnet tool install -g --version 6.2.2 Swashbuckle.AspNetCore.Cli
-
-      - name: Build
-        run: dotnet build HuokanServer
-      - name: Generate openapi.json
-        # cd to EndToEndTests to use the e2e appsettings.json
-        run: (cd HuokanServer.EndToEndTests && swagger tofile --output ../openapi.json ../HuokanServer/bin/Debug/net5.0/HuokanServer.dll v1)
+      - name: Download openapi.json
+        uses: actions/download-artifact@v2
+        with:
+          name: openapi.json
 
       - name: Generate SDK
         run: |
