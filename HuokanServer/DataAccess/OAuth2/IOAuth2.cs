@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 
@@ -13,13 +11,5 @@ namespace HuokanServer.DataAccess.OAuth2
 		Task<TokenResponse> GetToken(string code, string redirectUri);
 		Task<TokenResponse> RefreshToken(string refreshToken);
 		Task<TokenRevocationResponse> RevokeToken(string token);
-	}
-
-	public class OAuth2Exception : Exception
-	{
-		public OAuth2Exception() { }
-		public OAuth2Exception(string message) : base(message) { }
-		public OAuth2Exception(string message, Exception innerException) : base(message, innerException) { }
-		protected OAuth2Exception(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

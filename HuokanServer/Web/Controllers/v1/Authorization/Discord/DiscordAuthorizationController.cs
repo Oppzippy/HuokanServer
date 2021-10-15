@@ -61,12 +61,20 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 
 		[HttpGet]
 		[Route("authorize")]
-		public async Task<AuthorizationModel> Authorize(
+		public async Task<ActionResult<AuthorizationModel>> Authorize(
 			[Required][FromQuery(Name = "code")] string code,
 			[Required][FromQuery(Name = "redirectUrl")] string redirectUrl
 		)
 		{
-			TokenResponse token = await _oAuthClient.GetToken(code, redirectUrl);
+			TokenResponse token;
+			try
+			{
+				token = await _oAuthClient.GetToken(code, redirectUrl);
+			}
+			catch (OAuth2Exception)
+			{
+				return BadRequest();
+			}
 			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
 			{
