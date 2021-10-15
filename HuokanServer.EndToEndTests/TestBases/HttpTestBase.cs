@@ -6,7 +6,6 @@ using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.EndToEndTests.Mocks;
 using HuokanServer.IntegrationTests.TestBases;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -56,7 +55,7 @@ namespace HuokanServer.EndToEndTests.TestBases
 			});
 
 			var client = new HttpClient();
-			client.SetBearerToken(apiKey);
+			client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
 
 			return client;
 		}

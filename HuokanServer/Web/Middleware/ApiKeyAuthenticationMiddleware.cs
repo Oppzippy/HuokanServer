@@ -39,7 +39,7 @@ namespace HuokanServer.Web.Middleware
 
 		private string GetApiKey(HttpContext context)
 		{
-			return GetApiKeyFromAuthorizationHeader(context) ?? GetApiKeyFromAuthorizationHeader(context);
+			return GetApiKeyFromXApiKeyHeader(context) ?? GetApiKeyFromAuthorizationHeader(context);
 		}
 
 		private string GetApiKeyFromXApiKeyHeader(HttpContext context)
