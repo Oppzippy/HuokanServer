@@ -73,7 +73,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 			}
 			catch (OAuth2Exception)
 			{
-				return BadRequest();
+				return Unauthorized();
 			}
 			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
