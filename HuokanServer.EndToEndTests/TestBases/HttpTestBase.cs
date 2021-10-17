@@ -1,5 +1,7 @@
 using System;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.ApiKeyRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
@@ -18,6 +20,16 @@ namespace HuokanServer.EndToEndTests.TestBases
 			get
 			{
 				return "http://localhost:53234";
+			}
+		}
+
+		public JsonSerializerOptions SerializerOptions
+		{
+			get
+			{
+				var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+				serializerOptions.Converters.Add(new JsonStringEnumConverter());
+				return serializerOptions;
 			}
 		}
 

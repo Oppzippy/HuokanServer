@@ -11,7 +11,10 @@ namespace HuokanServer.EndToEndTests.Endpoints.Users.Permissions
 		[Fact]
 		public async Task TestGetMyPermissionsAsAdmin()
 		{
-			var permissionCollection = await HttpClient.GetFromJsonAsync<GlobalPermissionCollectionModel>($"{BaseUrl}/users/{User.Id}/permissions");
+			var permissionCollection = await HttpClient.GetFromJsonAsync<GlobalPermissionCollectionModel>(
+				$"{BaseUrl}/users/{User.Id}/permissions",
+				SerializerOptions
+			);
 			Assert.Empty(permissionCollection.Permissions);
 		}
 	}

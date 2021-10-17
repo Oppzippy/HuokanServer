@@ -13,7 +13,8 @@ namespace HuokanServer.EndToEndTests.Endpoints.Organizations.Users.Permissions
 		public async Task TestGetMyPermissions()
 		{
 			var permissionCollection = await HttpClient.GetFromJsonAsync<OrganizationPermissionCollectionModel>(
-				$"{BaseUrl}/organizations/{Organization.Id}/users/{User.Id}/permissions"
+				$"{BaseUrl}/organizations/{Organization.Id}/users/{User.Id}/permissions",
+				SerializerOptions
 			);
 			Assert.Equal(new HashSet<OrganizationPermissionModel>()
 			{

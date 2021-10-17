@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.GuildRepository;
@@ -16,7 +15,6 @@ namespace HuokanServer.EndToEndTests.TestBases
 		protected readonly BackedGuild Guild;
 		protected readonly HttpClient HttpClient;
 		protected readonly HttpClient AdminHttpClient;
-
 
 		public OrganizationUserTestBase() : base()
 		{
