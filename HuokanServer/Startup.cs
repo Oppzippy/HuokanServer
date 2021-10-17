@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using DbUp;
 using DbUp.Engine;
@@ -40,7 +41,11 @@ namespace HuokanServer
 			services.AddTransient<ItemNotFound404Middleware>();
 			services.AddTransient<DuplicateItem429Middleware>();
 
-			services.AddControllers();
+			services.AddControllers().AddJsonOptions(options =>
+			{
+				var enumConverter = new JsonStringEnumConverter();
+				options.JsonSerializerOptions.Converters.Add(enumConverter);
+			});
 
 			services.AddCors(options =>
 			{
