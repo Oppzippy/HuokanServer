@@ -21,10 +21,10 @@ namespace HuokanServer.Web.Controllers.v1.Organizations
 		}
 
 		[HttpGet]
-		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
+		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
 		public async Task<OrganizationCollectionModel> GetOrganizations()
 		{
-			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(User.Id);
+			List<BackedOrganization> organizations = await _organizationRepository.GetAllOrganizations();
 			return new OrganizationCollectionModel()
 			{
 				Organizations = organizations.Select(OrganizationModel.From).ToList()

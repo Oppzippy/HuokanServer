@@ -18,16 +18,16 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 			try
 			{
 				DbBackedOrganization org = await dbConnection.QueryFirstAsync<DbBackedOrganization>(@"
-				SELECT
-					external_id AS id,
-					name,
-					slug,
-					discord_guild_id,
-					created_at
-				FROM
-					organization
-				WHERE
-					external_id = @Id",
+					SELECT
+						external_id AS id,
+						name,
+						slug,
+						discord_guild_id,
+						created_at
+					FROM
+						organization
+					WHERE
+						external_id = @Id",
 					new
 					{
 						Id = organizationId,
@@ -39,6 +39,22 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 			{
 				throw new ItemNotFoundException("The specified organization does not exist.", ex);
 			}
+		}
+
+		public async Task<List<BackedOrganization>> GetAllOrganizations()
+		{
+			using IDbConnection dbConnection = GetDbConnection();
+			IEnumerable<DbBackedOrganization> orgs = await dbConnection.QueryAsync<DbBackedOrganization>(@"
+				SELECT
+					external_id AS id,
+					name,
+					slug,
+					discord_guild_id,
+					created_at
+				FROM
+					organization"
+			);
+			return orgs.Select(org => org.ToBackedOrganization()).AsList();
 		}
 
 		public async Task<BackedOrganization> FindOrganization(string slug)

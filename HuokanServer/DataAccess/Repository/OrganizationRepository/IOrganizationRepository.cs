@@ -10,6 +10,7 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 		Task<BackedOrganization> FindOrganization(string slug);
 		Task<BackedOrganization> FindOrganization(ulong discordGuildId);
 		Task<List<BackedOrganization>> FindOrganizationsContainingUser(Guid userId);
+		Task<List<BackedOrganization>> GetAllOrganizations();
 		Task<BackedOrganization> GetOrganization(Guid organizationId);
 	}
 }

@@ -13,7 +13,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.OrganizationReposi
 			{
 				DiscordGuildId = 1,
 				Name = "Organization",
-				Slug = "organization"
+				Slug = "organization",
 			});
 			BackedOrganization org = await Repository.GetOrganization(createdOrg.Id);
 			Assert.Equal(createdOrg, org);
