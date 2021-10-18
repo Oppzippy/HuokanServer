@@ -105,7 +105,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		{
 			BackedUser user = HttpContext.Features.Get<BackedUser>();
 			IDiscordUser discordUser = await _discordUserFactory.Create(user.Id);
-			List<ulong> guildIds = discordUser.GuildIds;
+			List<ulong> guildIds = await discordUser.GetGuildIds();
 			await _userRepository.SetDiscordOrganizations(user.Id, guildIds);
 		}
 	}

@@ -28,12 +28,10 @@ namespace HuokanServer.DataAccess.Discord
 			get { return _discord.CurrentUser.Id; }
 		}
 
-		public List<ulong> GuildIds
+		public async Task<List<ulong>> GetGuildIds()
 		{
-			get
-			{
-				return _discord.Guilds.Keys.ToList();
-			}
+			IEnumerable<DiscordGuild> guilds = await _discord.GetCurrentUserGuildsAsync();
+			return guilds.Select(guild => guild.Id).ToList();
 		}
 
 		public async Task<DiscordMember> GuildMember(ulong guildId)
