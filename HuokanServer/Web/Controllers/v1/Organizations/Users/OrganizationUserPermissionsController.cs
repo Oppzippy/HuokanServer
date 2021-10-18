@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HuokanServer.DataAccess.Permissions;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
+using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Users
 		}
 
 		[HttpGet]
+		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
 		public async Task<ActionResult<OrganizationPermissionCollectionModel>> GetOrganizationUserPermissions(
 			[FromRoute(Name = "organizationId")] Guid organizationId,
 			[FromRoute(Name = "userId")] Guid userId

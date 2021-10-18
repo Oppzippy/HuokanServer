@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Permissions;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
+using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace HuokanServer.Web.Controllers.v1.Users
 		}
 
 		[HttpGet]
+		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
 		public async Task<ActionResult<GlobalPermissionCollectionModel>> GetUserPermissions([FromRoute(Name = "userId")] Guid userId)
 		{
 			if (userId != User.Id)
