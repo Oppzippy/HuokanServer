@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using DSharpPlus.Exceptions;
 
 namespace HuokanServer.DataAccess.Discord
 {
@@ -16,9 +17,15 @@ namespace HuokanServer.DataAccess.Discord
 		{
 			string token = await _discordUserAuthenticationHandler.GetToken(userId);
 			var user = new DiscordUser();
-			// TODO try to authenticate, catch exception and check if token was invalid
-			// If it's invalid, force refresh the token. If the refresh token is invalid, delete it alltogether and log the user out.
-			await user.Authenticate(token);
+			try
+			{
+				await user.Authenticate(token);
+			}
+			catch (UnauthorizedException)
+			{
+				token = await _discordUserAuthenticationHandler.ForceRefreshToken(userId);
+				await user.Authenticate(token);
+			}
 			return user;
 		}
 

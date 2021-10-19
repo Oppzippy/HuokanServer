@@ -32,7 +32,13 @@ namespace HuokanServer.DataAccess.Discord
 			return token.Token;
 		}
 
-		public async Task<string> ForceRefreshToken(Guid userId, UserDiscordToken token)
+		public async Task<string> ForceRefreshToken(Guid userId)
+		{
+			UserDiscordToken token = await _userDiscordTokenRepository.GetDiscordToken(userId);
+			return await ForceRefreshToken(userId, token);
+		}
+
+		private async Task<string> ForceRefreshToken(Guid userId, UserDiscordToken token)
 		{
 			TokenResponse response = await _oAuth2.RefreshToken(token.RefreshToken);
 			token = token with
