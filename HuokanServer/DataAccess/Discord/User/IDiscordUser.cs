@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 
-namespace HuokanServer.DataAccess.Discord
+namespace HuokanServer.DataAccess.Discord.User
 {
 	public interface IDiscordUser
 	{
 		ulong Id { get; }
 		Task<List<ulong>> GetGuildIds();
-		Task<DiscordMember> GuildMember(ulong guildId);
 	}
 }

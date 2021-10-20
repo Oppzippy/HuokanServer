@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -16,7 +17,7 @@ namespace HuokanServer.Web.Models
 
 		[BindRequired]
 		[Required]
-		public ulong DiscordGuildId { get; init; }
+		public string DiscordGuildId { get; init; }
 
 		public static OrganizationPartialModel From(Organization organization)
 		{
@@ -24,17 +25,18 @@ namespace HuokanServer.Web.Models
 			{
 				Name = organization.Name,
 				Slug = organization.Slug,
-				DiscordGuildId = organization.DiscordGuildId,
+				DiscordGuildId = organization.DiscordGuildId.ToString(),
 			};
 		}
 
 		public Organization ToOrganization()
 		{
+			// TODO wrap exception from ulong.parse
 			return new Organization()
 			{
 				Name = Name,
 				Slug = Slug,
-				DiscordGuildId = DiscordGuildId,
+				DiscordGuildId = ulong.Parse(DiscordGuildId),
 			};
 		}
 	}

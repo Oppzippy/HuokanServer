@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HuokanServer.DataAccess.Discord
+namespace HuokanServer.DataAccess.Discord.User
 {
 	public interface IDiscordUserFactory
 	{

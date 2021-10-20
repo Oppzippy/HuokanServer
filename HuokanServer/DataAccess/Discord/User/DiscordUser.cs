@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 
-namespace HuokanServer.DataAccess.Discord
+namespace HuokanServer.DataAccess.Discord.User
 {
 	/// <summary>Provides a high level interface for obtaining information about a discord user.
 	/// Ensure Authenticate is called before doing anything.</summary>
@@ -32,11 +32,6 @@ namespace HuokanServer.DataAccess.Discord
 		{
 			IEnumerable<DiscordGuild> guilds = await _discord.GetCurrentUserGuildsAsync();
 			return guilds.Select(guild => guild.Id).ToList();
-		}
-
-		public async Task<DiscordMember> GuildMember(ulong guildId)
-		{
-			return await _discord.GetGuildMemberAsync(guildId, Id);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using HuokanServer.DataAccess.Discord;
+using HuokanServer.DataAccess.Discord.User;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 
@@ -8,14 +8,14 @@ namespace HuokanServer.DataAccess.Permissions
 {
 	public class PermissionResolver : IPermissionResolver
 	{
-		private readonly IOrganizationUserPermissionRepositoryFactory _organizationUserPermissionRepositoryFactory;
+		private readonly IOrganizationUserPermissionRepository _organizationUserPermissionRepository;
 		private readonly IDiscordUserFactory _discordUserFactory;
 		private readonly IGlobalUserPermissionRepository _globalUserPermissionRepository;
 		private readonly IOrganizationRepository _organizationRepository;
 
-		public PermissionResolver(IOrganizationUserPermissionRepositoryFactory userPermissionRepositoryFactory, IDiscordUserFactory discordUserFactory, IGlobalUserPermissionRepository globalUserPermissionRepository, IOrganizationRepository organizationRepository)
+		public PermissionResolver(IOrganizationUserPermissionRepository organizationUserPermissionRepository, IDiscordUserFactory discordUserFactory, IGlobalUserPermissionRepository globalUserPermissionRepository, IOrganizationRepository organizationRepository)
 		{
-			_organizationUserPermissionRepositoryFactory = userPermissionRepositoryFactory;
+			_organizationUserPermissionRepository = organizationUserPermissionRepository;
 			_discordUserFactory = discordUserFactory;
 			_globalUserPermissionRepository = globalUserPermissionRepository;
 			_organizationRepository = organizationRepository;
@@ -23,19 +23,16 @@ namespace HuokanServer.DataAccess.Permissions
 
 		public async Task<bool> DoesUserHaveOrganizationPermission(Guid userId, Guid organizationId, OrganizationPermission permission)
 		{
-			IOrganizationUserPermissionRepository userPermissionRepository = _organizationUserPermissionRepositoryFactory.CreateDiscord(
-				await _discordUserFactory.Create(userId)
-			);
 			BackedOrganization organization = await _organizationRepository.GetOrganization(organizationId);
 
 			switch (permission)
 			{
 				case OrganizationPermission.ADMINISTRATOR:
-					return await userPermissionRepository.IsAdministrator(organization);
+					return await _organizationUserPermissionRepository.IsAdministrator(organization, userId);
 				case OrganizationPermission.MODERATOR:
-					return await userPermissionRepository.IsModerator(organization);
+					return await _organizationUserPermissionRepository.IsModerator(organization, userId);
 				case OrganizationPermission.MEMBER:
-					return await userPermissionRepository.IsMember(organization);
+					return await _organizationUserPermissionRepository.IsMember(organization, userId);
 				default:
 					return false;
 			}

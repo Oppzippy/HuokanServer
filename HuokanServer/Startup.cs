@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using DbUp;
 using DbUp.Engine;
+using DSharpPlus;
 using HuokanServer.DataAccess.Repository;
 using HuokanServer.Web.Filters;
 using HuokanServer.Web.Middleware;
@@ -34,6 +35,18 @@ namespace HuokanServer
 
 			services.AddApplicationSettings(Configuration);
 			services.AddDataAccess();
+			services.AddSingleton<DiscordClient>((serviceProvider) =>
+			{
+				var applicationSettings = serviceProvider.GetService<ApplicationSettings>();
+				var discordClient = new DiscordClient(new DiscordConfiguration()
+				{
+					Intents = DiscordIntents.Guilds,
+					Token = applicationSettings.DiscordBotToken,
+				});
+				discordClient.ConnectAsync().Wait();
+				return discordClient;
+			});
+
 			services.AddTransient<HttpClient>();
 			services.AddHttpContextAccessor();
 			services.AddFilters();
@@ -57,11 +70,11 @@ namespace HuokanServer
 				});
 			});
 
-			services.AddSwaggerGen(c =>
+			services.AddSwaggerGen(options =>
 			{
-				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
-				c.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
-				c.CustomSchemaIds(schema => Regex.Replace(schema.Name, "Model$", ""));
+				options.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
+				options.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
+				options.CustomSchemaIds(schema => Regex.Replace(schema.Name, "Model$", ""));
 
 				var apiKeySecurityScheme = new OpenApiSecurityScheme()
 				{
@@ -78,12 +91,12 @@ namespace HuokanServer
 					Type = SecuritySchemeType.ApiKey,
 				};
 
-				c.AddSecurityDefinition("ApiKeyAuth", apiKeySecurityScheme);
-				c.AddSecurityDefinition("BearerAuth", bearerSecurityScheme);
+				options.AddSecurityDefinition("ApiKeyAuth", apiKeySecurityScheme);
+				options.AddSecurityDefinition("BearerAuth", bearerSecurityScheme);
 
 				string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 				string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-				c.IncludeXmlComments(xmlPath);
+				options.IncludeXmlComments(xmlPath);
 			});
 		}
 

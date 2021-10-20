@@ -1,44 +1,49 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using HuokanServer.DataAccess.Discord;
+using HuokanServer.DataAccess.Discord.Bot;
+using HuokanServer.DataAccess.Discord.User;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 
 namespace HuokanServer.DataAccess.Repository.UserPermissionRepository
 {
 	public class OrganizationUserPermissionRepository : IOrganizationUserPermissionRepository
 	{
-		private readonly IDiscordUser _discordUser;
-		// TODO replace with some sort of TTL cache (MemoryCache?)
-		private readonly Dictionary<ulong, DiscordMember> _currentUserMemberCache = new Dictionary<ulong, DiscordMember>();
+		private readonly IDiscordUserFactory _discordUserFactory;
+		private readonly IDiscordBot _discordBot;
 
-		public OrganizationUserPermissionRepository(IDiscordUser discordUser)
+		public OrganizationUserPermissionRepository(IDiscordBot discordBot, IDiscordUserFactory discordUserFactory)
 		{
-			_discordUser = discordUser;
+			_discordUserFactory = discordUserFactory;
+			_discordBot = discordBot;
 		}
 
-		public async Task<bool> IsAdministrator(BackedOrganization organization)
+		public async Task<bool> IsAdministrator(BackedOrganization organization, Guid userId)
 		{
-			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.Administrator);
+			DiscordGuildMember member = await GetDiscordGuildMemberAsync(organization.DiscordGuildId, userId);
+			return member.IsOwner || member.HasPermission((long)DSharpPlus.Permissions.Administrator);
 		}
 
-		public async Task<bool> IsModerator(BackedOrganization organization)
+		public async Task<bool> IsModerator(BackedOrganization organization, Guid userId)
 		{
-			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
-			return member.IsOwner || member.Permissions.HasPermission(DSharpPlus.Permissions.ManageGuild);
+			DiscordGuildMember member = await GetDiscordGuildMemberAsync(organization.DiscordGuildId, userId);
+			return member.IsOwner || member.HasPermission((long)DSharpPlus.Permissions.ManageGuild);
 		}
 
-		public async Task<bool> IsMember(BackedOrganization organization)
+		public async Task<bool> IsMember(BackedOrganization organization, Guid userId)
 		{
-			DiscordMember member = await GetCurrentUserGuildMember(organization.DiscordGuildId);
+			DiscordGuildMember member = await GetDiscordGuildMemberAsync(organization.DiscordGuildId, userId);
 			return member != null;
 		}
 
-		private async Task<DiscordMember> GetCurrentUserGuildMember(ulong guildId)
+		private async Task<DiscordGuildMember> GetDiscordGuildMemberAsync(ulong guildId, Guid userId)
 		{
-			return await _discordUser.GuildMember(guildId);
+			IDiscordUser discordUser = await _discordUserFactory.Create(userId);
+			return await GetDiscordGuildMemberAsync(guildId, discordUser.Id);
+		}
+
+		private async Task<DiscordGuildMember> GetDiscordGuildMemberAsync(ulong guildId, ulong userId)
+		{
+			return await _discordBot.GetGuildMember(guildId, userId);
 		}
 	}
 }

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;
 
-namespace HuokanServer.DataAccess.Discord
+namespace HuokanServer.DataAccess.Discord.User
 {
 	public interface IDiscordUserAuthenticationHandler
 	{

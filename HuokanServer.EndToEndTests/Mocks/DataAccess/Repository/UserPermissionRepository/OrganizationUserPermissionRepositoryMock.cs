@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
@@ -6,17 +7,17 @@ namespace HuokanServer.EndToEndTests.Mocks.DataAccess.Repository.UserPermissionR
 {
 	public class OrganizationUserPermissionRepositoryMock : IOrganizationUserPermissionRepository
 	{
-		public Task<bool> IsAdministrator(BackedOrganization organization)
+		public Task<bool> IsAdministrator(BackedOrganization organization, Guid userId)
 		{
 			return Task.FromResult(true);
 		}
 
-		public Task<bool> IsMember(BackedOrganization organization)
+		public Task<bool> IsMember(BackedOrganization organization, Guid userId)
 		{
 			return Task.FromResult(true);
 		}
 
-		public Task<bool> IsModerator(BackedOrganization organization)
+		public Task<bool> IsModerator(BackedOrganization organization, Guid userId)
 		{
 			return Task.FromResult(true);
 		}

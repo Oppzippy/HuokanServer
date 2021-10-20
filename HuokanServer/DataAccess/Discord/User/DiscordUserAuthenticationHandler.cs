@@ -4,7 +4,7 @@ using HuokanServer.DataAccess.OAuth2;
 using HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;
 using IdentityModel.Client;
 
-namespace HuokanServer.DataAccess.Discord
+namespace HuokanServer.DataAccess.Discord.User
 {
 	public class DiscordUserAuthenticationHandler : IDiscordUserAuthenticationHandler
 	{

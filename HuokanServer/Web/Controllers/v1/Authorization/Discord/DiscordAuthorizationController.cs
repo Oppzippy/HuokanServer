@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using HuokanServer.DataAccess.Discord;
+using HuokanServer.DataAccess.Discord.User;
 using HuokanServer.DataAccess.OAuth2;
 using HuokanServer.DataAccess.Repository.ApiKeyRepository;
 using HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;

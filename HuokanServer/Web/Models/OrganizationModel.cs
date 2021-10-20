@@ -22,7 +22,7 @@ namespace HuokanServer.Web.Models
 				Id = organization.Id,
 				Name = organization.Name,
 				Slug = organization.Slug,
-				DiscordGuildId = organization.DiscordGuildId,
+				DiscordGuildId = organization.DiscordGuildId.ToString(),
 				CreatedAt = organization.CreatedAt,
 			};
 		}

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using HuokanServer.DataAccess.Discord;
+using HuokanServer.DataAccess.Discord.User;
 
 namespace HuokanServer.EndToEndTests.Mocks.DataAccess.Discord
 {

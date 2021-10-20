@@ -1,4 +1,5 @@
-using HuokanServer.DataAccess.Discord;
+using HuokanServer.DataAccess.Discord.Bot;
+using HuokanServer.DataAccess.Discord.User;
 using HuokanServer.DataAccess.OAuth2;
 using HuokanServer.DataAccess.Permissions;
 using HuokanServer.DataAccess.Repository.ApiKeyRepository;
@@ -17,9 +18,11 @@ namespace HuokanServer.DataAccess.Repository
 		public static IServiceCollection AddDataAccess(this IServiceCollection services)
 		{
 			services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
-			// Discord
+			// Discord User
 			services.AddTransient<IDiscordUserFactory, DiscordUserFactory>();
 			services.AddTransient<IDiscordUserAuthenticationHandler, DiscordUserAuthenticationHandler>();
+			// Discord Bot
+			services.AddTransient<IDiscordBot, DiscordBot>();
 			// OAuth2
 			services.AddTransient<IOAuth2Factory, OAuth2Factory>();
 			// Permissions
@@ -32,7 +35,7 @@ namespace HuokanServer.DataAccess.Repository
 			services.AddTransient<IOrganizationRepository, OrganizationRepository.OrganizationRepository>();
 			services.AddTransient<IUserDiscordTokenRepository, UserDiscordTokenRepository.UserDiscordTokenRepository>();
 			services.AddTransient<IGlobalUserPermissionRepository, GlobalUserPermissionRepository>();
-			services.AddTransient<IOrganizationUserPermissionRepositoryFactory, OrganizationUserPermissionRepositoryFactory>();
+			services.AddTransient<IOrganizationUserPermissionRepository, OrganizationUserPermissionRepository>();
 			services.AddTransient<IUserRepository, UserRepository.UserRepository>();
 
 			return services;

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using DSharpPlus.Exceptions;
 
-namespace HuokanServer.DataAccess.Discord
+namespace HuokanServer.DataAccess.Discord.User
 {
 	public class DiscordUserFactory : IDiscordUserFactory
 	{
