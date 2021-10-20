@@ -12,6 +12,6 @@ CREATE TABLE deposit_node_endorsement (
 	id SERIAL PRIMARY KEY,
 	node_id INTEGER NOT NULL REFERENCES graph_node(id),
 	user_id CHARACTER VARYING(50) NOT NULL,
-	created_at TIMESTAMP NOT NULL,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL,
 	UNIQUE(node_id, user_id)
 );

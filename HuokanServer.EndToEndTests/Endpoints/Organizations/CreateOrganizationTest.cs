@@ -22,7 +22,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Organizations
 			{
 				Name = "Organization 1",
 				Slug = "organization-1",
-				DiscordGuildId = "1",
+				DiscordGuildId = 1,
 			});
 
 			Assert.Equal(HttpStatusCode.OK, response.StatusCode);

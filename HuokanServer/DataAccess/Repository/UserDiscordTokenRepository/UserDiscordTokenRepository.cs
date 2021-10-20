@@ -69,8 +69,8 @@ namespace HuokanServer.DataAccess.Repository.UserDiscordTokenRepository
 						UserId = userId,
 						Token = token.Token,
 						RefreshToken = token.RefreshToken,
-						ExpiresAt = token.ExpiresAt.ToUniversalTime(),
-						CreatedAt = DateTime.UtcNow,
+						ExpiresAt = token.ExpiresAt,
+						CreatedAt = DateTimeOffset.UtcNow,
 					}
 				);
 			}

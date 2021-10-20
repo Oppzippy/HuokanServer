@@ -25,7 +25,7 @@ namespace HuokanServer.DataAccess.Discord.User
 
 		private async Task<string> RefreshTokenIfExpired(Guid userId, UserDiscordToken token)
 		{
-			if (token.ExpiresAt <= DateTime.UtcNow)
+			if (token.ExpiresAt <= DateTimeOffset.UtcNow)
 			{
 				return await ForceRefreshToken(userId, token);
 			}
@@ -45,7 +45,7 @@ namespace HuokanServer.DataAccess.Discord.User
 			{
 				Token = response.AccessToken,
 				RefreshToken = response.RefreshToken,
-				ExpiresAt = DateTime.UtcNow.AddSeconds(response.ExpiresIn),
+				ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn),
 			};
 			await _userDiscordTokenRepository.SetDiscordToken(userId, token);
 			return token.Token;

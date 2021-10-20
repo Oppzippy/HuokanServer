@@ -9,6 +9,6 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 		public string CharacterName { get; init; }
 		public long DepositInCopper { get; init; }
 		public long GuildBankCopper { get; init; }
-		public DateTime CreatedAt { get; init; }
+		public DateTimeOffset CreatedAt { get; init; }
 	}
 }

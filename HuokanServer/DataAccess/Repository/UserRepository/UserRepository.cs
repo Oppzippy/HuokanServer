@@ -141,7 +141,7 @@ namespace HuokanServer.DataAccess.Repository.UserRepository
 				new
 				{
 					DiscordUserId = Convert.ToDecimal(user.DiscordUserId),
-					CreatedAt = DateTime.UtcNow,
+					CreatedAt = DateTimeOffset.UtcNow,
 				}
 			);
 			return dbBackedUser.ToBackedUser();
@@ -245,7 +245,7 @@ namespace HuokanServer.DataAccess.Repository.UserRepository
 		{
 			public Guid Id { get; init; }
 			public decimal DiscordUserId { get; init; }
-			public DateTime CreatedAt { get; init; }
+			public DateTimeOffset CreatedAt { get; init; }
 
 			public BackedUser ToBackedUser()
 			{

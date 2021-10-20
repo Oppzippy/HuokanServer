@@ -63,7 +63,7 @@ namespace HuokanServer.EndToEndTests.TestBases
 			string apiKey = await apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
-				ExpiresAt = DateTime.UtcNow.AddDays(1),
+				ExpiresAt = DateTimeOffset.UtcNow.AddDays(1),
 			});
 
 			var client = new HttpClient();

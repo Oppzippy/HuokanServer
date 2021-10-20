@@ -13,6 +13,6 @@ namespace HuokanServer.Web.Models
 
 		[BindRequired]
 		[Required]
-		public DateTime CapturedAt { get; init; }
+		public DateTimeOffset CapturedAt { get; init; }
 	}
 }

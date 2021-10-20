@@ -28,7 +28,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 						GuildBankCopper = 1,
 					},
 				},
-				CapturedAt = DateTime.UtcNow,
+				CapturedAt = DateTimeOffset.UtcNow,
 			});
 
 			Assert.Equal(HttpStatusCode.OK, response.StatusCode);

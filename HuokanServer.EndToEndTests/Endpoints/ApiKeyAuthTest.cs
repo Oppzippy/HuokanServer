@@ -27,7 +27,7 @@ namespace HuokanServer.EndToEndTests.Endpoints
 			_apiKey = await apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
-				ExpiresAt = DateTime.UtcNow.AddDays(1),
+				ExpiresAt = DateTimeOffset.UtcNow.AddDays(1),
 			});
 		}
 

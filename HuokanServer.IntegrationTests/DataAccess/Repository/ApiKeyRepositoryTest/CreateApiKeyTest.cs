@@ -15,7 +15,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.ApiKeyRepositoryTe
 			string apiKey = await Repository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
-				ExpiresAt = DateTime.UtcNow.AddDays(7),
+				ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
 			});
 			Assert.NotNull(apiKey);
 		}

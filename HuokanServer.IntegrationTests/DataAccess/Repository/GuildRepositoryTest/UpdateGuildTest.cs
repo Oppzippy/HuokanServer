@@ -23,7 +23,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTes
 			{
 				Name = "Guild two",
 				Realm = "Realm two",
-				CreatedAt = DateTime.MinValue,
+				CreatedAt = DateTimeOffset.MinValue,
 			};
 			BackedGuild updatedGuild = await Repository.UpdateGuild(modifiedGuild);
 

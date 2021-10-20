@@ -13,7 +13,7 @@ namespace HuokanServer.Web.Models
 
 		[BindRequired]
 		[Required]
-		public DateTime CreatedAt { get; init; }
+		public DateTimeOffset CreatedAt { get; init; }
 
 		public static OrganizationModel From(BackedOrganization organization)
 		{
@@ -22,7 +22,7 @@ namespace HuokanServer.Web.Models
 				Id = organization.Id,
 				Name = organization.Name,
 				Slug = organization.Slug,
-				DiscordGuildId = organization.DiscordGuildId.ToString(),
+				DiscordGuildId = organization.DiscordGuildId,
 				CreatedAt = organization.CreatedAt,
 			};
 		}

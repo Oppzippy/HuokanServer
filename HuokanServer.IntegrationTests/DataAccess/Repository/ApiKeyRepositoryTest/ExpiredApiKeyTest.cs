@@ -16,7 +16,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.ApiKeyRepositoryTe
 			string key = await Repository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
-				ExpiresAt = DateTime.UtcNow.AddMinutes(-1),
+				ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-1),
 			});
 			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.FindApiKey(key));
 		}

@@ -4,7 +4,7 @@ CREATE TABLE organization (
 	"name" TEXT NOT NULL,
 	slug TEXT NOT NULL UNIQUE,
 	discord_guild_id NUMERIC NOT NULL UNIQUE,
-	created_at TIMESTAMP NOT NULL
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE guild (
@@ -14,8 +14,8 @@ CREATE TABLE guild (
 	"name" TEXT NOT NULL,
 	realm TEXT NOT NULL,
 	guild_bank_graph_id INTEGER NULL REFERENCES graph(id),
-	created_at TIMESTAMP NOT NULL,
-	deleted_at TIMESTAMP NULL,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+	deleted_at TIMESTAMP WITH TIME ZONE NULL,
 	is_not_deleted BOOLEAN GENERATED ALWAYS AS (deleted_at IS NULL) STORED,
 	UNIQUE(organization_id, "name", realm, is_not_deleted)
 );
@@ -25,7 +25,7 @@ CREATE TABLE user_account (
 	id SERIAL PRIMARY KEY,
 	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	discord_user_id NUMERIC UNIQUE NOT NULL,
-	created_at TIMESTAMP NOT NULL
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE user_discord_token (
@@ -33,8 +33,8 @@ CREATE TABLE user_discord_token (
 	user_id INTEGER UNIQUE NOT NULL REFERENCES user_account(id),
 	token TEXT NULL,
 	refresh_token TEXT NULL,
-	expires_at TIMESTAMP NOT NULL,
-	created_at TIMESTAMP NOT NULL
+	expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE api_key (
@@ -42,8 +42,8 @@ CREATE TABLE api_key (
 	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	key_hash TEXT NOT NULL UNIQUE,
 	user_id INTEGER NOT NULL REFERENCES user_account(id),
-	created_at TIMESTAMP NOT NULL,
-	expires_at TIMESTAMP NULL
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+	expires_at TIMESTAMP WITH TIME ZONE NULL
 );
 
 CREATE VIEW unexpired_api_key AS SELECT * FROM api_key WHERE expires_at IS NULL OR NOW() < expires_at AT TIME ZONE 'UTC';

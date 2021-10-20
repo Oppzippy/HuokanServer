@@ -16,13 +16,13 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserDiscordTokenRe
 			{
 				Token = "token",
 				RefreshToken = "refresh",
-				ExpiresAt = DateTime.UtcNow.AddDays(1),
+				ExpiresAt = DateTimeOffset.UtcNow.AddDays(1),
 			});
 			BackedUserDiscordToken token = await Repository.GetDiscordToken(user.Id);
 			Assert.Equal("token", token.Token);
 			Assert.Equal("refresh", token.RefreshToken);
-			Assert.NotEqual(default(DateTime), token.CreatedAt);
-			Assert.NotEqual(default(DateTime), token.ExpiresAt);
+			Assert.NotEqual(default(DateTimeOffset), token.CreatedAt);
+			Assert.NotEqual(default(DateTimeOffset), token.ExpiresAt);
 		}
 	}
 }

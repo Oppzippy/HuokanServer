@@ -16,9 +16,9 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserDiscordTokenRe
 			{
 				Token = "token",
 				RefreshToken = "refresh",
-				ExpiresAt = DateTime.UtcNow.AddDays(1),
+				ExpiresAt = DateTimeOffset.UtcNow.AddDays(1),
 			});
-			DateTime secondExpiration = DateTime.UtcNow.AddDays(2);
+			DateTimeOffset secondExpiration = DateTimeOffset.UtcNow.AddDays(2);
 			await Repository.SetDiscordToken(user.Id, new UserDiscordToken()
 			{
 				Token = "token2",

@@ -15,7 +15,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest
 			{
 				DiscordUserId = 1,
 			});
-			Assert.NotEqual(default(DateTime), user.CreatedAt);
+			Assert.NotEqual(default(DateTimeOffset), user.CreatedAt);
 			Assert.NotEqual(Guid.Empty, user.Id);
 			Assert.Equal<ulong>(1, user.DiscordUserId);
 		}

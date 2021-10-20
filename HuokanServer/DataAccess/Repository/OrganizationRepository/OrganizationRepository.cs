@@ -157,7 +157,7 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 						Name = organization.Name,
 						Slug = organization.Slug,
 						DiscordGuildId = Convert.ToDecimal(organization.DiscordGuildId),
-						CreatedAt = DateTime.UtcNow,
+						CreatedAt = DateTimeOffset.UtcNow,
 					}
 				);
 				return organizations.ToBackedOrganization();
@@ -178,7 +178,7 @@ namespace HuokanServer.DataAccess.Repository.OrganizationRepository
 			public string Slug { get; init; }
 			public decimal DiscordGuildId { get; init; }
 			public Guid Id { get; init; }
-			public DateTime CreatedAt { get; init; }
+			public DateTimeOffset CreatedAt { get; init; }
 
 			public BackedOrganization ToBackedOrganization()
 			{

@@ -10,7 +10,7 @@
     <PackageReference Include="dbup-postgresql" Version="4.5.0" />
     <PackageReference Include="DSharpPlus.Rest" Version="4.1.0" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
-    <PackageReference Include="Npgsql" Version="5.0.7" />
+    <PackageReference Include="Npgsql" Version="6.0.0-rc.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
   </ItemGroup>
 

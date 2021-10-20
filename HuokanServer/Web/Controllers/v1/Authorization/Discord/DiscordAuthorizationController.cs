@@ -84,12 +84,12 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 			{
 				Token = token.AccessToken,
 				RefreshToken = token.RefreshToken,
-				ExpiresAt = DateTime.UtcNow.AddSeconds(token.ExpiresIn),
+				ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(token.ExpiresIn),
 			});
 			string apiKey = await _apiKeyRepository.CreateApiKey(new ApiKey()
 			{
 				UserId = user.Id,
-				ExpiresAt = DateTime.UtcNow.AddDays(7),
+				ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
 			});
 
 			return new AuthorizationModel()

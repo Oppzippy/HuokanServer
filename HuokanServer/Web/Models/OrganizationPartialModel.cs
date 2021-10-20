@@ -17,7 +17,7 @@ namespace HuokanServer.Web.Models
 
 		[BindRequired]
 		[Required]
-		public string DiscordGuildId { get; init; }
+		public ulong DiscordGuildId { get; init; }
 
 		public static OrganizationPartialModel From(Organization organization)
 		{
@@ -25,7 +25,7 @@ namespace HuokanServer.Web.Models
 			{
 				Name = organization.Name,
 				Slug = organization.Slug,
-				DiscordGuildId = organization.DiscordGuildId.ToString(),
+				DiscordGuildId = organization.DiscordGuildId,
 			};
 		}
 
@@ -36,7 +36,7 @@ namespace HuokanServer.Web.Models
 			{
 				Name = Name,
 				Slug = Slug,
-				DiscordGuildId = ulong.Parse(DiscordGuildId),
+				DiscordGuildId = DiscordGuildId,
 			};
 		}
 	}

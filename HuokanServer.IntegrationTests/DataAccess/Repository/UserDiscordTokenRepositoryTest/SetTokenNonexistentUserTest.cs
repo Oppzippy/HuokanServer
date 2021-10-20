@@ -16,7 +16,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserDiscordTokenRe
 				{
 					Token = "token",
 					RefreshToken = "refresh",
-					ExpiresAt = DateTime.UtcNow.AddDays(1),
+					ExpiresAt = DateTimeOffset.UtcNow.AddDays(1),
 				})
 			);
 		}

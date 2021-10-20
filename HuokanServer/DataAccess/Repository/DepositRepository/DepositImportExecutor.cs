@@ -186,7 +186,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					{
 						NodeId = nodeId,
 						UserId = userId,
-						CreatedAt = DateTime.UtcNow,
+						CreatedAt = DateTimeOffset.UtcNow,
 					},
 					_transaction
 				);
@@ -224,7 +224,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					CharacterName = deposit.CharacterName,
 					DepositInCopper = deposit.DepositInCopper,
 					GuildBankCopper = deposit.GuildBankCopper,
-					CreatedAt = DateTime.UtcNow,
+					CreatedAt = DateTimeOffset.UtcNow,
 				});
 				parentNodeId = result.Id;
 				nodeIds.Add(result.Id);

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
@@ -9,6 +10,7 @@ using DbUp.Engine;
 using DSharpPlus;
 using HuokanServer.DataAccess.Repository;
 using HuokanServer.Web.Filters;
+using HuokanServer.Web.Json;
 using HuokanServer.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,12 +56,13 @@ namespace HuokanServer
 			services.AddTransient<ItemNotFound404Middleware>();
 			services.AddTransient<DuplicateItem429Middleware>();
 
-			services.AddControllers().AddJsonOptions(options =>
-			{
-				var enumConverter = new JsonStringEnumConverter();
-				options.JsonSerializerOptions.Converters.Add(enumConverter);
-			});
-
+			services.AddControllers()
+				.AddJsonOptions(options =>
+				{
+					options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+					options.JsonSerializerOptions.Converters.Add(new JsonUlongStringConverter());
+					options.JsonSerializerOptions.Converters.Add(new JsonDateTimeOffsetStringConverter());
+				});
 			services.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll", builder =>

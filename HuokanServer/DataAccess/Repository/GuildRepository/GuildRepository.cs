@@ -120,7 +120,7 @@ namespace HuokanServer.DataAccess.Repository.GuildRepository
 						Name = guild.Name,
 						Realm = guild.Realm,
 						GuildBankGraphId = guildBankGraph.id,
-						CreatedAt = DateTime.UtcNow,
+						CreatedAt = DateTimeOffset.UtcNow,
 					}
 				);
 				transaction.Commit();
@@ -194,7 +194,7 @@ namespace HuokanServer.DataAccess.Repository.GuildRepository
 				{
 					OrganizationId = organizationId,
 					GuildId = guildId,
-					DeletedAt = DateTime.UtcNow,
+					DeletedAt = DateTimeOffset.UtcNow,
 				}
 			);
 			if (rowsAffected == 0)

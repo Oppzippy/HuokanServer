@@ -23,7 +23,7 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTes
 			Assert.Equal("Bank Guild", guild.Name);
 			Assert.Equal("Illidan", guild.Realm);
 			Assert.Equal(organization.Id, guild.OrganizationId);
-			Assert.NotEqual(default(DateTime), guild.CreatedAt);
+			Assert.NotEqual(default(DateTimeOffset), guild.CreatedAt);
 		}
 	}
 }
