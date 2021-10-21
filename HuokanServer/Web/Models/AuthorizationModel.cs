@@ -5,8 +5,8 @@ namespace HuokanServer.Web.Models
 {
 	public record AuthorizationModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public string ApiKey { get; init; }
 	}
 }

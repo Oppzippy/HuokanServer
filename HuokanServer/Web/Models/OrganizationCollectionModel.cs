@@ -8,8 +8,8 @@ namespace HuokanServer.Web.Models
 {
 	public record OrganizationCollectionModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public List<OrganizationModel> Organizations { get; init; }
 
 		public static OrganizationCollectionModel From(IEnumerable<BackedOrganization> organizations)

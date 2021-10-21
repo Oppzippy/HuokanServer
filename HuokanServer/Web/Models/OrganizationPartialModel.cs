@@ -7,16 +7,21 @@ namespace HuokanServer.Web.Models
 {
 	public record OrganizationPartialModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
+		[MinLength(2)]
+		[MaxLength(50)]
 		public string Name { get; init; }
 
-		[BindRequired]
 		[Required]
+		[BindRequired]
+		[MinLength(2)]
+		[MaxLength(50)]
+		[RegularExpression("^[A-Za-z0-9\\-]+$")]
 		public string Slug { get; init; }
 
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public ulong DiscordGuildId { get; init; }
 
 		public static OrganizationPartialModel From(Organization organization)

@@ -6,8 +6,8 @@ namespace HuokanServer.Web.Models
 {
 	public record GlobalPermissionCollectionModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public HashSet<GlobalPermissionModel> Permissions { get; init; }
 	}
 }

@@ -7,12 +7,12 @@ namespace HuokanServer.Web.Models
 {
 	public record DepositLogModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public List<DepositLogEntryModel> Log { get; init; }
 
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public DateTimeOffset CapturedAt { get; init; }
 	}
 }

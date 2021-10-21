@@ -8,8 +8,8 @@ namespace HuokanServer.Web.Models
 {
 	public record DepositCollectionModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public List<DepositModel> Deposits { get; init; }
 
 		public static DepositCollectionModel From(IEnumerable<BackedDeposit> deposits)

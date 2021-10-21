@@ -7,12 +7,12 @@ namespace HuokanServer.Web.Models
 {
 	public record UserModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public Guid Id { get; init; }
 
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public ulong DiscordUserId { get; init; }
 
 		public static UserModel From(BackedUser user)

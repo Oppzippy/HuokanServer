@@ -6,12 +6,16 @@ namespace HuokanServer.Web.Models
 {
 	public record GuildPartialModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
+		[MinLength(2)]
+		[MaxLength(24)]
 		public string Name { get; init; }
 
-		[BindRequired]
 		[Required]
+		[BindRequired]
+		[MinLength(1)]
+		[MaxLength(50)]
 		public string Realm { get; init; }
 
 		public static GuildPartialModel From(Guild guild)

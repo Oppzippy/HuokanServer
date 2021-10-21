@@ -6,8 +6,8 @@ namespace HuokanServer.Web.Models
 {
 	public record GuildCollectionModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public List<GuildModel> Guilds { get; init; }
 	}
 }

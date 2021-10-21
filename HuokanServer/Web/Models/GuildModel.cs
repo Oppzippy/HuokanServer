@@ -7,8 +7,8 @@ namespace HuokanServer.Web.Models
 {
 	public record GuildModel : GuildPartialModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public Guid Id { get; init; }
 
 		public static GuildModel From(BackedGuild backedGuild)

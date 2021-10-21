@@ -7,12 +7,12 @@ namespace HuokanServer.Web.Models
 {
 	public record OrganizationModel : OrganizationPartialModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public Guid Id { get; init; }
 
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public DateTimeOffset CreatedAt { get; init; }
 
 		public static OrganizationModel From(BackedOrganization organization)

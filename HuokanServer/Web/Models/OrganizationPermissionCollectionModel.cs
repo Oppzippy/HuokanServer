@@ -6,8 +6,8 @@ namespace HuokanServer.Web.Models
 {
 	public record OrganizationPermissionCollectionModel
 	{
-		[BindRequired]
 		[Required]
+		[BindRequired]
 		public HashSet<OrganizationPermissionModel> Permissions { get; init; }
 	}
 }
