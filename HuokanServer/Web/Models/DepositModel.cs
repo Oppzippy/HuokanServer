@@ -19,7 +19,7 @@ namespace HuokanServer.Web.Models
 
 		[Required]
 		[BindRequired]
-		[Range(typeof(long), "0", "99999999999")]
+		[Range(typeof(long), "1", "99999999999")]
 		public long DepositInCopper { get; init; }
 
 		public static DepositModel From(BackedDeposit deposit)
