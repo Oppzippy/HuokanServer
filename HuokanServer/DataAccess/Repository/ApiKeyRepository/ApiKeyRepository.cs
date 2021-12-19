@@ -90,11 +90,7 @@ namespace HuokanServer.DataAccess.Repository.ApiKeyRepository
 
 		private string GenerateApiKey(int sizeInBytes)
 		{
-			using var rng = new RNGCryptoServiceProvider();
-
-			var apiKeyBytes = new byte[sizeInBytes];
-			rng.GetBytes(apiKeyBytes);
-
+			byte[] apiKeyBytes = RandomNumberGenerator.GetBytes(sizeInBytes);
 			return Convert.ToBase64String(apiKeyBytes);
 		}
 

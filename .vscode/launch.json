@@ -13,7 +13,7 @@
 				"enabled": false
 			},
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/HuokanServer/bin/Debug/net5.0/HuokanServer.dll",
+			"program": "${workspaceFolder}/HuokanServer/bin/Debug/net6.0/HuokanServer.dll",
 			"args": ["--urls=http://localhost:5001"],
 			"cwd": "${workspaceFolder}/HuokanServer",
 			"stopAtEntry": false,
