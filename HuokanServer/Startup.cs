@@ -78,6 +78,12 @@ namespace HuokanServer
 				options.SwaggerDoc("v1", new OpenApiInfo { Title = "Huokan", Version = "v1" });
 				options.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
 				options.CustomSchemaIds(schema => Regex.Replace(schema.Name, "Model$", ""));
+				options.MapType<ulong>(() => new OpenApiSchema()
+				{
+					Type = "string",
+					Format = "uint64",
+					Minimum = 0,
+				});
 
 				var apiKeySecurityScheme = new OpenApiSecurityScheme()
 				{
