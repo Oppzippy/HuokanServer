@@ -99,7 +99,7 @@ jobs:
       - name: Install openapi-python-client
         run: pip install openapi-python-client
       - name: Generate SDK
-        run: openapi-python-client --config HuokanServer/OpenAPI/python.yml generate --path openapi.json
+        run: openapi-python-client generate --path openapi.json --config HuokanServer/OpenAPI/python.yml
       - name: Move into huokanapiclient-python repository
         run: |
           cd huokanapiclient-python
