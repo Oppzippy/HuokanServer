@@ -103,7 +103,7 @@ jobs:
       - name: Remove all old files
         run: |
           cd huokanapiclient-python
-          git ls-files -z | xargs -0 rm -f
+          rm -r !(".git")
           cd ..
       - name: Move into huokanapiclient-python repository
         run: |
