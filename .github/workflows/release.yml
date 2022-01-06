@@ -100,10 +100,15 @@ jobs:
         run: pip install openapi-python-client
       - name: Generate SDK
         run: openapi-python-client generate --path openapi.json --config HuokanServer/OpenAPI/python.yml
+      - name: Remove all old files
+        run: |
+          cd huokanapiclient-python
+          git ls-files -z | xargs -0 rm -f
+          cd ..
       - name: Move into huokanapiclient-python repository
         run: |
-          rm -rf huokanapiclient-python/huokanapiclient
-          mv huokanapiclient huokanapiclient-python/huokanapiclient
+          mv huokanapiclient/* huokanapiclient-python
+          mv huokanapiclient/.[!.]* huokanapiclient-python
 
       - name: Set up ssh-agent
         uses: webfactory/ssh-agent@v0.5.4
