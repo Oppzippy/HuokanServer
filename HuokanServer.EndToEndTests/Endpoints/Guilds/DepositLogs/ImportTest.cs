@@ -23,7 +23,8 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 				{
 					new DepositLogEntryModel()
 					{
-						CharacterName = "Test-Test",
+						CharacterName = "Test",
+						CharacterRealm = "Test",
 						DepositInCopper = 1,
 						GuildBankCopper = 1,
 					},

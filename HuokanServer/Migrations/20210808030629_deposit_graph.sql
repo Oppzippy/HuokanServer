@@ -2,6 +2,7 @@ CREATE TABLE deposit_node (
 	node_id INTEGER PRIMARY KEY REFERENCES graph_node(id),
 	external_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
 	character_name TEXT NOT NULL,
+	character_realm TEXT NOT NULL,
 	deposit_in_copper BIGINT NOT NULL,
 	guild_bank_copper BIGINT NOT NULL
 );

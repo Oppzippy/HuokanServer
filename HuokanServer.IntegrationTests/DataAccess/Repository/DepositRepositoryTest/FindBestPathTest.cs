@@ -20,7 +20,8 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryT
 			await Repository.Import(guild.OrganizationId, guild.Id, user1.Id, new List<Deposit>()
 			{
 				new Deposit(){
-					CharacterName = "MaliciousUser-Illidan",
+					CharacterName = "MaliciousUser",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 999999,
 					GuildBankCopper = 999999,
 				},
@@ -28,12 +29,14 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryT
 			await Repository.Import(guild.OrganizationId, guild.Id, user1.Id, new List<Deposit>()
 			{
 				new Deposit(){
-					CharacterName = "Advertiser-Illidan",
+					CharacterName = "Advertiser",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 1,
 					GuildBankCopper = 1,
 				},
 				new Deposit(){
-					CharacterName = "Advertiser2-Illidan",
+					CharacterName = "Advertiser2",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 2,
 					GuildBankCopper = 3,
 				},
@@ -41,17 +44,20 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryT
 			await Repository.Import(guild.OrganizationId, guild.Id, user2.Id, new List<Deposit>()
 			{
 				new Deposit(){
-					CharacterName = "Advertiser-Illidan",
+					CharacterName = "Advertiser",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 1,
 					GuildBankCopper = 1,
 				},
 				new Deposit(){
-					CharacterName = "Advertiser2-Illidan",
+					CharacterName = "Advertiser2",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 2,
 					GuildBankCopper = 3,
 				},
 				new Deposit(){
-					CharacterName = "Advertiser2-Illidan",
+					CharacterName = "Advertiser2",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 2,
 					GuildBankCopper = 5,
 				},
@@ -61,15 +67,18 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryT
 			Assert.Equal(3, deposits.Count);
 
 			Assert.Equal(1, deposits[0].DepositInCopper);
-			Assert.Equal("Advertiser-Illidan", deposits[0].CharacterName);
+			Assert.Equal("Advertiser", deposits[0].CharacterName);
+			Assert.Equal("Illidan", deposits[0].CharacterRealm);
 			Assert.Equal(2, deposits[0].Endorsements);
 
 			Assert.Equal(2, deposits[1].DepositInCopper);
-			Assert.Equal("Advertiser2-Illidan", deposits[1].CharacterName);
+			Assert.Equal("Advertiser2", deposits[1].CharacterName);
+			Assert.Equal("Illidan", deposits[1].CharacterRealm);
 			Assert.Equal(2, deposits[1].Endorsements);
 
 			Assert.Equal(2, deposits[2].DepositInCopper);
-			Assert.Equal("Advertiser2-Illidan", deposits[2].CharacterName);
+			Assert.Equal("Advertiser2", deposits[2].CharacterName);
+			Assert.Equal("Illidan", deposits[2].CharacterRealm);
 			Assert.Equal(1, deposits[2].Endorsements);
 		}
 	}

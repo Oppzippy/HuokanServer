@@ -19,6 +19,12 @@ namespace HuokanServer.Web.Models
 
 		[Required]
 		[BindRequired]
+		[MinLength(1)]
+		[MaxLength(100)]
+		public string CharacterRealm { get; set; }
+
+		[Required]
+		[BindRequired]
 		[Range(typeof(long), "1", "99999999999")]
 		public long DepositInCopper { get; init; }
 
@@ -27,6 +33,7 @@ namespace HuokanServer.Web.Models
 			return new DepositModel()
 			{
 				CharacterName = deposit.CharacterName,
+				CharacterRealm = deposit.CharacterRealm,
 				DepositInCopper = deposit.DepositInCopper,
 				Endorsements = deposit.Endorsements,
 			};

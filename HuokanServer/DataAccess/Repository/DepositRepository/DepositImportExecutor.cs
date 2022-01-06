@@ -93,12 +93,14 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 				WHERE
 					guild.external_id = @GuildId AND
 					deposit_node.character_name = @CharacterName AND
+					deposit_node.character_realm = @CharacterRealm AND
 					deposit_node.deposit_in_copper = @DepositInCopper AND
 					deposit_node.guild_bank_copper = @GuildBankCopper",
 				new
 				{
 					GuildId = guildId,
 					CharacterName = firstDeposit.CharacterName,
+					CharacterRealm = firstDeposit.CharacterRealm,
 					DepositInCopper = firstDeposit.DepositInCopper,
 					GuildBankCopper = firstDeposit.GuildBankCopper,
 				},
@@ -143,6 +145,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 						guild.external_id = @GuildId AND
 						graph_edge.start_node_id = ANY(@PreviousNodeIds::INTEGER ARRAY) AND
 						deposit_node.character_name = @CharacterName AND
+						deposit_node.character_realm = @CharacterRealm AND
 						deposit_node.deposit_in_copper = @DepositInCopper AND
 						deposit_node.guild_bank_copper = @GuildBankCopper",
 					new
@@ -150,6 +153,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 						GuildId = guildId,
 						PreviousNodeIds = depositIds,
 						CharacterName = deposit.CharacterName,
+						CharacterRealm = deposit.CharacterRealm,
 						DepositInCopper = deposit.DepositInCopper,
 						GuildBankCopper = deposit.GuildBankCopper,
 					},
@@ -222,6 +226,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					ParentNodeId = parentNodeId,
 					GuildId = guildId,
 					CharacterName = deposit.CharacterName,
+					CharacterRealm = deposit.CharacterRealm,
 					DepositInCopper = deposit.DepositInCopper,
 					GuildBankCopper = deposit.GuildBankCopper,
 					CreatedAt = DateTimeOffset.UtcNow,
@@ -244,10 +249,11 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					RETURNING id, created_at
 				),
 				dn AS (
-					INSERT INTO deposit_node (node_id, character_name, deposit_in_copper, guild_bank_copper)
+					INSERT INTO deposit_node (node_id, character_name, character_realm, deposit_in_copper, guild_bank_copper)
 					VALUES (
 						(SELECT id FROM gn),
 						@CharacterName,
+						@CharacterRealm,
 						@DepositInCopper,
 						@GuildBankCopper
 					)

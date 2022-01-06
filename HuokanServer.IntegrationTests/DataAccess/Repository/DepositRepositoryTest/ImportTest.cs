@@ -17,12 +17,14 @@ namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryT
 			await Repository.Import(guild.OrganizationId, guild.Id, user.Id, new List<Deposit>()
 			{
 				new Deposit(){
-					CharacterName = "Advertiser-Illidan",
+					CharacterName = "Advertiser",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 1,
 					GuildBankCopper = 1,
 				},
 				new Deposit(){
-					CharacterName = "Advertiser2-Illidan",
+					CharacterName = "Advertiser2",
+					CharacterRealm = "Illidan",
 					DepositInCopper = 2,
 					GuildBankCopper = 3,
 				},

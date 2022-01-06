@@ -20,7 +20,8 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.Deposits
 			{
 				new Deposit()
 				{
-					CharacterName = "Test-Test",
+					CharacterName = "Test",
+					CharacterRealm = "Realm",
 					DepositInCopper = 1,
 					GuildBankCopper = 1,
 				}
@@ -29,7 +30,8 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.Deposits
 			var depositCollection = await HttpClient.GetFromJsonAsync<DepositCollectionModel>($"{BaseUrl}/organizations/{Organization.Id}/guilds/{Guild.Id}/deposits");
 			List<DepositModel> deposits = depositCollection.Deposits;
 			Assert.Single(deposits);
-			Assert.Equal("Test-Test", deposits.First().CharacterName);
+			Assert.Equal("Test", deposits.First().CharacterName);
+			Assert.Equal("Realm", deposits.First().CharacterRealm);
 			Assert.Equal(1, deposits.First().DepositInCopper);
 			Assert.Equal(1, deposits.First().Endorsements);
 		}

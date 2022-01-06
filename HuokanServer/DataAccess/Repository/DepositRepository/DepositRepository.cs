@@ -81,6 +81,7 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					node.id,
 					node.endorsements::INTEGER,
 					deposit_node.character_name,
+					deposit_node.character_realm,
 					deposit_node.deposit_in_copper
 				FROM node INNER JOIN deposit_node ON deposit_node.node_id = node.id",
 				new
