@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
@@ -14,6 +13,7 @@ using HuokanServer.Web.Json;
 using HuokanServer.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,6 +36,10 @@ namespace HuokanServer
 			RunDatabaseMigrations();
 
 			services.AddApplicationSettings(Configuration);
+			services.AddHttpLogging((options) =>
+			{
+				options.LoggingFields = HttpLoggingFields.All;
+			});
 			services.AddDataAccess();
 			services.AddSingleton<DiscordClient>((serviceProvider) =>
 			{
@@ -132,6 +136,7 @@ namespace HuokanServer
 				app.UseCors("AllowAll");
 			}
 
+			app.UseHttpLogging();
 			app.UseRouting();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 			app.UseMiddleware<ItemNotFound404Middleware>();
