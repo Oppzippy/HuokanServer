@@ -7,7 +7,7 @@ CREATE TABLE deposit_node (
 	guild_bank_copper BIGINT NOT NULL
 );
 
-CREATE INDEX deposit_node_index ON deposit_node (character_name, deposit_in_copper, guild_bank_copper);
+CREATE INDEX deposit_node_index ON deposit_node (character_name, character_realm, deposit_in_copper, guild_bank_copper);
 
 CREATE TABLE deposit_node_endorsement (
 	id SERIAL PRIMARY KEY,
