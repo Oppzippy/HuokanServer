@@ -38,7 +38,7 @@ namespace HuokanServer
 			services.AddApplicationSettings(Configuration);
 			services.AddHttpLogging((options) =>
 			{
-				options.LoggingFields = HttpLoggingFields.All;
+				options.LoggingFields = HttpLoggingFields.All | HttpLoggingFields.RequestQuery;
 			});
 			services.AddDataAccess();
 			services.AddSingleton<DiscordClient>((serviceProvider) =>
