@@ -138,6 +138,7 @@ namespace HuokanServer
 
 			app.UseHttpLogging();
 			app.UseRouting();
+			app.UseSentryTracing();
 			app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 			app.UseMiddleware<ItemNotFound404Middleware>();
 			app.UseMiddleware<DuplicateItem429Middleware>();
