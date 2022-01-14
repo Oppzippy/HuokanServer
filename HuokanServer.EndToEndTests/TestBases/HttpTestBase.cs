@@ -46,6 +46,7 @@ namespace HuokanServer.EndToEndTests.TestBases
 					{
 						services.AddMocks();
 					});
+					webBuilder.UseSentry();
 				})
 				.Build();
 			Task.WaitAll(_host.StartAsync());
