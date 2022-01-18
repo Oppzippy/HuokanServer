@@ -12,8 +12,8 @@ namespace HuokanServer.EndToEndTests.Mocks
 		public static IServiceCollection AddMocks(this IServiceCollection services)
 		{
 			services.RemoveAll<IOrganizationUserPermissionRepository>();
-			services.RemoveAll<IDiscordUserFactory>();
-			services.AddTransient<IDiscordUserFactory, DiscordUserFactoryMock>();
+			services.RemoveAll<IUnknownDiscordUserFactory>();
+			services.AddTransient<IUnknownDiscordUserFactory, DiscordUserFactoryMock>();
 			services.AddTransient<IOrganizationUserPermissionRepository, OrganizationUserPermissionRepositoryMock>();
 			return services;
 		}

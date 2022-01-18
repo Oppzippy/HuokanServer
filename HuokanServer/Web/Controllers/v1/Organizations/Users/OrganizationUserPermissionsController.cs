@@ -40,7 +40,7 @@ namespace HuokanServer.Web.Controllers.v1.Organizations.Users
 			foreach (var permissionModel in Enum.GetValues<OrganizationPermissionModel>())
 			{
 				var permission = Enum.Parse<OrganizationPermission>(permissionModel.ToString());
-				if (await _permissionResolver.DoesUserHaveOrganizationPermission(userId, organizationId, permission))
+				if (await _permissionResolver.DoesUserHaveOrganizationPermission(User, organizationId, permission))
 				{
 					permissions.Add(permissionModel);
 				}

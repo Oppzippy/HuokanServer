@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using DSharpPlus;
 using DSharpPlus.Entities;
 
 namespace HuokanServer.DataAccess.Discord.Bot
@@ -12,7 +11,7 @@ namespace HuokanServer.DataAccess.Discord.Bot
 		public string Username { get; init; }
 		public string Discriminator { get; init; }
 		public long Permissions { get; init; }
-		public List<ulong> RoleIds { get; init; }
+		public ISet<ulong> RoleIds { get; init; }
 
 		public static DiscordGuildMember FromDSharpPlus(DiscordMember member)
 		{
@@ -23,7 +22,7 @@ namespace HuokanServer.DataAccess.Discord.Bot
 				Username = member.Username,
 				Discriminator = member.Discriminator,
 				Permissions = (long)member.Permissions,
-				RoleIds = member.Roles.Select(role => role.Id).ToList(),
+				RoleIds = member.Roles.Select(role => role.Id).ToHashSet(),
 			};
 		}
 

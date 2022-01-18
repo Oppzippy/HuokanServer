@@ -38,7 +38,7 @@ namespace HuokanServer.Web.Filters
 			{
 				Guid organizationId = GetOrganizationIdFromRoute(context.HttpContext);
 
-				if (await _permissionResolver.DoesUserHaveOrganizationPermission(user.Id, organizationId, RequiredPermission))
+				if (await _permissionResolver.DoesUserHaveOrganizationPermission(user, organizationId, RequiredPermission))
 				{
 					// Logged in and authorized
 					return;

@@ -4,7 +4,7 @@ using HuokanServer.DataAccess.Discord.User;
 
 namespace HuokanServer.EndToEndTests.Mocks.DataAccess.Discord
 {
-	public class DiscordUserFactoryMock : IDiscordUserFactory
+	public class DiscordUserFactoryMock : IUnknownDiscordUserFactory
 	{
 		public Task<IDiscordUser> Create(Guid userId)
 		{

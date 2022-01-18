@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 
 namespace HuokanServer.DataAccess.Discord.User
 {
-	public interface IDiscordUserFactory
+	public interface IUnknownDiscordUserFactory
 	{
-		Task<IDiscordUser> Create(Guid userId);
 		Task<IDiscordUser> Create(string token);
 	}
 }

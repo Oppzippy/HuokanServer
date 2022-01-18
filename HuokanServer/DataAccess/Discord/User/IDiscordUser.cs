@@ -5,7 +5,7 @@ namespace HuokanServer.DataAccess.Discord.User
 {
 	public interface IDiscordUser
 	{
-		ulong Id { get; }
+		Task<ulong> GetId();
 		Task<List<ulong>> GetGuildIds();
 	}
 }

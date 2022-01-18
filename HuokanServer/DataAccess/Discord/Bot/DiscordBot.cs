@@ -1,20 +1,19 @@
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using HuokanServer.DataAccess.Cache.DiscordGuildMember;
 
 namespace HuokanServer.DataAccess.Discord.Bot
 {
 	public class DiscordBot : IDiscordBot
 	{
 		private readonly DiscordClient _client;
-		// The DiscordBot object's lifetime is only the duration of the http request so we don't
-		// have to worry about expiring anything.
-		private readonly ConcurrentDictionary<string, DiscordGuildMember> _guildMemberCache = new ConcurrentDictionary<string, DiscordGuildMember>();
+		private readonly DiscordGuildMemberCache _cache;
 
-		public DiscordBot(DiscordClient client)
+		public DiscordBot(DiscordClient client, DiscordGuildMemberCache cache)
 		{
 			_client = client;
+			_cache = cache;
 		}
 
 		public async Task Connect()
@@ -29,17 +28,17 @@ namespace HuokanServer.DataAccess.Discord.Bot
 
 		public async Task<DiscordGuildMember> GetGuildMember(ulong guildId, ulong userId)
 		{
-			string key = $"{guildId}:{userId}";
-			if (_guildMemberCache.TryGetValue(key, out DiscordGuildMember value))
+			DiscordGuildMember discordGuildMember = await _cache.GetGuildMember(guildId, userId);
+			if (discordGuildMember != null)
 			{
-				return value;
+				return discordGuildMember;
 			}
 
 			DiscordGuild guild = await _client.GetGuildAsync(guildId);
 			DiscordMember member = await guild.GetMemberAsync(userId);
 
-			var discordGuildMember = DiscordGuildMember.FromDSharpPlus(member);
-			_guildMemberCache[key] = discordGuildMember;
+			discordGuildMember = DiscordGuildMember.FromDSharpPlus(member);
+			await _cache.SetGuildMember(guildId, userId, discordGuildMember);
 
 			return discordGuildMember;
 		}

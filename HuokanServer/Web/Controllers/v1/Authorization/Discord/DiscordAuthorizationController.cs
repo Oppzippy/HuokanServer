@@ -22,7 +22,8 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 	{
 		private readonly ApplicationSettings _settings;
 		private readonly IOAuth2 _oAuthClient;
-		private readonly IDiscordUserFactory _discordUserFactory;
+		private readonly IUnknownDiscordUserFactory _unknownDiscordUserFactory;
+		private readonly IKnownDiscordUserFactory _knownDiscordUserFactory;
 		private readonly IUserRepository _userRepository;
 		private readonly IApiKeyRepository _apiKeyRepository;
 		private readonly IUserDiscordTokenRepository _userDiscordTokenRepository;
@@ -30,7 +31,8 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		public DiscordAuthorizationController(
 			ApplicationSettings settings,
 			IOAuth2Factory oAuth2Factory,
-			IDiscordUserFactory discordUserFactory,
+			IUnknownDiscordUserFactory unknownDiscordUserFactory,
+			IKnownDiscordUserFactory knownDiscordUserFactory,
 			IUserRepository userRepository,
 			IApiKeyRepository apiKeyRepository,
 			IUserDiscordTokenRepository userDiscordTokenRepository
@@ -38,7 +40,8 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		{
 			_settings = settings;
 			_oAuthClient = oAuth2Factory.CreateDiscord(settings.DiscordClientId, settings.DiscordClientSecret); // TODO get client id and secret from config
-			_discordUserFactory = discordUserFactory;
+			_unknownDiscordUserFactory = unknownDiscordUserFactory;
+			_knownDiscordUserFactory = knownDiscordUserFactory;
 			_userRepository = userRepository;
 			_apiKeyRepository = apiKeyRepository;
 			_userDiscordTokenRepository = userDiscordTokenRepository;
@@ -75,10 +78,10 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 			{
 				return Unauthorized();
 			}
-			IDiscordUser discordUser = await _discordUserFactory.Create(token.AccessToken);
+			IDiscordUser discordUser = await _unknownDiscordUserFactory.Create(token.AccessToken);
 			BackedUser user = await _userRepository.FindOrCreateUser(new User()
 			{
-				DiscordUserId = discordUser.Id,
+				DiscordUserId = await discordUser.GetId(),
 			});
 			await _userDiscordTokenRepository.SetDiscordToken(user.Id, new UserDiscordToken()
 			{
@@ -104,7 +107,7 @@ namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
 		public async Task RefreshOrganizations()
 		{
 			BackedUser user = HttpContext.Features.Get<BackedUser>();
-			IDiscordUser discordUser = await _discordUserFactory.Create(user.Id);
+			IDiscordUser discordUser = await _knownDiscordUserFactory.Create(user.Id, user.DiscordUserId);
 			List<ulong> guildIds = await discordUser.GetGuildIds();
 			await _userRepository.SetDiscordOrganizations(user.Id, guildIds);
 		}

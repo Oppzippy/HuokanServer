@@ -10,5 +10,10 @@ services:
       POSTGRES_DB: huokan
       POSTGRES_USER: huokan
       POSTGRES_PASSWORD: huokan
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: always
 volumes:
   db_data: {}

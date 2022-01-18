@@ -7,17 +7,17 @@ namespace HuokanServer.EndToEndTests.Mocks.DataAccess.Repository.UserPermissionR
 {
 	public class OrganizationUserPermissionRepositoryMock : IOrganizationUserPermissionRepository
 	{
-		public Task<bool> IsAdministrator(BackedOrganization organization, Guid userId)
+		public Task<bool> IsAdministrator(BackedOrganization organization, Guid huokanUserId, ulong userId)
 		{
 			return Task.FromResult(true);
 		}
 
-		public Task<bool> IsMember(BackedOrganization organization, Guid userId)
+		public Task<bool> IsMember(BackedOrganization organization, Guid huokanUserId, ulong userId)
 		{
 			return Task.FromResult(true);
 		}
 
-		public Task<bool> IsModerator(BackedOrganization organization, Guid userId)
+		public Task<bool> IsModerator(BackedOrganization organization, Guid huokanUserId, ulong userId)
 		{
 			return Task.FromResult(true);
 		}

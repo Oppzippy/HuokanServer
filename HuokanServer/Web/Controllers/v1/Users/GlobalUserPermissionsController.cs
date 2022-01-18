@@ -33,7 +33,7 @@ namespace HuokanServer.Web.Controllers.v1.Users
 			foreach (var permissionModel in Enum.GetValues<GlobalPermissionModel>())
 			{
 				var permission = Enum.Parse<GlobalPermission>(permissionModel.ToString());
-				if (await _permissionResolver.DoesUserHaveGlobalPermission(userId, permission))
+				if (await _permissionResolver.DoesUserHaveGlobalPermission(User, permission))
 				{
 					permissions.Add(permissionModel);
 				}

@@ -33,7 +33,7 @@ namespace HuokanServer.Web.Controllers.v1.Users
 				List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);
 				return OrganizationCollectionModel.From(organizations);
 			}
-			if (await _permissionResolver.DoesUserHaveGlobalPermission(User.Id, GlobalPermission.ADMINISTRATOR))
+			if (await _permissionResolver.DoesUserHaveGlobalPermission(User, GlobalPermission.ADMINISTRATOR))
 			{
 				// A user that isn't me
 				List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);

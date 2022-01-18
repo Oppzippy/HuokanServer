@@ -1,12 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
+using HuokanServer.DataAccess.Repository.UserRepository;
 
 namespace HuokanServer.DataAccess.Permissions
 {
 	public interface IPermissionResolver
 	{
-		Task<bool> DoesUserHaveOrganizationPermission(Guid userId, Guid organizationId, OrganizationPermission permission);
-		Task<bool> DoesUserHaveGlobalPermission(Guid userId, GlobalPermission permission);
+		Task<bool> DoesUserHaveOrganizationPermission(BackedUser user, Guid organizationId, OrganizationPermission permission);
+		Task<bool> DoesUserHaveGlobalPermission(BackedUser user, GlobalPermission permission);
 	}
 }

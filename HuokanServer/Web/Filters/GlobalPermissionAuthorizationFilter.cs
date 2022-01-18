@@ -30,7 +30,7 @@ namespace HuokanServer.Web.Filters
 				context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
 				return;
 			}
-			if (await _permissionResolver.DoesUserHaveGlobalPermission(user.Id, RequiredPermission))
+			if (await _permissionResolver.DoesUserHaveGlobalPermission(user, RequiredPermission))
 			{
 				// Logged in and authorized
 				return;

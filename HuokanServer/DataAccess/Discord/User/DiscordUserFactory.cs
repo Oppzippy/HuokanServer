@@ -1,39 +1,23 @@
-using System;
 using System.Threading.Tasks;
-using DSharpPlus.Exceptions;
+using HuokanServer.DataAccess.Cache.DiscordUser;
 
 namespace HuokanServer.DataAccess.Discord.User
 {
-	public class DiscordUserFactory : IDiscordUserFactory
+	public class DiscordUserFactory : IUnknownDiscordUserFactory
 	{
-		private readonly IDiscordUserAuthenticationHandler _discordUserAuthenticationHandler;
+		private readonly IDiscordUserAuthenticationHandlerFactory _authenticationHandlerFactory;
+		private readonly DiscordUserCache _cache;
 
-		public DiscordUserFactory(IDiscordUserAuthenticationHandler discordUserAuthenticationHandler)
+		public DiscordUserFactory(IDiscordUserAuthenticationHandlerFactory discordUserAuthenticationHandler, DiscordUserCache cache)
 		{
-			_discordUserAuthenticationHandler = discordUserAuthenticationHandler;
+			_authenticationHandlerFactory = discordUserAuthenticationHandler;
+			_cache = cache;
 		}
 
-		public async Task<IDiscordUser> Create(Guid userId)
+		public Task<IDiscordUser> Create(string token)
 		{
-			string token = await _discordUserAuthenticationHandler.GetToken(userId);
-			var user = new DiscordUser();
-			try
-			{
-				await user.Authenticate(token);
-			}
-			catch (UnauthorizedException)
-			{
-				token = await _discordUserAuthenticationHandler.ForceRefreshToken(userId);
-				await user.Authenticate(token);
-			}
-			return user;
-		}
-
-		public async Task<IDiscordUser> Create(string token)
-		{
-			var user = new DiscordUser();
-			await user.Authenticate(token);
-			return user;
+			IDiscordUserAuthenticationHandler authenticationHandler = _authenticationHandlerFactory.Create(token);
+			return Task.FromResult<IDiscordUser>(new DiscordUser(authenticationHandler, token));
 		}
 	}
 }
