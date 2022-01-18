@@ -14,6 +14,10 @@ jobs:
           POSTGRES_DB: huokan_test
           POSTGRES_USER: huokan
           POSTGRES_PASSWORD: huokan
+      redis:
+        image: redis:alpine
+        ports:
+          - "6379:6379"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
