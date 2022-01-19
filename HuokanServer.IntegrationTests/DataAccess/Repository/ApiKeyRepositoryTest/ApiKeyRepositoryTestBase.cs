@@ -3,25 +3,24 @@ using HuokanServer.DataAccess.Repository.ApiKeyRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.IntegrationTests.TestBases;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.ApiKeyRepositoryTest
-{
-	public class ApiKeyRepositoryTestBase : DatabaseTestBase
-	{
-		public IApiKeyRepository Repository
-		{
-			get
-			{
-				return new ApiKeyRepository(ConnectionFactory);
-			}
-		}
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.ApiKeyRepositoryTest;
 
-		protected async Task<BackedUser> CreateUser()
+public class ApiKeyRepositoryTestBase : DatabaseTestBase
+{
+	public IApiKeyRepository Repository
+	{
+		get
 		{
-			var userRepository = new UserRepository(ConnectionFactory);
-			return await userRepository.CreateUser(new User()
-			{
-				DiscordUserId = 1,
-			});
+			return new ApiKeyRepository(ConnectionFactory);
 		}
+	}
+
+	protected async Task<BackedUser> CreateUser()
+	{
+		var userRepository = new UserRepository(ConnectionFactory);
+		return await userRepository.CreateUser(new User()
+		{
+			DiscordUserId = 1,
+		});
 	}
 }

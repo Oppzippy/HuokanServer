@@ -7,36 +7,35 @@ using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations
+namespace HuokanServer.Web.Controllers.v1.Organizations;
+
+[ApiController]
+[Route("organizations")]
+public class OrganizationsController : LoggedInControllerBase
 {
-	[ApiController]
-	[Route("organizations")]
-	public class OrganizationsController : LoggedInControllerBase
+	private readonly IOrganizationRepository _organizationRepository;
+
+	public OrganizationsController(IOrganizationRepository organizationRepository)
 	{
-		private readonly IOrganizationRepository _organizationRepository;
+		_organizationRepository = organizationRepository;
+	}
 
-		public OrganizationsController(IOrganizationRepository organizationRepository)
+	[HttpGet]
+	[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
+	public async Task<OrganizationCollectionModel> GetOrganizations()
+	{
+		List<BackedOrganization> organizations = await _organizationRepository.GetAllOrganizations();
+		return new OrganizationCollectionModel()
 		{
-			_organizationRepository = organizationRepository;
-		}
+			Organizations = organizations.Select(OrganizationModel.From).ToList()
+		};
+	}
 
-		[HttpGet]
-		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
-		public async Task<OrganizationCollectionModel> GetOrganizations()
-		{
-			List<BackedOrganization> organizations = await _organizationRepository.GetAllOrganizations();
-			return new OrganizationCollectionModel()
-			{
-				Organizations = organizations.Select(OrganizationModel.From).ToList()
-			};
-		}
-
-		[HttpPost]
-		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
-		public async Task<OrganizationModel> CreateOrganization([FromBody] OrganizationPartialModel apiOrganization)
-		{
-			BackedOrganization newOrganization = await _organizationRepository.CreateOrganization(apiOrganization.ToOrganization());
-			return OrganizationModel.From(newOrganization);
-		}
+	[HttpPost]
+	[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.ADMINISTRATOR)]
+	public async Task<OrganizationModel> CreateOrganization([FromBody] OrganizationPartialModel apiOrganization)
+	{
+		BackedOrganization newOrganization = await _organizationRepository.CreateOrganization(apiOrganization.ToOrganization());
+		return OrganizationModel.From(newOrganization);
 	}
 }

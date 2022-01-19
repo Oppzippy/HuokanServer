@@ -1,9 +1,8 @@
 using System;
 
-namespace HuokanServer.DataAccess.Repository.UserDiscordTokenRepository
+namespace HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;
+
+public record BackedUserDiscordToken : UserDiscordToken
 {
-	public record BackedUserDiscordToken : UserDiscordToken
-	{
-		public DateTimeOffset CreatedAt { get; init; }
-	}
+	public DateTimeOffset CreatedAt { get; init; }
 }

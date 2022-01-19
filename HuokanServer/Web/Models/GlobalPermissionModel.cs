@@ -1,7 +1,6 @@
-namespace HuokanServer.Web.Models
+namespace HuokanServer.Web.Models;
+
+public enum GlobalPermissionModel
 {
-	public enum GlobalPermissionModel
-	{
-		ADMINISTRATOR,
-	}
+	ADMINISTRATOR,
 }

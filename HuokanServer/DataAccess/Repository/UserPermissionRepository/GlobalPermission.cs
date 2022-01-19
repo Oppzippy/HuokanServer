@@ -1,8 +1,7 @@
-namespace HuokanServer.DataAccess.Repository.UserPermissionRepository
+namespace HuokanServer.DataAccess.Repository.UserPermissionRepository;
+
+public enum GlobalPermission
 {
-	public enum GlobalPermission
-	{
-		ADMINISTRATOR,
-		USER,
-	}
+	ADMINISTRATOR,
+	USER,
 }

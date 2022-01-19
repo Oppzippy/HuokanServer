@@ -6,37 +6,36 @@ using HuokanServer.DataAccess.Repository.GuildRepository;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using HuokanServer.IntegrationTests.TestBases;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest;
+
+public class GuildRepositoryTestBase : DatabaseTestBase
 {
-	public class GuildRepositoryTestBase : DatabaseTestBase
+	public IGuildRepository Repository
 	{
-		public IGuildRepository Repository
+		get
 		{
-			get
-			{
-				return new GuildRepository(ConnectionFactory);
-			}
+			return new GuildRepository(ConnectionFactory);
 		}
+	}
 
-		public async Task<List<BackedOrganization>> CreateOrganizations(int amount)
+	public async Task<List<BackedOrganization>> CreateOrganizations(int amount)
+	{
+		var repo = new OrganizationRepository(ConnectionFactory);
+		var organizations = new List<BackedOrganization>();
+		for (int i = 0; i < amount; i++)
 		{
-			var repo = new OrganizationRepository(ConnectionFactory);
-			var organizations = new List<BackedOrganization>();
-			for (int i = 0; i < amount; i++)
+			organizations.Add(await repo.CreateOrganization(new Organization()
 			{
-				organizations.Add(await repo.CreateOrganization(new Organization()
-				{
-					DiscordGuildId = (ulong)i + 1,
-					Name = $"Test Organization {i}",
-					Slug = $"test-organization-{i}",
-				}));
-			}
-			return organizations; ;
+				DiscordGuildId = (ulong)i + 1,
+				Name = $"Test Organization {i}",
+				Slug = $"test-organization-{i}",
+			}));
 		}
+		return organizations; ;
+	}
 
-		public async Task<BackedOrganization> CreateOrganization()
-		{
-			return (await CreateOrganizations(1))[0];
-		}
+	public async Task<BackedOrganization> CreateOrganization()
+	{
+		return (await CreateOrganizations(1))[0];
 	}
 }

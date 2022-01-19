@@ -5,32 +5,31 @@ using HuokanServer.DataAccess.Repository.GuildRepository;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest;
+
+public class FindDeletedGuildsTest : GuildRepositoryTestBase
 {
-	public class FindDeletedGuildsTest : GuildRepositoryTestBase
+	[Fact]
+	public async Task TestDoesntFindDeletedGuilds()
 	{
-		[Fact]
-		public async Task TestDoesntFindDeletedGuilds()
-		{
-			BackedOrganization organization = await CreateOrganization();
-			BackedGuild[] newlyCreatedGuilds = await Task.WhenAll(
-				Repository.CreateGuild(new Guild()
-				{
-					Name = "Guild one",
-					Realm = "Realm",
-					OrganizationId = organization.Id,
-				}),
-				Repository.CreateGuild(new Guild()
-				{
-					Name = "Guild two",
-					Realm = "Realm",
-					OrganizationId = organization.Id,
-				})
-			);
-			await Repository.DeleteGuild(organization.Id, newlyCreatedGuilds[1].Id);
-			List<BackedGuild> guilds = await Repository.FindGuilds(organization.Id, new GuildFilter() { });
-			Assert.Single(guilds);
-			Assert.Equal(newlyCreatedGuilds[0], guilds[0]);
-		}
+		BackedOrganization organization = await CreateOrganization();
+		BackedGuild[] newlyCreatedGuilds = await Task.WhenAll(
+			Repository.CreateGuild(new Guild()
+			{
+				Name = "Guild one",
+				Realm = "Realm",
+				OrganizationId = organization.Id,
+			}),
+			Repository.CreateGuild(new Guild()
+			{
+				Name = "Guild two",
+				Realm = "Realm",
+				OrganizationId = organization.Id,
+			})
+		);
+		await Repository.DeleteGuild(organization.Id, newlyCreatedGuilds[1].Id);
+		List<BackedGuild> guilds = await Repository.FindGuilds(organization.Id, new GuildFilter() { });
+		Assert.Single(guilds);
+		Assert.Equal(newlyCreatedGuilds[0], guilds[0]);
 	}
 }

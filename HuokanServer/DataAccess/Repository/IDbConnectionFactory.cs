@@ -1,10 +1,9 @@
 using System.Data;
 
-namespace HuokanServer.DataAccess.Repository
+namespace HuokanServer.DataAccess.Repository;
+
+public interface IDbConnectionFactory
 {
-	public interface IDbConnectionFactory
-	{
-		string ConnectionString { get; }
-		IDbConnection Create();
-	}
+	string ConnectionString { get; }
+	IDbConnection Create();
 }

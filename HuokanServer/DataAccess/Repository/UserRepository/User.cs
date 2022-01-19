@@ -1,7 +1,6 @@
-namespace HuokanServer.DataAccess.Repository.UserRepository
+namespace HuokanServer.DataAccess.Repository.UserRepository;
+
+public record User
 {
-	public record User
-	{
-		public ulong DiscordUserId { get; init; }
-	}
+	public ulong DiscordUserId { get; init; }
 }

@@ -4,20 +4,19 @@ using System.Linq;
 using HuokanServer.DataAccess.Repository.DepositRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HuokanServer.Web.Models
-{
-	public record DepositCollectionModel
-	{
-		[Required]
-		[BindRequired]
-		public List<DepositModel> Deposits { get; init; }
+namespace HuokanServer.Web.Models;
 
-		public static DepositCollectionModel From(IEnumerable<BackedDeposit> deposits)
+public record DepositCollectionModel
+{
+	[Required]
+	[BindRequired]
+	public List<DepositModel> Deposits { get; init; }
+
+	public static DepositCollectionModel From(IEnumerable<BackedDeposit> deposits)
+	{
+		return new DepositCollectionModel()
 		{
-			return new DepositCollectionModel()
-			{
-				Deposits = deposits.Select(DepositModel.From).ToList(),
-			};
-		}
+			Deposits = deposits.Select(DepositModel.From).ToList(),
+		};
 	}
 }

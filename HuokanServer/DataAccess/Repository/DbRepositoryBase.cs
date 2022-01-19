@@ -1,19 +1,18 @@
 using System.Data;
 
-namespace HuokanServer.DataAccess.Repository
+namespace HuokanServer.DataAccess.Repository;
+
+public abstract class DbRepositoryBase
 {
-	public abstract class DbRepositoryBase
+	private readonly IDbConnectionFactory _dbConnectionFactory;
+
+	public DbRepositoryBase(IDbConnectionFactory dbConnectionFactory)
 	{
-		private readonly IDbConnectionFactory _dbConnectionFactory;
+		_dbConnectionFactory = dbConnectionFactory;
+	}
 
-		public DbRepositoryBase(IDbConnectionFactory dbConnectionFactory)
-		{
-			_dbConnectionFactory = dbConnectionFactory;
-		}
-
-		protected IDbConnection GetDbConnection()
-		{
-			return _dbConnectionFactory.Create();
-		}
+	protected IDbConnection GetDbConnection()
+	{
+		return _dbConnectionFactory.Create();
 	}
 }

@@ -3,19 +3,18 @@ using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.IntegrationTests.TestBases;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest;
+
+public class GetUserTest : UserRepositoryTestBase
 {
-	public class GetUserTest : UserRepositoryTestBase
+	[Fact]
+	public async Task TestGet()
 	{
-		[Fact]
-		public async Task TestGet()
+		BackedUser newlyCreatedUser = await Repository.CreateUser(new User()
 		{
-			BackedUser newlyCreatedUser = await Repository.CreateUser(new User()
-			{
-				DiscordUserId = 123,
-			});
-			BackedUser user = await Repository.GetUser(newlyCreatedUser.Id);
-			Assert.NotNull(user);
-		}
+			DiscordUserId = 123,
+		});
+		BackedUser user = await Repository.GetUser(newlyCreatedUser.Id);
+		Assert.NotNull(user);
 	}
 }

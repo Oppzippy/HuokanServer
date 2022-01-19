@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HuokanServer.DataAccess.Discord.User
+namespace HuokanServer.DataAccess.Discord.User;
+
+public interface IUnknownDiscordUserFactory
 {
-	public interface IUnknownDiscordUserFactory
-	{
-		Task<IDiscordUser> Create(string token);
-	}
+	Task<IDiscordUser> Create(string token);
 }

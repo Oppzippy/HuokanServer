@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HuokanServer.DataAccess.Discord.User
+namespace HuokanServer.DataAccess.Discord.User;
+
+public interface IDiscordUser
 {
-	public interface IDiscordUser
-	{
-		Task<ulong> GetId();
-		Task<List<ulong>> GetGuildIds();
-	}
+	Task<ulong> GetId();
+	Task<List<ulong>> GetGuildIds();
 }

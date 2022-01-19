@@ -5,18 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
-namespace HuokanServer.DataAccess.Repository.UserPermissionRepository
-{
-	public class GlobalUserPermissionRepository : DbRepositoryBase, IGlobalUserPermissionRepository
-	{
-		public GlobalUserPermissionRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
+namespace HuokanServer.DataAccess.Repository.UserPermissionRepository;
 
-		public async Task<bool> IsAdministrator(Guid userId)
+public class GlobalUserPermissionRepository : DbRepositoryBase, IGlobalUserPermissionRepository
+{
+	public GlobalUserPermissionRepository(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
+
+	public async Task<bool> IsAdministrator(Guid userId)
+	{
+		using IDbConnection dbConnection = GetDbConnection();
+		try
 		{
-			using IDbConnection dbConnection = GetDbConnection();
-			try
-			{
-				await dbConnection.QueryFirstAsync(@"
+			await dbConnection.QueryFirstAsync(@"
 					SELECT
 						1
 					FROM
@@ -24,37 +24,36 @@ namespace HuokanServer.DataAccess.Repository.UserPermissionRepository
 					WHERE
 						external_id = @UserId AND
 						permission_level = @PermissionLevel::global_permission_level",
-					new
-					{
-						UserId = userId,
-						PermissionLevel = "ADMINISTRATOR",
-					}
-				);
-			}
-			catch (InvalidOperationException)
-			{
-				// No results
-				return false;
-			}
-			return true;
+				new
+				{
+					UserId = userId,
+					PermissionLevel = "ADMINISTRATOR",
+				}
+			);
 		}
-
-		public async Task SetIsAdministrator(Guid userId, bool isAdministrator)
+		catch (InvalidOperationException)
 		{
-			using IDbConnection dbConnection = GetDbConnection();
-			await dbConnection.ExecuteAsync(@"
+			// No results
+			return false;
+		}
+		return true;
+	}
+
+	public async Task SetIsAdministrator(Guid userId, bool isAdministrator)
+	{
+		using IDbConnection dbConnection = GetDbConnection();
+		await dbConnection.ExecuteAsync(@"
 				UPDATE
 					user_account
 				SET
 					permission_level = @PermissionLevel::global_permission_level
 				WHERE
 					external_id = @UserId",
-				new
-				{
-					PermissionLevel = isAdministrator ? "ADMINISTRATOR" : "USER",
-					UserId = userId,
-				}
-			);
-		}
+			new
+			{
+				PermissionLevel = isAdministrator ? "ADMINISTRATOR" : "USER",
+				UserId = userId,
+			}
+		);
 	}
 }

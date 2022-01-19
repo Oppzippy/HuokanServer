@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HuokanServer.Web.Models
+namespace HuokanServer.Web.Models;
+
+public record GlobalPermissionCollectionModel
 {
-	public record GlobalPermissionCollectionModel
-	{
-		[Required]
-		[BindRequired]
-		public HashSet<GlobalPermissionModel> Permissions { get; init; }
-	}
+	[Required]
+	[BindRequired]
+	public HashSet<GlobalPermissionModel> Permissions { get; init; }
 }

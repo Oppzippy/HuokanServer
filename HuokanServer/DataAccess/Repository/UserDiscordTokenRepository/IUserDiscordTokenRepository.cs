@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HuokanServer.DataAccess.Repository.UserDiscordTokenRepository
+namespace HuokanServer.DataAccess.Repository.UserDiscordTokenRepository;
+
+public interface IUserDiscordTokenRepository
 {
-	public interface IUserDiscordTokenRepository
-	{
-		Task<BackedUserDiscordToken> GetDiscordToken(Guid userId);
-		Task SetDiscordToken(Guid userId, UserDiscordToken token);
-	}
+	Task<BackedUserDiscordToken> GetDiscordToken(Guid userId);
+	Task SetDiscordToken(Guid userId, UserDiscordToken token);
 }

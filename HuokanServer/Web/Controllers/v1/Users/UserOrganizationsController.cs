@@ -8,38 +8,37 @@ using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Web.Controllers.v1.Users
+namespace HuokanServer.Web.Controllers.v1.Users;
+
+[ApiController]
+[Route("users/{userId:guid}/organizations")]
+public class UserOrganizationsController : LoggedInControllerBase
 {
-	[ApiController]
-	[Route("users/{userId:guid}/organizations")]
-	public class UserOrganizationsController : LoggedInControllerBase
+	private readonly IOrganizationRepository _organizationRepository;
+	private readonly IPermissionResolver _permissionResolver;
+
+	public UserOrganizationsController(IOrganizationRepository organizationRepository, IPermissionResolver permissionResolver)
 	{
-		private readonly IOrganizationRepository _organizationRepository;
-		private readonly IPermissionResolver _permissionResolver;
+		_organizationRepository = organizationRepository;
+		_permissionResolver = permissionResolver;
+	}
 
-		public UserOrganizationsController(IOrganizationRepository organizationRepository, IPermissionResolver permissionResolver)
+	[HttpGet]
+	[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
+	public async Task<ActionResult<OrganizationCollectionModel>> GetOrganizationsContainingUser([FromRoute(Name = "userId")] Guid userId)
+	{
+		if (userId == User.Id)
 		{
-			_organizationRepository = organizationRepository;
-			_permissionResolver = permissionResolver;
+			// Me
+			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);
+			return OrganizationCollectionModel.From(organizations);
 		}
-
-		[HttpGet]
-		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
-		public async Task<ActionResult<OrganizationCollectionModel>> GetOrganizationsContainingUser([FromRoute(Name = "userId")] Guid userId)
+		if (await _permissionResolver.DoesUserHaveGlobalPermission(User, GlobalPermission.ADMINISTRATOR))
 		{
-			if (userId == User.Id)
-			{
-				// Me
-				List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);
-				return OrganizationCollectionModel.From(organizations);
-			}
-			if (await _permissionResolver.DoesUserHaveGlobalPermission(User, GlobalPermission.ADMINISTRATOR))
-			{
-				// A user that isn't me
-				List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);
-				return OrganizationCollectionModel.From(organizations);
-			}
-			return NotFound();
+			// A user that isn't me
+			List<BackedOrganization> organizations = await _organizationRepository.FindOrganizationsContainingUser(userId);
+			return OrganizationCollectionModel.From(organizations);
 		}
+		return NotFound();
 	}
 }

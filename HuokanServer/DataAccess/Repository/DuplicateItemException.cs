@@ -1,11 +1,10 @@
 using System;
 
-namespace HuokanServer.DataAccess.Repository
+namespace HuokanServer.DataAccess.Repository;
+
+public class DuplicateItemException : Exception
 {
-	public class DuplicateItemException : Exception
+	public DuplicateItemException(string message, Exception innerException) : base(message, innerException)
 	{
-		public DuplicateItemException(string message, Exception innerException) : base(message, innerException)
-		{
-		}
 	}
 }

@@ -5,20 +5,19 @@ using HuokanServer.DataAccess.Repository.ApiKeyRepository;
 using HuokanServer.DataAccess.Repository.UserRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.ApiKeyRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.ApiKeyRepositoryTest;
+
+public class ExpiredApiKeyTest : ApiKeyRepositoryTestBase
 {
-	public class ExpiredApiKeyTest : ApiKeyRepositoryTestBase
+	[Fact]
+	public async Task TestExpiredApiKeyShouldNotBeFound()
 	{
-		[Fact]
-		public async Task TestExpiredApiKeyShouldNotBeFound()
+		BackedUser user = await CreateUser();
+		string key = await Repository.CreateApiKey(new ApiKey()
 		{
-			BackedUser user = await CreateUser();
-			string key = await Repository.CreateApiKey(new ApiKey()
-			{
-				UserId = user.Id,
-				ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-1),
-			});
-			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.FindApiKey(key));
-		}
+			UserId = user.Id,
+			ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-1),
+		});
+		await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.FindApiKey(key));
 	}
 }

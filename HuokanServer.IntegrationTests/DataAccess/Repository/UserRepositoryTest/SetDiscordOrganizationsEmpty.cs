@@ -3,18 +3,17 @@ using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.UserRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest;
+
+public class SetDiscordOrganizationsEmpty : UserRepositoryTestBase
 {
-	public class SetDiscordOrganizationsEmpty : UserRepositoryTestBase
+	[Fact]
+	public async Task TestSetDiscordOrganizationsToEmpty()
 	{
-		[Fact]
-		public async Task TestSetDiscordOrganizationsToEmpty()
+		BackedUser user = await Repository.CreateUser(new User()
 		{
-			BackedUser user = await Repository.CreateUser(new User()
-			{
-				DiscordUserId = 1,
-			});
-			await Repository.SetDiscordOrganizations(user.Id, new List<ulong>());
-		}
+			DiscordUserId = 1,
+		});
+		await Repository.SetDiscordOrganizations(user.Id, new List<ulong>());
 	}
 }

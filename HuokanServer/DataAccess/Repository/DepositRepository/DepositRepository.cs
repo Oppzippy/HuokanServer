@@ -4,27 +4,27 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 
-namespace HuokanServer.DataAccess.Repository.DepositRepository
+namespace HuokanServer.DataAccess.Repository.DepositRepository;
+
+public class DepositRepository : DbRepositoryBase, IDepositRepository
 {
-	public class DepositRepository : DbRepositoryBase, IDepositRepository
+	private readonly IDepositImportExecutorFactory _depositImportExecutorFactory;
+
+	public DepositRepository(
+		IDbConnectionFactory dbConnectionFactory,
+		IDepositImportExecutorFactory depositImportExecutorFactory
+	) : base(dbConnectionFactory)
 	{
-		private readonly IDepositImportExecutorFactory _depositImportExecutorFactory;
+		_depositImportExecutorFactory = depositImportExecutorFactory;
+	}
 
-		public DepositRepository(
-			IDbConnectionFactory dbConnectionFactory,
-			IDepositImportExecutorFactory depositImportExecutorFactory
-		) : base(dbConnectionFactory)
+	public async Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId)
+	{
+		using IDbConnection dbConnection = GetDbConnection();
+		// Throw exception if the guild does not exist
+		try
 		{
-			_depositImportExecutorFactory = depositImportExecutorFactory;
-		}
-
-		public async Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId)
-		{
-			using IDbConnection dbConnection = GetDbConnection();
-			// Throw exception if the guild does not exist
-			try
-			{
-				await dbConnection.QueryFirstAsync(@"
+			await dbConnection.QueryFirstAsync(@"
 				SELECT 1
 				FROM
 					organization
@@ -33,18 +33,18 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 				WHERE
 					guild.external_id = @GuildId AND
 					organization.external_id = @OrganizationId",
-					new
-					{
-						OrganizationId = organizationId,
-						GuildId = guildId,
-					}
-				);
-			}
-			catch (InvalidOperationException ex)
-			{
-				throw new ItemNotFoundException("The guild does not exist.", ex);
-			}
-			var results = await dbConnection.QueryAsync<BackedDeposit>(@"
+				new
+				{
+					OrganizationId = organizationId,
+					GuildId = guildId,
+				}
+			);
+		}
+		catch (InvalidOperationException ex)
+		{
+			throw new ItemNotFoundException("The guild does not exist.", ex);
+		}
+		var results = await dbConnection.QueryAsync<BackedDeposit>(@"
 				WITH RECURSIVE node AS (
 					(
 						SELECT
@@ -84,19 +84,18 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					deposit_node.character_realm,
 					deposit_node.deposit_in_copper
 				FROM node INNER JOIN deposit_node ON deposit_node.node_id = node.id",
-				new
-				{
-					OrganizationId = organizationId,
-					GuildId = guildId,
-				}
-			);
-			return results.AsList();
-		}
+			new
+			{
+				OrganizationId = organizationId,
+				GuildId = guildId,
+			}
+		);
+		return results.AsList();
+	}
 
-		public async Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits)
-		{
-			IDepositImportExecutor executor = _depositImportExecutorFactory.Create();
-			await executor.Import(organizationId, guildId, userId, deposits);
-		}
+	public async Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits)
+	{
+		IDepositImportExecutor executor = _depositImportExecutorFactory.Create();
+		await executor.Import(organizationId, guildId, userId, deposits);
 	}
 }

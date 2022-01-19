@@ -7,41 +7,40 @@ using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Web.Controllers.v1.Users
+namespace HuokanServer.Web.Controllers.v1.Users;
+
+[ApiController]
+[Route("users/{userId:guid}/permissions")]
+public class GlobalUserPermissionsController : LoggedInControllerBase
 {
-	[ApiController]
-	[Route("users/{userId:guid}/permissions")]
-	public class GlobalUserPermissionsController : LoggedInControllerBase
+	private readonly IPermissionResolver _permissionResolver;
+
+	public GlobalUserPermissionsController(IPermissionResolver permissionResolver)
 	{
-		private readonly IPermissionResolver _permissionResolver;
+		_permissionResolver = permissionResolver;
+	}
 
-		public GlobalUserPermissionsController(IPermissionResolver permissionResolver)
+	[HttpGet]
+	[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
+	public async Task<ActionResult<GlobalPermissionCollectionModel>> GetUserPermissions([FromRoute(Name = "userId")] Guid userId)
+	{
+		if (userId != User.Id)
 		{
-			_permissionResolver = permissionResolver;
+			// TODO Not implemented
+			return NotFound();
 		}
-
-		[HttpGet]
-		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
-		public async Task<ActionResult<GlobalPermissionCollectionModel>> GetUserPermissions([FromRoute(Name = "userId")] Guid userId)
+		var permissions = new HashSet<GlobalPermissionModel>();
+		foreach (var permissionModel in Enum.GetValues<GlobalPermissionModel>())
 		{
-			if (userId != User.Id)
+			var permission = Enum.Parse<GlobalPermission>(permissionModel.ToString());
+			if (await _permissionResolver.DoesUserHaveGlobalPermission(User, permission))
 			{
-				// TODO Not implemented
-				return NotFound();
+				permissions.Add(permissionModel);
 			}
-			var permissions = new HashSet<GlobalPermissionModel>();
-			foreach (var permissionModel in Enum.GetValues<GlobalPermissionModel>())
-			{
-				var permission = Enum.Parse<GlobalPermission>(permissionModel.ToString());
-				if (await _permissionResolver.DoesUserHaveGlobalPermission(User, permission))
-				{
-					permissions.Add(permissionModel);
-				}
-			}
-			return new GlobalPermissionCollectionModel()
-			{
-				Permissions = permissions,
-			};
 		}
+		return new GlobalPermissionCollectionModel()
+		{
+			Permissions = permissions,
+		};
 	}
 }

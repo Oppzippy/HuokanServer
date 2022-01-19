@@ -1,7 +1,6 @@
-namespace HuokanServer.DataAccess.Repository.DepositRepository
+namespace HuokanServer.DataAccess.Repository.DepositRepository;
+
+public interface IDepositImportExecutorFactory
 {
-	public interface IDepositImportExecutorFactory
-	{
-		IDepositImportExecutor Create();
-	}
+	IDepositImportExecutor Create();
 }

@@ -2,14 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest;
+
+public class FindUsersInNonexistentOrganization : UserRepositoryTestBase
 {
-	public class FindUsersInNonexistentOrganization : UserRepositoryTestBase
+	[Fact]
+	public async Task TestFindUsersInNonexistentOrganization()
 	{
-		[Fact]
-		public async Task TestFindUsersInNonexistentOrganization()
-		{
-			Assert.Empty(await Repository.FindUsersInOrganization(Guid.Empty));
-		}
+		Assert.Empty(await Repository.FindUsersInOrganization(Guid.Empty));
 	}
 }

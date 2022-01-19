@@ -5,14 +5,13 @@ using HuokanServer.DataAccess.Repository.GuildRepository;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest;
+
+public class DeleteNonexistentGuildTest : GuildRepositoryTestBase
 {
-	public class DeleteNonexistentGuildTest : GuildRepositoryTestBase
+	[Fact]
+	public async Task TestDeleteNonexistentOrganizationAndGuild()
 	{
-		[Fact]
-		public async Task TestDeleteNonexistentOrganizationAndGuild()
-		{
-			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.DeleteGuild(Guid.Empty, Guid.Empty));
-		}
+		await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.DeleteGuild(Guid.Empty, Guid.Empty));
 	}
 }

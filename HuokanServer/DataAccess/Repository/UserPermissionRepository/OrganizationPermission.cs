@@ -1,9 +1,8 @@
-namespace HuokanServer.DataAccess.Repository.UserPermissionRepository
+namespace HuokanServer.DataAccess.Repository.UserPermissionRepository;
+
+public enum OrganizationPermission
 {
-	public enum OrganizationPermission
-	{
-		ADMINISTRATOR,
-		MODERATOR,
-		MEMBER,
-	}
+	ADMINISTRATOR,
+	MODERATOR,
+	MEMBER,
 }

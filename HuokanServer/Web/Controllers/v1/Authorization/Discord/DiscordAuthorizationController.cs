@@ -14,102 +14,101 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace HuokanServer.Web.Controllers.v1.Authorization.Discord
+namespace HuokanServer.Web.Controllers.v1.Authorization.Discord;
+
+[ApiController]
+[Route("authorization/discord")]
+public class DiscordAuthorizationController : ControllerBase
 {
-	[ApiController]
-	[Route("authorization/discord")]
-	public class DiscordAuthorizationController : ControllerBase
+	private readonly ApplicationSettings _settings;
+	private readonly IOAuth2 _oAuthClient;
+	private readonly IUnknownDiscordUserFactory _unknownDiscordUserFactory;
+	private readonly IKnownDiscordUserFactory _knownDiscordUserFactory;
+	private readonly IUserRepository _userRepository;
+	private readonly IApiKeyRepository _apiKeyRepository;
+	private readonly IUserDiscordTokenRepository _userDiscordTokenRepository;
+
+	public DiscordAuthorizationController(
+		ApplicationSettings settings,
+		IOAuth2Factory oAuth2Factory,
+		IUnknownDiscordUserFactory unknownDiscordUserFactory,
+		IKnownDiscordUserFactory knownDiscordUserFactory,
+		IUserRepository userRepository,
+		IApiKeyRepository apiKeyRepository,
+		IUserDiscordTokenRepository userDiscordTokenRepository
+	)
 	{
-		private readonly ApplicationSettings _settings;
-		private readonly IOAuth2 _oAuthClient;
-		private readonly IUnknownDiscordUserFactory _unknownDiscordUserFactory;
-		private readonly IKnownDiscordUserFactory _knownDiscordUserFactory;
-		private readonly IUserRepository _userRepository;
-		private readonly IApiKeyRepository _apiKeyRepository;
-		private readonly IUserDiscordTokenRepository _userDiscordTokenRepository;
+		_settings = settings;
+		_oAuthClient = oAuth2Factory.CreateDiscord(settings.DiscordClientId, settings.DiscordClientSecret); // TODO get client id and secret from config
+		_unknownDiscordUserFactory = unknownDiscordUserFactory;
+		_knownDiscordUserFactory = knownDiscordUserFactory;
+		_userRepository = userRepository;
+		_apiKeyRepository = apiKeyRepository;
+		_userDiscordTokenRepository = userDiscordTokenRepository;
+	}
 
-		public DiscordAuthorizationController(
-			ApplicationSettings settings,
-			IOAuth2Factory oAuth2Factory,
-			IUnknownDiscordUserFactory unknownDiscordUserFactory,
-			IKnownDiscordUserFactory knownDiscordUserFactory,
-			IUserRepository userRepository,
-			IApiKeyRepository apiKeyRepository,
-			IUserDiscordTokenRepository userDiscordTokenRepository
-		)
+	[HttpGet]
+	[Route("redirect")]
+	public RedirectResult RedirectToDiscord([Required][FromQuery(Name = "redirectUrl")] string redirectUrl)
+	{
+		var queryParams = new Dictionary<string, string>()
 		{
-			_settings = settings;
-			_oAuthClient = oAuth2Factory.CreateDiscord(settings.DiscordClientId, settings.DiscordClientSecret); // TODO get client id and secret from config
-			_unknownDiscordUserFactory = unknownDiscordUserFactory;
-			_knownDiscordUserFactory = knownDiscordUserFactory;
-			_userRepository = userRepository;
-			_apiKeyRepository = apiKeyRepository;
-			_userDiscordTokenRepository = userDiscordTokenRepository;
-		}
+			{"client_id", _settings.DiscordClientId},
+			{"redirect_uri", redirectUrl},
+			{"response_type", "code"},
+			{"scope", "identify guilds"}
+		};
+		string url = QueryHelpers.AddQueryString("https://discord.com/api/oauth2/authorize", queryParams);
+		return Redirect(url);
+	}
 
-		[HttpGet]
-		[Route("redirect")]
-		public RedirectResult RedirectToDiscord([Required][FromQuery(Name = "redirectUrl")] string redirectUrl)
+	[HttpGet]
+	[Route("authorize")]
+	public async Task<ActionResult<AuthorizationModel>> Authorize(
+		[Required][FromQuery(Name = "code")] string code,
+		[Required][FromQuery(Name = "redirectUrl")] string redirectUrl
+	)
+	{
+		TokenResponse token;
+		try
 		{
-			var queryParams = new Dictionary<string, string>()
-			{
-				{"client_id", _settings.DiscordClientId},
-				{"redirect_uri", redirectUrl},
-				{"response_type", "code"},
-				{"scope", "identify guilds"}
-			};
-			string url = QueryHelpers.AddQueryString("https://discord.com/api/oauth2/authorize", queryParams);
-			return Redirect(url);
+			token = await _oAuthClient.GetToken(code, redirectUrl);
 		}
-
-		[HttpGet]
-		[Route("authorize")]
-		public async Task<ActionResult<AuthorizationModel>> Authorize(
-			[Required][FromQuery(Name = "code")] string code,
-			[Required][FromQuery(Name = "redirectUrl")] string redirectUrl
-		)
+		catch (OAuth2Exception)
 		{
-			TokenResponse token;
-			try
-			{
-				token = await _oAuthClient.GetToken(code, redirectUrl);
-			}
-			catch (OAuth2Exception)
-			{
-				return Unauthorized();
-			}
-			IDiscordUser discordUser = await _unknownDiscordUserFactory.Create(token.AccessToken);
-			BackedUser user = await _userRepository.FindOrCreateUser(new User()
-			{
-				DiscordUserId = await discordUser.GetId(),
-			});
-			await _userDiscordTokenRepository.SetDiscordToken(user.Id, new UserDiscordToken()
-			{
-				Token = token.AccessToken,
-				RefreshToken = token.RefreshToken,
-				ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(token.ExpiresIn),
-			});
-			string apiKey = await _apiKeyRepository.CreateApiKey(new ApiKey()
-			{
-				UserId = user.Id,
-				ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
-			});
-
-			return new AuthorizationModel()
-			{
-				ApiKey = apiKey,
-			};
+			return Unauthorized();
 		}
-
-		[HttpGet]
-		[Route("refreshOrganizations")]
-		[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
-		public async Task RefreshOrganizations()
+		IDiscordUser discordUser = await _unknownDiscordUserFactory.Create(token.AccessToken);
+		BackedUser user = await _userRepository.FindOrCreateUser(new User()
 		{
-			BackedUser user = HttpContext.Features.Get<BackedUser>();
-			IDiscordUser discordUser = await _knownDiscordUserFactory.Create(user.Id, user.DiscordUserId);
-			List<ulong> guildIds = await discordUser.GetGuildIds();
-			await _userRepository.SetDiscordOrganizations(user.Id, guildIds);
-		}
+			DiscordUserId = await discordUser.GetId(),
+		});
+		await _userDiscordTokenRepository.SetDiscordToken(user.Id, new UserDiscordToken()
+		{
+			Token = token.AccessToken,
+			RefreshToken = token.RefreshToken,
+			ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(token.ExpiresIn),
+		});
+		string apiKey = await _apiKeyRepository.CreateApiKey(new ApiKey()
+		{
+			UserId = user.Id,
+			ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
+		});
+
+		return new AuthorizationModel()
+		{
+			ApiKey = apiKey,
+		};
+	}
+
+	[HttpGet]
+	[Route("refreshOrganizations")]
+	[GlobalPermissionAuthorizationFilterFactory(GlobalPermission.USER)]
+	public async Task RefreshOrganizations()
+	{
+		BackedUser user = HttpContext.Features.Get<BackedUser>();
+		IDiscordUser discordUser = await _knownDiscordUserFactory.Create(user.Id, user.DiscordUserId);
+		List<ulong> guildIds = await discordUser.GetGuildIds();
+		await _userRepository.SetDiscordOrganizations(user.Id, guildIds);
 	}
 }

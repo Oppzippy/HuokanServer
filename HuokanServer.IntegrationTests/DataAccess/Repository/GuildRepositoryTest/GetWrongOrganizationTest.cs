@@ -6,21 +6,20 @@ using HuokanServer.DataAccess.Repository.GuildRepository;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest;
+
+public class GetWrongOrganizationTest : GuildRepositoryTestBase
 {
-	public class GetWrongOrganizationTest : GuildRepositoryTestBase
+	[Fact]
+	public async Task TestGetWithWrongOrganizationId()
 	{
-		[Fact]
-		public async Task TestGetWithWrongOrganizationId()
+		BackedOrganization organization = await CreateOrganization();
+		BackedGuild guild = await Repository.CreateGuild(new Guild()
 		{
-			BackedOrganization organization = await CreateOrganization();
-			BackedGuild guild = await Repository.CreateGuild(new Guild()
-			{
-				Name = "Guild",
-				Realm = "Realm",
-				OrganizationId = organization.Id,
-			});
-			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.GetGuild(Guid.Empty, guild.Id));
-		}
+			Name = "Guild",
+			Realm = "Realm",
+			OrganizationId = organization.Id,
+		});
+		await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.GetGuild(Guid.Empty, guild.Id));
 	}
 }

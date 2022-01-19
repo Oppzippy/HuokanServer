@@ -1,16 +1,15 @@
 using HuokanServer.DataAccess.Repository.UserPermissionRepository;
 using HuokanServer.IntegrationTests.TestBases;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserPermissionRepository
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserPermissionRepository;
+
+public class GlobalUserPermissionRepositoryTestBase : DatabaseTestBase
 {
-	public class GlobalUserPermissionRepositoryTestBase : DatabaseTestBase
+	public IGlobalUserPermissionRepository Repository
 	{
-		public IGlobalUserPermissionRepository Repository
+		get
 		{
-			get
-			{
-				return new GlobalUserPermissionRepository(ConnectionFactory);
-			}
+			return new GlobalUserPermissionRepository(ConnectionFactory);
 		}
 	}
 }

@@ -1,17 +1,16 @@
-namespace HuokanServer.DataAccess.Repository.DepositRepository
+namespace HuokanServer.DataAccess.Repository.DepositRepository;
+
+public class DepositImportExecutorFactory : IDepositImportExecutorFactory
 {
-	public class DepositImportExecutorFactory : IDepositImportExecutorFactory
+	private readonly IDbConnectionFactory _connectionFactory;
+
+	public DepositImportExecutorFactory(IDbConnectionFactory connectionFactory)
 	{
-		private readonly IDbConnectionFactory _connectionFactory;
+		_connectionFactory = connectionFactory;
+	}
 
-		public DepositImportExecutorFactory(IDbConnectionFactory connectionFactory)
-		{
-			_connectionFactory = connectionFactory;
-		}
-
-		public IDepositImportExecutor Create()
-		{
-			return new DepositImportExecutor(_connectionFactory);
-		}
+	public IDepositImportExecutor Create()
+	{
+		return new DepositImportExecutor(_connectionFactory);
 	}
 }

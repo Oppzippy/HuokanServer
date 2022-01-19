@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HuokanServer.DataAccess.Repository.DepositRepository
+namespace HuokanServer.DataAccess.Repository.DepositRepository;
+
+public interface IDepositImportExecutor
 {
-	public interface IDepositImportExecutor
-	{
-		Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits);
-	}
+	Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits);
 }

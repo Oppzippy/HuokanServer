@@ -5,48 +5,48 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
-namespace HuokanServer.DataAccess.Repository.DepositRepository
+namespace HuokanServer.DataAccess.Repository.DepositRepository;
+
+public class DepositImportExecutor : IDepositImportExecutor
 {
-	public class DepositImportExecutor : IDepositImportExecutor
+	private readonly IDbConnectionFactory _connectionFactory;
+	private IDbConnection _dbConnection;
+	private IDbTransaction _transaction;
+
+	public DepositImportExecutor(IDbConnectionFactory connectionFactory)
 	{
-		private readonly IDbConnectionFactory _connectionFactory;
-		private IDbConnection _dbConnection;
-		private IDbTransaction _transaction;
+		_connectionFactory = connectionFactory;
+	}
 
-		public DepositImportExecutor(IDbConnectionFactory connectionFactory)
+	public async Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits)
+	{
+		using IDbConnection dbConnection = _connectionFactory.Create();
+		using IDbTransaction transaction = dbConnection.BeginTransaction();
+		_dbConnection = dbConnection;
+		_transaction = transaction;
+
+		if (!await DoesOrganizationContainGuild(organizationId, guildId))
 		{
-			_connectionFactory = connectionFactory;
+			throw new ItemNotFoundException("Guild not found.");
 		}
 
-		public async Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits)
+		List<List<int>> sequences = await FindDepositSequence(guildId, deposits);
+		if (sequences.Any())
 		{
-			using IDbConnection dbConnection = _connectionFactory.Create();
-			using IDbTransaction transaction = dbConnection.BeginTransaction();
-			_dbConnection = dbConnection;
-			_transaction = transaction;
-
-			if (!await DoesOrganizationContainGuild(organizationId, guildId))
-			{
-				throw new ItemNotFoundException("Guild not found.");
-			}
-
-			List<List<int>> sequences = await FindDepositSequence(guildId, deposits);
-			if (sequences.Any())
-			{
-				await ImportMergeIntoExistingSequences(guildId, userId, deposits, sequences);
-			}
-			else
-			{
-				await ImportAndEndorseSequence(guildId, userId, deposits, null);
-			}
-
-			_transaction.Commit();
+			await ImportMergeIntoExistingSequences(guildId, userId, deposits, sequences);
+		}
+		else
+		{
+			await ImportAndEndorseSequence(guildId, userId, deposits, null);
 		}
 
+		_transaction.Commit();
+	}
 
-		private async Task<bool> DoesOrganizationContainGuild(Guid organizationId, Guid guildId)
-		{
-			dynamic result = await _dbConnection.QueryFirstAsync(@"
+
+	private async Task<bool> DoesOrganizationContainGuild(Guid organizationId, Guid guildId)
+	{
+		dynamic result = await _dbConnection.QueryFirstAsync(@"
 				SELECT
 					COUNT(*) AS ""count""
 				FROM
@@ -56,30 +56,30 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 				WHERE
 					organization.external_id = @OrganizationId AND
 					guild.external_id = @GuildId",
-				new
-				{
-					OrganizationId = organizationId,
-					GuildId = guildId,
-				},
-				_transaction
-			);
-			return result.count > 0;
-		}
-
-		private async Task<List<List<int>>> FindDepositSequence(Guid guildId, List<Deposit> deposits)
-		{
-			if (deposits.Count == 0)
+			new
 			{
-				return new List<List<int>>();
-			}
-			List<int> depositIds = await FindDepositSequenceStart(guildId, deposits[0]);
-			List<List<int>> sequences = await FindDepositSequenceRest(guildId, deposits, depositIds);
-			return sequences;
-		}
+				OrganizationId = organizationId,
+				GuildId = guildId,
+			},
+			_transaction
+		);
+		return result.count > 0;
+	}
 
-		private async Task<List<int>> FindDepositSequenceStart(Guid guildId, Deposit firstDeposit)
+	private async Task<List<List<int>>> FindDepositSequence(Guid guildId, List<Deposit> deposits)
+	{
+		if (deposits.Count == 0)
 		{
-			var rows = await _dbConnection.QueryAsync<FindDepositSequenceStartResult>(@"
+			return new List<List<int>>();
+		}
+		List<int> depositIds = await FindDepositSequenceStart(guildId, deposits[0]);
+		List<List<int>> sequences = await FindDepositSequenceRest(guildId, deposits, depositIds);
+		return sequences;
+	}
+
+	private async Task<List<int>> FindDepositSequenceStart(Guid guildId, Deposit firstDeposit)
+	{
+		var rows = await _dbConnection.QueryAsync<FindDepositSequenceStartResult>(@"
 				SELECT
 					graph_node.id
 				FROM
@@ -96,38 +96,38 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					deposit_node.character_realm = @CharacterRealm AND
 					deposit_node.deposit_in_copper = @DepositInCopper AND
 					deposit_node.guild_bank_copper = @GuildBankCopper",
-				new
-				{
-					GuildId = guildId,
-					CharacterName = firstDeposit.CharacterName,
-					CharacterRealm = firstDeposit.CharacterRealm,
-					DepositInCopper = firstDeposit.DepositInCopper,
-					GuildBankCopper = firstDeposit.GuildBankCopper,
-				},
-				_transaction
-			);
-			return rows.Select(row => row.Id).AsList();
-		}
-
-		private class FindDepositSequenceStartResult
-		{
-			public int Id { get; set; }
-		}
-
-		private async Task<List<List<int>>> FindDepositSequenceRest(Guid guildId, List<Deposit> deposits, List<int> depositIds)
-		{
-			// TODO we probably don't need to verify guild id in WHERE since this won't change from parent to child
-			// and we're only looking at children of nodes from the correct guild
-			var sequencesByLatestId = new Dictionary<int, List<int>>();
-			foreach (int depositId in depositIds)
+			new
 			{
-				sequencesByLatestId[depositId] = new List<int> { depositId };
-			}
-			for (int i = 1; i < deposits.Count; i++)
-			{
-				Deposit deposit = deposits[i];
-				// TODO don't use dynamic
-				var nextDeposits = (await _dbConnection.QueryAsync(@"
+				GuildId = guildId,
+				CharacterName = firstDeposit.CharacterName,
+				CharacterRealm = firstDeposit.CharacterRealm,
+				DepositInCopper = firstDeposit.DepositInCopper,
+				GuildBankCopper = firstDeposit.GuildBankCopper,
+			},
+			_transaction
+		);
+		return rows.Select(row => row.Id).AsList();
+	}
+
+	private class FindDepositSequenceStartResult
+	{
+		public int Id { get; set; }
+	}
+
+	private async Task<List<List<int>>> FindDepositSequenceRest(Guid guildId, List<Deposit> deposits, List<int> depositIds)
+	{
+		// TODO we probably don't need to verify guild id in WHERE since this won't change from parent to child
+		// and we're only looking at children of nodes from the correct guild
+		var sequencesByLatestId = new Dictionary<int, List<int>>();
+		foreach (int depositId in depositIds)
+		{
+			sequencesByLatestId[depositId] = new List<int> { depositId };
+		}
+		for (int i = 1; i < deposits.Count; i++)
+		{
+			Deposit deposit = deposits[i];
+			// TODO don't use dynamic
+			var nextDeposits = (await _dbConnection.QueryAsync(@"
 					SELECT
 						graph_node.id,
 						graph_edge.start_node_id AS prev_id
@@ -148,36 +148,36 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 						deposit_node.character_realm = @CharacterRealm AND
 						deposit_node.deposit_in_copper = @DepositInCopper AND
 						deposit_node.guild_bank_copper = @GuildBankCopper",
-					new
-					{
-						GuildId = guildId,
-						PreviousNodeIds = depositIds,
-						CharacterName = deposit.CharacterName,
-						CharacterRealm = deposit.CharacterRealm,
-						DepositInCopper = deposit.DepositInCopper,
-						GuildBankCopper = deposit.GuildBankCopper,
-					},
-					_transaction
-				)).AsList();
-				if (nextDeposits.Count == 0)
+				new
 				{
-					break;
-				}
-				foreach (var nextDeposit in nextDeposits)
-				{
-					sequencesByLatestId[nextDeposit.id] = sequencesByLatestId[nextDeposit.prev_id];
-					sequencesByLatestId[nextDeposit.id].Add(nextDeposit.id);
-					sequencesByLatestId.Remove(nextDeposit.prev_id);
-				}
-			}
-			return sequencesByLatestId.Values.AsList();
-		}
-
-		private async Task CreateEndorsements(Guid userId, List<int> nodeIds)
-		{
-			foreach (int nodeId in nodeIds)
+					GuildId = guildId,
+					PreviousNodeIds = depositIds,
+					CharacterName = deposit.CharacterName,
+					CharacterRealm = deposit.CharacterRealm,
+					DepositInCopper = deposit.DepositInCopper,
+					GuildBankCopper = deposit.GuildBankCopper,
+				},
+				_transaction
+			)).AsList();
+			if (nextDeposits.Count == 0)
 			{
-				await _dbConnection.ExecuteAsync(@"
+				break;
+			}
+			foreach (var nextDeposit in nextDeposits)
+			{
+				sequencesByLatestId[nextDeposit.id] = sequencesByLatestId[nextDeposit.prev_id];
+				sequencesByLatestId[nextDeposit.id].Add(nextDeposit.id);
+				sequencesByLatestId.Remove(nextDeposit.prev_id);
+			}
+		}
+		return sequencesByLatestId.Values.AsList();
+	}
+
+	private async Task CreateEndorsements(Guid userId, List<int> nodeIds)
+	{
+		foreach (int nodeId in nodeIds)
+		{
+			await _dbConnection.ExecuteAsync(@"
 					INSERT INTO deposit_node_endorsement
 						(node_id, user_id, created_at)
 					VALUES (
@@ -186,60 +186,60 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 						@CreatedAt
 					)
 					ON CONFLICT (node_id, user_id) DO NOTHING",
-					new
-					{
-						NodeId = nodeId,
-						UserId = userId,
-						CreatedAt = DateTimeOffset.UtcNow,
-					},
-					_transaction
-				);
-			}
-		}
-
-		private async Task ImportMergeIntoExistingSequences(Guid guildId, Guid userId, List<Deposit> deposits, List<List<int>> sequences)
-		{
-			int maxLength = sequences.Max(sequence => sequence.Count);
-			IEnumerable<List<int>> matchedSequences = sequences.Where(sequence => sequence.Count == maxLength);
-
-			foreach (List<int> sequence in matchedSequences)
-			{
-				List<Deposit> newDeposits = deposits.GetRange(sequence.Count, deposits.Count - sequence.Count);
-				await CreateEndorsements(userId, sequence);
-				await ImportAndEndorseSequence(guildId, userId, newDeposits, sequence.Last());
-			}
-		}
-
-		private async Task ImportAndEndorseSequence(Guid guildId, Guid userId, List<Deposit> deposits, int? parentNodeId)
-		{
-			List<int> nodeIds = await ImportSequence(guildId, deposits, parentNodeId);
-			await CreateEndorsements(userId, nodeIds);
-		}
-
-		private async Task<List<int>> ImportSequence(Guid guildId, List<Deposit> deposits, int? parentNodeId)
-		{
-			var nodeIds = new List<int>();
-			foreach (Deposit deposit in deposits)
-			{
-				CreateDepositResult result = await CreateDeposit(new CreateDepositsArgs
+				new
 				{
-					ParentNodeId = parentNodeId,
-					GuildId = guildId,
-					CharacterName = deposit.CharacterName,
-					CharacterRealm = deposit.CharacterRealm,
-					DepositInCopper = deposit.DepositInCopper,
-					GuildBankCopper = deposit.GuildBankCopper,
+					NodeId = nodeId,
+					UserId = userId,
 					CreatedAt = DateTimeOffset.UtcNow,
-				});
-				parentNodeId = result.Id;
-				nodeIds.Add(result.Id);
-			}
-			return nodeIds;
+				},
+				_transaction
+			);
 		}
+	}
 
-		private async Task<CreateDepositResult> CreateDeposit(CreateDepositsArgs args)
+	private async Task ImportMergeIntoExistingSequences(Guid guildId, Guid userId, List<Deposit> deposits, List<List<int>> sequences)
+	{
+		int maxLength = sequences.Max(sequence => sequence.Count);
+		IEnumerable<List<int>> matchedSequences = sequences.Where(sequence => sequence.Count == maxLength);
+
+		foreach (List<int> sequence in matchedSequences)
 		{
-			return await _dbConnection.QueryFirstAsync<CreateDepositResult>(@"
+			List<Deposit> newDeposits = deposits.GetRange(sequence.Count, deposits.Count - sequence.Count);
+			await CreateEndorsements(userId, sequence);
+			await ImportAndEndorseSequence(guildId, userId, newDeposits, sequence.Last());
+		}
+	}
+
+	private async Task ImportAndEndorseSequence(Guid guildId, Guid userId, List<Deposit> deposits, int? parentNodeId)
+	{
+		List<int> nodeIds = await ImportSequence(guildId, deposits, parentNodeId);
+		await CreateEndorsements(userId, nodeIds);
+	}
+
+	private async Task<List<int>> ImportSequence(Guid guildId, List<Deposit> deposits, int? parentNodeId)
+	{
+		var nodeIds = new List<int>();
+		foreach (Deposit deposit in deposits)
+		{
+			CreateDepositResult result = await CreateDeposit(new CreateDepositsArgs
+			{
+				ParentNodeId = parentNodeId,
+				GuildId = guildId,
+				CharacterName = deposit.CharacterName,
+				CharacterRealm = deposit.CharacterRealm,
+				DepositInCopper = deposit.DepositInCopper,
+				GuildBankCopper = deposit.GuildBankCopper,
+				CreatedAt = DateTimeOffset.UtcNow,
+			});
+			parentNodeId = result.Id;
+			nodeIds.Add(result.Id);
+		}
+		return nodeIds;
+	}
+
+	private async Task<CreateDepositResult> CreateDeposit(CreateDepositsArgs args)
+	{
+		return await _dbConnection.QueryFirstAsync<CreateDepositResult>(@"
 				WITH gn AS (
 					INSERT INTO graph_node (graph_id, created_at)
 					VALUES (
@@ -270,9 +270,8 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository
 					)
 				)
 				SELECT id FROM gn",
-				args,
-				_transaction
-			);
-		}
+			args,
+			_transaction
+		);
 	}
 }

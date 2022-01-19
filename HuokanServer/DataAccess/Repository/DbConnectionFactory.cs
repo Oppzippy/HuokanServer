@@ -1,29 +1,28 @@
 using System.Data;
 using Npgsql;
 
-namespace HuokanServer.DataAccess.Repository
+namespace HuokanServer.DataAccess.Repository;
+
+public class DbConnectionFactory : IDbConnectionFactory
 {
-	public class DbConnectionFactory : IDbConnectionFactory
+	public string ConnectionString { get; }
+
+	public DbConnectionFactory(ApplicationSettings settings)
 	{
-		public string ConnectionString { get; }
+		ConnectionString = settings.DbConnectionString;
+	}
 
-		public DbConnectionFactory(ApplicationSettings settings)
-		{
-			ConnectionString = settings.DbConnectionString;
-		}
-
-		public DbConnectionFactory(string connectionString)
-		{
-			ConnectionString = connectionString;
-		}
+	public DbConnectionFactory(string connectionString)
+	{
+		ConnectionString = connectionString;
+	}
 
 
-		public IDbConnection Create()
-		{
-			NpgsqlConnection dbConnection = new NpgsqlConnection(ConnectionString);
-			// TODO use OpenAsync?
-			dbConnection.Open();
-			return dbConnection;
-		}
+	public IDbConnection Create()
+	{
+		NpgsqlConnection dbConnection = new NpgsqlConnection(ConnectionString);
+		// TODO use OpenAsync?
+		dbConnection.Open();
+		return dbConnection;
 	}
 }

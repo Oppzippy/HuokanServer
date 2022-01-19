@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest;
+
+public class AddNonexistentUserToNonexistentOrganizationTest : UserRepositoryTestBase
 {
-	public class AddNonexistentUserToNonexistentOrganizationTest : UserRepositoryTestBase
+	[Fact]
+	public async Task TestAddNonexistentUserToNonexistentOrganization()
 	{
-		[Fact]
-		public async Task TestAddNonexistentUserToNonexistentOrganization()
-		{
-			await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.AddUserToOrganization(Guid.Empty, Guid.Empty));
-		}
+		await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.AddUserToOrganization(Guid.Empty, Guid.Empty));
 	}
 }

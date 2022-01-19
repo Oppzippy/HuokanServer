@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace HuokanServer.DataAccess.Discord.Bot
+namespace HuokanServer.DataAccess.Discord.Bot;
+
+public interface IDiscordBot
 {
-	public interface IDiscordBot
-	{
-		Task<DiscordGuildMember> GetGuildMember(ulong guildId, ulong userId);
-	}
+	Task<DiscordGuildMember> GetGuildMember(ulong guildId, ulong userId);
 }

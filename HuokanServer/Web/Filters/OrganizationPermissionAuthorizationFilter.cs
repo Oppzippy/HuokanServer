@@ -11,53 +11,52 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 
-namespace HuokanServer.Web.Filters
+namespace HuokanServer.Web.Filters;
+
+public class OrganizationPermissionAuthorizationFilter : IAsyncAuthorizationFilter
 {
-	public class OrganizationPermissionAuthorizationFilter : IAsyncAuthorizationFilter
+	public OrganizationPermission RequiredPermission { get; set; }
+	private readonly IPermissionResolver _permissionResolver;
+	private readonly IOrganizationRepository _organizationRepository;
+
+	public OrganizationPermissionAuthorizationFilter(IPermissionResolver permissionResolver, IOrganizationRepository organizationRepository)
 	{
-		public OrganizationPermission RequiredPermission { get; set; }
-		private readonly IPermissionResolver _permissionResolver;
-		private readonly IOrganizationRepository _organizationRepository;
+		_permissionResolver = permissionResolver;
+		_organizationRepository = organizationRepository;
+	}
 
-		public OrganizationPermissionAuthorizationFilter(IPermissionResolver permissionResolver, IOrganizationRepository organizationRepository)
+	public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+	{
+		BackedUser user = context.HttpContext.Features.Get<BackedUser>();
+		if (user == null)
 		{
-			_permissionResolver = permissionResolver;
-			_organizationRepository = organizationRepository;
+			// Not logged in
+			context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
+			return;
 		}
-
-		public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+		try
 		{
-			BackedUser user = context.HttpContext.Features.Get<BackedUser>();
-			if (user == null)
+			Guid organizationId = GetOrganizationIdFromRoute(context.HttpContext);
+
+			if (await _permissionResolver.DoesUserHaveOrganizationPermission(user, organizationId, RequiredPermission))
 			{
-				// Not logged in
-				context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
+				// Logged in and authorized
 				return;
 			}
-			try
-			{
-				Guid organizationId = GetOrganizationIdFromRoute(context.HttpContext);
-
-				if (await _permissionResolver.DoesUserHaveOrganizationPermission(user, organizationId, RequiredPermission))
-				{
-					// Logged in and authorized
-					return;
-				}
-			}
-			catch (FormatException) { }
-			catch (ItemNotFoundException) { }
-
-			context.Result = new StatusCodeResult((int)HttpStatusCode.NotFound);
 		}
+		catch (FormatException) { }
+		catch (ItemNotFoundException) { }
 
-		private Guid GetOrganizationIdFromRoute(HttpContext httpContext)
+		context.Result = new StatusCodeResult((int)HttpStatusCode.NotFound);
+	}
+
+	private Guid GetOrganizationIdFromRoute(HttpContext httpContext)
+	{
+		RouteValueDictionary routeValues = httpContext.Request.RouteValues;
+		if (routeValues.TryGetValue("organizationId", out object organizationIdObject) && organizationIdObject is string organizationIdString)
 		{
-			RouteValueDictionary routeValues = httpContext.Request.RouteValues;
-			if (routeValues.TryGetValue("organizationId", out object organizationIdObject) && organizationIdObject is string organizationIdString)
-			{
-				return Guid.Parse(organizationIdString);
-			}
-			throw new FormatException();
+			return Guid.Parse(organizationIdString);
 		}
+		throw new FormatException();
 	}
 }

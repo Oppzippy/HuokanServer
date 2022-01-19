@@ -4,26 +4,25 @@ using HuokanServer.DataAccess.Repository.GuildRepository;
 using HuokanServer.DataAccess.Repository.OrganizationRepository;
 using Xunit;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest
-{
-	public class CreateGuildTest : GuildRepositoryTestBase
-	{
-		[Fact]
-		public async Task TestCreate()
-		{
-			BackedOrganization organization = await CreateOrganization();
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.GuildRepositoryTest;
 
-			BackedGuild guild = await Repository.CreateGuild(new Guild()
-			{
-				Name = "Bank Guild",
-				Realm = "Illidan",
-				OrganizationId = organization.Id,
-			});
-			Assert.NotEqual(Guid.Empty, guild.Id);
-			Assert.Equal("Bank Guild", guild.Name);
-			Assert.Equal("Illidan", guild.Realm);
-			Assert.Equal(organization.Id, guild.OrganizationId);
-			Assert.NotEqual(default(DateTimeOffset), guild.CreatedAt);
-		}
+public class CreateGuildTest : GuildRepositoryTestBase
+{
+	[Fact]
+	public async Task TestCreate()
+	{
+		BackedOrganization organization = await CreateOrganization();
+
+		BackedGuild guild = await Repository.CreateGuild(new Guild()
+		{
+			Name = "Bank Guild",
+			Realm = "Illidan",
+			OrganizationId = organization.Id,
+		});
+		Assert.NotEqual(Guid.Empty, guild.Id);
+		Assert.Equal("Bank Guild", guild.Name);
+		Assert.Equal("Illidan", guild.Realm);
+		Assert.Equal(organization.Id, guild.OrganizationId);
+		Assert.NotEqual(default(DateTimeOffset), guild.CreatedAt);
 	}
 }

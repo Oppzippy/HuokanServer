@@ -1,7 +1,6 @@
-namespace HuokanServer.DataAccess.OAuth2
+namespace HuokanServer.DataAccess.OAuth2;
+
+public interface IOAuth2Factory
 {
-	public interface IOAuth2Factory
-	{
-		IOAuth2 CreateDiscord(string clientId, string clientSecret);
-	}
+	IOAuth2 CreateDiscord(string clientId, string clientSecret);
 }

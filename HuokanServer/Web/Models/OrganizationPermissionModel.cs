@@ -1,9 +1,8 @@
-namespace HuokanServer.Web.Models
+namespace HuokanServer.Web.Models;
+
+public enum OrganizationPermissionModel
 {
-	public enum OrganizationPermissionModel
-	{
-		ADMINISTRATOR,
-		MODERATOR,
-		MEMBER,
-	}
+	ADMINISTRATOR,
+	MODERATOR,
+	MEMBER,
 }

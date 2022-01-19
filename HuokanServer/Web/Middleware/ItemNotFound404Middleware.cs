@@ -3,21 +3,20 @@ using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository;
 using Microsoft.AspNetCore.Http;
 
-namespace HuokanServer.Web.Middleware
+namespace HuokanServer.Web.Middleware;
+
+public class ItemNotFound404Middleware : IMiddleware
 {
-	public class ItemNotFound404Middleware : IMiddleware
+	public async Task InvokeAsync(HttpContext context, RequestDelegate next)
 	{
-		public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+		try
 		{
-			try
-			{
-				await next(context);
-			}
-			catch (ItemNotFoundException)
-			{
-				// TODO log
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-			}
+			await next(context);
+		}
+		catch (ItemNotFoundException)
+		{
+			// TODO log
+			context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 		}
 	}
 }

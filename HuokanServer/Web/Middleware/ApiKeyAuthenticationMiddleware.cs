@@ -7,62 +7,61 @@ using HuokanServer.DataAccess.Repository.UserRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace HuokanServer.Web.Middleware
+namespace HuokanServer.Web.Middleware;
+
+public class ApiKeyAuthenticationMiddleware : IMiddleware
 {
-	public class ApiKeyAuthenticationMiddleware : IMiddleware
+	private readonly IApiKeyRepository _apiKeyRepository;
+	private readonly IUserRepository _userRepository;
+
+	public ApiKeyAuthenticationMiddleware(IApiKeyRepository apiKeyRepository, IUserRepository userRepository)
 	{
-		private readonly IApiKeyRepository _apiKeyRepository;
-		private readonly IUserRepository _userRepository;
+		_apiKeyRepository = apiKeyRepository;
+		_userRepository = userRepository;
+	}
 
-		public ApiKeyAuthenticationMiddleware(IApiKeyRepository apiKeyRepository, IUserRepository userRepository)
+	public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+	{
+		string apiKey = GetApiKey(context);
+		if (apiKey != null)
 		{
-			_apiKeyRepository = apiKeyRepository;
-			_userRepository = userRepository;
-		}
-
-		public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-		{
-			string apiKey = GetApiKey(context);
-			if (apiKey != null)
+			try
 			{
-				try
-				{
-					BackedApiKey apiKeyInfo = await _apiKeyRepository.FindApiKey(apiKey);
-					BackedUser user = await _userRepository.GetUser(apiKeyInfo.UserId);
-					context.Features.Set<BackedUser>(user);
-					context.Features.Set<BackedApiKey>(apiKeyInfo);
-				}
-				catch (ItemNotFoundException) { } // API key or user not found
+				BackedApiKey apiKeyInfo = await _apiKeyRepository.FindApiKey(apiKey);
+				BackedUser user = await _userRepository.GetUser(apiKeyInfo.UserId);
+				context.Features.Set<BackedUser>(user);
+				context.Features.Set<BackedApiKey>(apiKeyInfo);
 			}
-			await next(context);
+			catch (ItemNotFoundException) { } // API key or user not found
 		}
+		await next(context);
+	}
 
-		private string GetApiKey(HttpContext context)
+	private string GetApiKey(HttpContext context)
+	{
+		return GetApiKeyFromXApiKeyHeader(context) ?? GetApiKeyFromAuthorizationHeader(context);
+	}
+
+	private string GetApiKeyFromXApiKeyHeader(HttpContext context)
+	{
+		if (context.Request.Headers.TryGetValue("X-API-Key", out StringValues apiKeyValues) && apiKeyValues.Count >= 1)
 		{
-			return GetApiKeyFromXApiKeyHeader(context) ?? GetApiKeyFromAuthorizationHeader(context);
+			return apiKeyValues.First();
 		}
+		return null;
+	}
 
-		private string GetApiKeyFromXApiKeyHeader(HttpContext context)
+	private string GetApiKeyFromAuthorizationHeader(HttpContext context)
+	{
+		if (context.Request.Headers.TryGetValue("Authorization", out StringValues apiKeyValues) && apiKeyValues.Count >= 1)
 		{
-			if (context.Request.Headers.TryGetValue("X-API-Key", out StringValues apiKeyValues) && apiKeyValues.Count >= 1)
+			string authorization = apiKeyValues.First();
+			const string bearerPrefix = "bearer ";
+			if (authorization.ToLower().StartsWith(bearerPrefix))
 			{
-				return apiKeyValues.First();
+				return authorization.Substring(bearerPrefix.Length).Trim();
 			}
-			return null;
 		}
-
-		private string GetApiKeyFromAuthorizationHeader(HttpContext context)
-		{
-			if (context.Request.Headers.TryGetValue("Authorization", out StringValues apiKeyValues) && apiKeyValues.Count >= 1)
-			{
-				string authorization = apiKeyValues.First();
-				const string bearerPrefix = "bearer ";
-				if (authorization.ToLower().StartsWith(bearerPrefix))
-				{
-					return authorization.Substring(bearerPrefix.Length).Trim();
-				}
-			}
-			return null;
-		}
+		return null;
 	}
 }

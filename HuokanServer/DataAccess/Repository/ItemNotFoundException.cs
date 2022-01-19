@@ -1,15 +1,14 @@
 using System;
 
-namespace HuokanServer.DataAccess.Repository
-{
-	public class ItemNotFoundException : Exception
-	{
-		public ItemNotFoundException(string message) : base(message)
-		{
-		}
+namespace HuokanServer.DataAccess.Repository;
 
-		public ItemNotFoundException(string message, Exception innerException) : base(message, innerException)
-		{
-		}
+public class ItemNotFoundException : Exception
+{
+	public ItemNotFoundException(string message) : base(message)
+	{
+	}
+
+	public ItemNotFoundException(string message, Exception innerException) : base(message, innerException)
+	{
 	}
 }

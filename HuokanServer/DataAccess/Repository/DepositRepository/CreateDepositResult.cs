@@ -1,7 +1,6 @@
-namespace HuokanServer.DataAccess.Repository.DepositRepository
+namespace HuokanServer.DataAccess.Repository.DepositRepository;
+
+public record CreateDepositResult
 {
-	public record CreateDepositResult
-	{
-		public int Id { get; init; }
-	}
+	public int Id { get; init; }
 }

@@ -1,16 +1,15 @@
 using HuokanServer.DataAccess.Repository.UserRepository;
 using HuokanServer.IntegrationTests.TestBases;
 
-namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest
+namespace HuokanServer.IntegrationTests.DataAccess.Repository.UserRepositoryTest;
+
+public class UserRepositoryTestBase : DatabaseTestBase
 {
-	public class UserRepositoryTestBase : DatabaseTestBase
+	public IUserRepository Repository
 	{
-		public IUserRepository Repository
+		get
 		{
-			get
-			{
-				return new UserRepository(ConnectionFactory);
-			}
+			return new UserRepository(ConnectionFactory);
 		}
 	}
 }

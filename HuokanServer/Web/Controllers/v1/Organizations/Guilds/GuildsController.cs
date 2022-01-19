@@ -8,88 +8,87 @@ using HuokanServer.Web.Filters;
 using HuokanServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds
+namespace HuokanServer.Web.Controllers.v1.Organizations.Guilds;
+
+[ApiController]
+[Route("organizations/{organizationId:guid}/guilds")]
+public class GuildsController : LoggedInControllerBase
 {
-	[ApiController]
-	[Route("organizations/{organizationId:guid}/guilds")]
-	public class GuildsController : LoggedInControllerBase
+	private IGuildRepository _guildRepository;
+
+	public GuildsController(IGuildRepository guildRepository)
 	{
-		private IGuildRepository _guildRepository;
+		_guildRepository = guildRepository;
+	}
 
-		public GuildsController(IGuildRepository guildRepository)
+	[HttpGet]
+	[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
+	public async Task<GuildCollectionModel> GetGuilds(
+		[FromRoute(Name = "organizationId")] Guid organizationId,
+		[FromQuery(Name = "name")] string guildName,
+		[FromQuery(Name = "realm")] string guildRealm
+	)
+	{
+		List<BackedGuild> guilds = await _guildRepository.FindGuilds(organizationId, new GuildFilter()
 		{
-			_guildRepository = guildRepository;
-		}
+			Name = guildName,
+			Realm = guildRealm,
+		});
+		return new GuildCollectionModel()
+		{
+			Guilds = guilds.Select(GuildModel.From).ToList(),
+		};
+	}
 
-		[HttpGet]
-		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
-		public async Task<GuildCollectionModel> GetGuilds(
-			[FromRoute(Name = "organizationId")] Guid organizationId,
-			[FromQuery(Name = "name")] string guildName,
-			[FromQuery(Name = "realm")] string guildRealm
-		)
-		{
-			List<BackedGuild> guilds = await _guildRepository.FindGuilds(organizationId, new GuildFilter()
-			{
-				Name = guildName,
-				Realm = guildRealm,
-			});
-			return new GuildCollectionModel()
-			{
-				Guilds = guilds.Select(GuildModel.From).ToList(),
-			};
-		}
+	[HttpGet]
+	[Route("{guildId:guid}")]
+	[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
+	public async Task<GuildModel> GetGuild(
+		[FromRoute(Name = "organizationId")] Guid organizationId,
+		[FromRoute(Name = "guildId")] Guid guildId
+	)
+	{
+		BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
+		return GuildModel.From(guild);
+	}
 
-		[HttpGet]
-		[Route("{guildId:guid}")]
-		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.MEMBER)]
-		public async Task<GuildModel> GetGuild(
-			[FromRoute(Name = "organizationId")] Guid organizationId,
-			[FromRoute(Name = "guildId")] Guid guildId
-		)
+	[HttpPost]
+	[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
+	public async Task<GuildModel> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] GuildPartialModel guildInfo)
+	{
+		BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
 		{
-			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
-			return GuildModel.From(guild);
-		}
+			OrganizationId = organizationId,
+			Name = guildInfo.Name,
+			Realm = guildInfo.Realm,
+		});
+		return GuildModel.From(newGuild);
+	}
 
-		[HttpPost]
-		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
-		public async Task<GuildModel> CreateGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromBody] GuildPartialModel guildInfo)
+	[HttpPatch]
+	[Route("{guildId:guid}")]
+	[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
+	public async Task<GuildModel> UpdateGuild(
+		[FromRoute(Name = "organizationId")] Guid organizationId,
+		[FromRoute(Name = "guildId")] Guid guildId,
+		[FromBody] GuildPartialModel guildInfo
+	)
+	{
+		BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
+		BackedGuild modifiedGuild = guild with
 		{
-			BackedGuild newGuild = await _guildRepository.CreateGuild(new Guild()
-			{
-				OrganizationId = organizationId,
-				Name = guildInfo.Name,
-				Realm = guildInfo.Realm,
-			});
-			return GuildModel.From(newGuild);
-		}
+			Name = guildInfo.Name,
+			Realm = guildInfo.Realm,
+		};
+		BackedGuild updatedGuild = await _guildRepository.UpdateGuild(modifiedGuild);
+		return GuildModel.From(updatedGuild);
+	}
 
-		[HttpPatch]
-		[Route("{guildId:guid}")]
-		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
-		public async Task<GuildModel> UpdateGuild(
-			[FromRoute(Name = "organizationId")] Guid organizationId,
-			[FromRoute(Name = "guildId")] Guid guildId,
-			[FromBody] GuildPartialModel guildInfo
-		)
-		{
-			BackedGuild guild = await _guildRepository.GetGuild(organizationId, guildId);
-			BackedGuild modifiedGuild = guild with
-			{
-				Name = guildInfo.Name,
-				Realm = guildInfo.Realm,
-			};
-			BackedGuild updatedGuild = await _guildRepository.UpdateGuild(modifiedGuild);
-			return GuildModel.From(updatedGuild);
-		}
-
-		[HttpDelete]
-		[Route("{guildId:guid}")]
-		[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
-		public async Task DeleteGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromRoute(Name = "guildId")] Guid guildId)
-		{
-			await _guildRepository.DeleteGuild(organizationId, guildId);
-		}
+	[HttpDelete]
+	[Route("{guildId:guid}")]
+	[OrganizationPermissionAuthorizationFilterFactory(OrganizationPermission.ADMINISTRATOR)]
+	public async Task DeleteGuild([FromRoute(Name = "organizationId")] Guid organizationId, [FromRoute(Name = "guildId")] Guid guildId)
+	{
+		await _guildRepository.DeleteGuild(organizationId, guildId);
 	}
 }

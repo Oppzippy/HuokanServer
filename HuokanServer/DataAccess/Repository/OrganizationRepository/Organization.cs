@@ -1,9 +1,8 @@
-namespace HuokanServer.DataAccess.Repository.OrganizationRepository
+namespace HuokanServer.DataAccess.Repository.OrganizationRepository;
+
+public record Organization
 {
-	public record Organization
-	{
-		public string Name { get; init; }
-		public string Slug { get; init; }
-		public ulong DiscordGuildId { get; init; }
-	}
+	public string Name { get; init; }
+	public string Slug { get; init; }
+	public ulong DiscordGuildId { get; init; }
 }
