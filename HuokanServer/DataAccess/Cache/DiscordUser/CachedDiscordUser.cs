@@ -36,8 +36,13 @@ public class CachedDiscordUser : IDiscordUser
 	public async Task<List<ulong>> GetGuildIds()
 	{
 		List<ulong> guildIds = await _discordUserCache.GetGuildIds(await GetId());
+		if (guildIds != null) return guildIds;
+		
 		IDiscordUser fallback = await GetFallback();
-		return guildIds ?? await fallback.GetGuildIds();
+		guildIds = await fallback.GetGuildIds();
+		await _discordUserCache.SetGuildIds(await GetId(), guildIds);
+		
+		return guildIds;
 	}
 
 	private async Task<IDiscordUser> GetFallback()
