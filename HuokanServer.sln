@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuokanServer", "HuokanServer\HuokanServer.csproj", "{DCE47149-47E5-4058-B87E-9E14B0BA47E8}"
 EndProject
@@ -17,9 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DCE47149-47E5-4058-B87E-9E14B0BA47E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +55,11 @@ Global
 		{DD174363-03A1-48BB-B1A5-6B0A2C5A57B9}.Release|x64.Build.0 = Release|Any CPU
 		{DD174363-03A1-48BB-B1A5-6B0A2C5A57B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{DD174363-03A1-48BB-B1A5-6B0A2C5A57B9}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {467EA5B8-A346-472E-8D01-E5A077662B26}
 	EndGlobalSection
 EndGlobal
