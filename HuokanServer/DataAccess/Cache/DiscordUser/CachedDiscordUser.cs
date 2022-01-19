@@ -36,17 +36,16 @@ public class CachedDiscordUser : IDiscordUser
 	public async Task<List<ulong>> GetGuildIds()
 	{
 		List<ulong> guildIds = await _discordUserCache.GetGuildIds(await GetId());
-		return guildIds ?? await _fallback.GetGuildIds();
+		IDiscordUser fallback = await GetFallback();
+		return guildIds ?? await fallback.GetGuildIds();
 	}
 
 	private async Task<IDiscordUser> GetFallback()
 	{
-		if (_fallback == null)
-		{
-			IDiscordUserAuthenticationHandler authenticationHandler = _authenticationHandlerFactory.Create(_huokanUserId);
-			string token = await authenticationHandler.GetToken();
-			_fallback = await _userFactory.Create(token);
-		}
+		if (_fallback != null) return _fallback;
+		IDiscordUserAuthenticationHandler authenticationHandler = _authenticationHandlerFactory.Create(_huokanUserId);
+		string token = await authenticationHandler.GetToken();
+		_fallback = await _userFactory.Create(token);
 		return _fallback;
 	}
 }

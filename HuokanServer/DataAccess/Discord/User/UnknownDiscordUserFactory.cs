@@ -1,17 +1,14 @@
 using System.Threading.Tasks;
-using HuokanServer.DataAccess.Cache.DiscordUser;
 
 namespace HuokanServer.DataAccess.Discord.User
 {
-	public class DiscordUserFactory : IUnknownDiscordUserFactory
+	public class UnknownDiscordUserFactory : IUnknownDiscordUserFactory
 	{
 		private readonly IDiscordUserAuthenticationHandlerFactory _authenticationHandlerFactory;
-		private readonly DiscordUserCache _cache;
 
-		public DiscordUserFactory(IDiscordUserAuthenticationHandlerFactory discordUserAuthenticationHandler, DiscordUserCache cache)
+		public UnknownDiscordUserFactory(IDiscordUserAuthenticationHandlerFactory discordUserAuthenticationHandler)
 		{
 			_authenticationHandlerFactory = discordUserAuthenticationHandler;
-			_cache = cache;
 		}
 
 		public Task<IDiscordUser> Create(string token)

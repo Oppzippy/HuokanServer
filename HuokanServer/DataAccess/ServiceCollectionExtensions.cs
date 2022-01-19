@@ -46,11 +46,16 @@ namespace HuokanServer.DataAccess.Repository
 		private static void AddDiscord(IServiceCollection services)
 		{
 			// User
-			services.AddTransient<IUnknownDiscordUserFactory, DiscordUserFactory>();
+			services.AddTransient<IUnknownDiscordUserFactory, UnknownDiscordUserFactory>();
 			services.AddTransient<IKnownDiscordUserFactory, CachedDiscordUserFactory>();
 			services.AddTransient<IDiscordUserAuthenticationHandlerFactory, DiscordUserAuthenticationHandlerFactory>();
 			// Bot
-			services.AddTransient<IDiscordBot, DiscordBot>();
+			services.AddTransient<DiscordBot>();
+			services.AddTransient<IDiscordBot>(provider =>
+			{
+				var bot = provider.GetService<DiscordBot>();
+				return new CachedDiscordBot(provider.GetService<DiscordGuildMemberCache>(), bot);
+			});
 		}
 
 		private static void AddCache(IServiceCollection services)
