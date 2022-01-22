@@ -36,7 +36,6 @@ public record OrganizationPartialModel
 
 	public Organization ToOrganization()
 	{
-		// TODO wrap exception from ulong.parse
 		return new Organization()
 		{
 			Name = Name,
