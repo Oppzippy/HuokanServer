@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
@@ -65,17 +66,20 @@ public class FindBestPathTest : DepositRepositoryTestBase
 
 		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id);
 		Assert.Equal(3, deposits.Count);
-
+		
+		Assert.NotEqual(Guid.Empty, deposits[0].Id);
 		Assert.Equal(1, deposits[0].DepositInCopper);
 		Assert.Equal("Advertiser", deposits[0].CharacterName);
 		Assert.Equal("Illidan", deposits[0].CharacterRealm);
 		Assert.Equal(2, deposits[0].Endorsements);
-
+		
+		Assert.NotEqual(Guid.Empty, deposits[1].Id);
 		Assert.Equal(2, deposits[1].DepositInCopper);
 		Assert.Equal("Advertiser2", deposits[1].CharacterName);
 		Assert.Equal("Illidan", deposits[1].CharacterRealm);
 		Assert.Equal(2, deposits[1].Endorsements);
 
+		Assert.NotEqual(Guid.Empty, deposits[2].Id);
 		Assert.Equal(2, deposits[2].DepositInCopper);
 		Assert.Equal("Advertiser2", deposits[2].CharacterName);
 		Assert.Equal("Illidan", deposits[2].CharacterRealm);

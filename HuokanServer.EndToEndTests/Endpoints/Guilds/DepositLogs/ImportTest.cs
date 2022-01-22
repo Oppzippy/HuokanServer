@@ -24,7 +24,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 					new DepositLogEntryModel()
 					{
 						CharacterName = "Test",
-						CharacterRealm = "Test",
+						CharacterRealm = "TestRealm",
 						DepositInCopper = 1,
 						GuildBankCopper = 1,
 					},
@@ -37,6 +37,10 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 			var depositRepository = new DepositRepository(ConnectionFactory, new DepositImportExecutorFactory(ConnectionFactory));
 			List<BackedDeposit> deposits = await depositRepository.GetDeposits(Organization.Id, Guild.Id);
 			Assert.Single(deposits);
+			Assert.NotEqual(Guid.Empty,deposits[0].Id);
+			Assert.Equal("Test",deposits[0].CharacterName);
+			Assert.Equal("TestRealm",deposits[0].CharacterRealm);
+			Assert.Equal(1,deposits[0].DepositInCopper);
 		}
 	}
 }

@@ -78,7 +78,7 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 						LIMIT 1
 					)
 				) SELECT
-					node.id,
+				    deposit_node.external_id AS id,
 					node.endorsements::INTEGER,
 					deposit_node.character_name,
 					deposit_node.character_realm,

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using HuokanServer.DataAccess.Repository.DepositRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -6,6 +7,10 @@ namespace HuokanServer.Web.Models;
 
 public record DepositModel
 {
+	[Required]
+	[BindRequired]
+	public Guid Id { get; init; }
+	
 	[Required]
 	[BindRequired]
 	[Range(0, int.MaxValue)]
@@ -21,7 +26,7 @@ public record DepositModel
 	[BindRequired]
 	[MinLength(1)]
 	[MaxLength(100)]
-	public string CharacterRealm { get; set; }
+	public string CharacterRealm { get; init; }
 
 	[Required]
 	[BindRequired]
@@ -32,6 +37,7 @@ public record DepositModel
 	{
 		return new DepositModel()
 		{
+			Id = deposit.Id,
 			CharacterName = deposit.CharacterName,
 			CharacterRealm = deposit.CharacterRealm,
 			DepositInCopper = deposit.DepositInCopper,
