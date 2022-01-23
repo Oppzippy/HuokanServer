@@ -11,4 +11,6 @@ public interface IDepositRepository
 
 	Task<List<BackedDeposit>> GetDepositsAfter(Guid organizationId, Guid guildId, Guid? afterNodeId,
 		int limit=int.MaxValue);
+
+	Task<BackedDeposit> GetDeposit(Guid organizationId, Guid guildId, Guid depositId, int offset = 0);
 }
