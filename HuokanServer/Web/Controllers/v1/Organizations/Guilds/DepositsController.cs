@@ -50,8 +50,7 @@ public class DepositsController : LoggedInControllerBase
 		[FromRoute(Name = "organizationId")] Guid organizationId,
 		[FromRoute(Name = "guildId")] Guid guildId,
 		[FromRoute(Name = "depositId")] Guid depositId,
-		[FromQuery(Name = "offset")] [Range(int.MinValue, 0)]
-		int offset
+		[FromQuery(Name = "offset")] int offset
 	)
 	{
 		BackedDeposit deposit = await _depositRepository.GetDeposit(organizationId, guildId, depositId, offset);
