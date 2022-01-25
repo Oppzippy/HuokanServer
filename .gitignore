@@ -2,3 +2,4 @@
 /HuokanServer*/obj
 /.vs
 /HuokanServer.*Tests/TestResults
+*.DotSettings.user
