@@ -113,16 +113,34 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 			return await GetDepositBefore(organizationId, guildId, depositId, -offset);
 		}
 
-		throw new NotImplementedException();
+		return await GetDepositAfter(organizationId, guildId, depositId, offset);
 	}
 
 	private async Task<BackedDeposit> GetDepositBefore(Guid organizationId, Guid guildId, Guid referenceDepositId,
 		int offset)
 	{
+		return await GetOffsetDeposit(organizationId, guildId, referenceDepositId, offset, true);
+	}
+
+	private async Task<BackedDeposit> GetDepositAfter(Guid organizationId, Guid guildId, Guid referenceId, int offset)
+	{
+		return await GetOffsetDeposit(organizationId, guildId, referenceId, offset, false);
+	}
+
+	private async Task<BackedDeposit> GetOffsetDeposit(Guid organizationId, Guid guildId, Guid referenceDepositId,
+		int offset, bool backwards)
+	{
 		using IDbConnection dbConnection = GetDbConnection();
+		var endNodeId = "end_node_id";
+		var startNodeId = "start_node_id";
+		if (backwards)
+		{
+			(endNodeId, startNodeId) = (startNodeId, endNodeId);
+		}
+
 		try
 		{
-			return await dbConnection.QueryFirstAsync<BackedDeposit>(@"
+			return await dbConnection.QueryFirstAsync<BackedDeposit>($@"
 				WITH RECURSIVE node AS (
 					(
 						SELECT
@@ -153,9 +171,9 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 						INNER JOIN deposit_node ON
 							graph_node.id = deposit_node.node_id
 						INNER JOIN graph_edge ON 
-							graph_edge.start_node_id = graph_node.id
+							graph_edge.{endNodeId} = graph_node.id
 						INNER JOIN node ON
-							graph_edge.end_node_id = node.id
+							graph_edge.{startNodeId} = node.id
 						WHERE
 							node.recursion_count <= @Offset
 					)
