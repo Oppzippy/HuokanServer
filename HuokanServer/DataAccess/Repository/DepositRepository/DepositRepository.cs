@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -91,16 +92,18 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 				FROM
 					node
 				INNER JOIN deposit_node ON
-					deposit_node.node_id = node.id",
+					deposit_node.node_id = node.id
+				ORDER BY
+					node.recursion_count",
 			new
 			{
 				OrganizationId = organizationId,
 				GuildId = guildId,
 				AfterNodeId = afterNodeId,
-				Limit = limit,
+				Limit = afterNodeId == null ? limit : Math.Max(limit + 1, limit),
 			}
 		);
-		return results.AsList();
+		return afterNodeId == null ? results.AsList() : results.Skip(1).AsList();
 	}
 
 	public async Task<BackedDeposit> GetDeposit(Guid organizationId, Guid guildId, Guid depositId, int offset = 0)
