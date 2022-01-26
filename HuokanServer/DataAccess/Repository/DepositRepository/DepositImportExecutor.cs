@@ -111,7 +111,7 @@ public class DepositImportExecutor : IDepositImportExecutor
 
 	private class FindDepositSequenceStartResult
 	{
-		public int Id { get; set; }
+		public int Id { get; init; }
 	}
 
 	private async Task<List<List<int>>> FindDepositSequenceRest(Guid guildId, List<Deposit> deposits, List<int> depositIds)
@@ -173,30 +173,6 @@ public class DepositImportExecutor : IDepositImportExecutor
 		return sequencesByLatestId.Values.AsList();
 	}
 
-	private async Task CreateEndorsements(Guid userId, List<int> nodeIds)
-	{
-		foreach (int nodeId in nodeIds)
-		{
-			await _dbConnection.ExecuteAsync(@"
-					INSERT INTO deposit_node_endorsement
-						(node_id, user_id, created_at)
-					VALUES (
-						@NodeId,
-						(SELECT id FROM user_account WHERE external_id = @UserId),
-						@CreatedAt
-					)
-					ON CONFLICT (node_id, user_id) DO NOTHING",
-				new
-				{
-					NodeId = nodeId,
-					UserId = userId,
-					CreatedAt = DateTimeOffset.UtcNow,
-				},
-				_transaction
-			);
-		}
-	}
-
 	private async Task ImportMergeIntoExistingSequences(Guid guildId, Guid userId, List<Deposit> deposits, List<List<int>> sequences)
 	{
 		int maxLength = sequences.Max(sequence => sequence.Count);
@@ -204,8 +180,9 @@ public class DepositImportExecutor : IDepositImportExecutor
 
 		foreach (List<int> sequence in matchedSequences)
 		{
+			List<Deposit> existingDeposits = deposits.GetRange(0, sequence.Count);
 			List<Deposit> newDeposits = deposits.GetRange(sequence.Count, deposits.Count - sequence.Count);
-			await CreateEndorsements(userId, sequence);
+			await CreateEndorsements(userId, sequence, existingDeposits);
 			await ImportAndEndorseSequence(guildId, userId, newDeposits, sequence.Last());
 		}
 	}
@@ -213,7 +190,7 @@ public class DepositImportExecutor : IDepositImportExecutor
 	private async Task ImportAndEndorseSequence(Guid guildId, Guid userId, List<Deposit> deposits, int? parentNodeId)
 	{
 		List<int> nodeIds = await ImportSequence(guildId, deposits, parentNodeId);
-		await CreateEndorsements(userId, nodeIds);
+		await CreateEndorsements(userId, nodeIds, deposits);
 	}
 
 	private async Task<List<int>> ImportSequence(Guid guildId, List<Deposit> deposits, int? parentNodeId)
@@ -273,5 +250,37 @@ public class DepositImportExecutor : IDepositImportExecutor
 			args,
 			_transaction
 		);
+	}
+	
+	private async Task CreateEndorsements(Guid userId, List<int> nodeIds, List<Deposit> deposits)
+	{
+		if (nodeIds.Count != deposits.Count)
+		{
+			throw new ArgumentException("nodeIds and deposits must have the same length");
+		}
+		for (int i = 0; i < nodeIds.Count; i++)
+		{
+			int nodeId = nodeIds[i];
+			Deposit deposit = deposits[i];
+			await _dbConnection.ExecuteAsync(@"
+					INSERT INTO deposit_node_endorsement
+						(node_id, user_id, created_at, approximate_deposit_timestamp)
+					VALUES (
+						@NodeId,
+						(SELECT id FROM user_account WHERE external_id = @UserId),
+						@CreatedAt,
+						@ApproximateDepositTime
+					)
+					ON CONFLICT (node_id, user_id) DO NOTHING",
+				new
+				{
+					NodeId = nodeId,
+					UserId = userId,
+					CreatedAt = DateTimeOffset.UtcNow,
+					ApproximateDepositTime = deposit.ApproximateDepositTimestamp,
+				},
+				_transaction
+			);
+		}
 	}
 }

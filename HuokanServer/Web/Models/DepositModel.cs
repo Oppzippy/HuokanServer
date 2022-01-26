@@ -32,7 +32,11 @@ public record DepositModel
 	[BindRequired]
 	[Range(typeof(long), "1", "99999999999")]
 	public long DepositInCopper { get; init; }
-
+	
+	[Required]
+	[BindRequired]
+	public DateTimeOffset ApproximateDepositTimestamp { get; init; }
+	
 	public static DepositModel From(BackedDeposit deposit)
 	{
 		return new DepositModel()
@@ -42,6 +46,7 @@ public record DepositModel
 			CharacterRealm = deposit.CharacterRealm,
 			DepositInCopper = deposit.DepositInCopper,
 			Endorsements = deposit.Endorsements,
+			ApproximateDepositTimestamp = deposit.ApproximateDepositTimestamp,
 		};
 	}
 }

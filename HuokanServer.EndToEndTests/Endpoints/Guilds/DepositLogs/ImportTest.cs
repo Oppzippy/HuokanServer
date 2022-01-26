@@ -17,6 +17,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 		[Fact]
 		public async Task TestImportDepositLog()
 		{
+			DateTimeOffset time = new DateTimeOffset(2022, 1, 1, 0, 0, 0, TimeSpan.Zero);
 			HttpResponseMessage response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/organizations/{Organization.Id}/guilds/{Guild.Id}/depositLogs", new DepositLogModel()
 			{
 				Log = new List<DepositLogEntryModel>()
@@ -27,6 +28,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 						CharacterRealm = "TestRealm",
 						DepositInCopper = 1,
 						GuildBankCopper = 1,
+						ApproximateDepositTime = time,
 					},
 				},
 				CapturedAt = DateTimeOffset.UtcNow,
@@ -41,6 +43,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 			Assert.Equal("Test",deposits[0].CharacterName);
 			Assert.Equal("TestRealm",deposits[0].CharacterRealm);
 			Assert.Equal(1,deposits[0].DepositInCopper);
+			Assert.Equal(time, deposits[0].ApproximateDepositTimestamp);
 		}
 	}
 }

@@ -24,6 +24,7 @@ public class GetDepositsAfterNonexistentTest : DepositRepositoryTestBase
 				CharacterRealm = "Realm",
 				DepositInCopper = 1,
 				GuildBankCopper = 1,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			},
 		});
 

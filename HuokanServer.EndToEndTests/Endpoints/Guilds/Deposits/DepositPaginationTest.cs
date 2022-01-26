@@ -27,6 +27,7 @@ public class PaginationTest : OrganizationUserTestBase
 				CharacterRealm = $"Realm",
 				DepositInCopper = i,
 				GuildBankCopper = i,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			});
 		}
 

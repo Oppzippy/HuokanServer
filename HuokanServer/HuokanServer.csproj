@@ -26,5 +26,6 @@
     <EmbeddedResource Include="Migrations\20210808030629_deposit_graph.sql" />
     <EmbeddedResource Include="Migrations\20210819184413_guild.sql" />
     <EmbeddedResource Include="Migrations\20210927050830_permission.sql" />
+    <EmbeddedResource Include="Migrations\20220126024138_deposit_approximate_time.sql" />
   </ItemGroup>
 </Project>

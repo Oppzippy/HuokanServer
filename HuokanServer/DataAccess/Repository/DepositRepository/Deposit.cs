@@ -1,3 +1,5 @@
+using System;
+
 namespace HuokanServer.DataAccess.Repository.DepositRepository;
 
 public record Deposit
@@ -6,4 +8,5 @@ public record Deposit
 	public string CharacterRealm { get; init; }
 	public long DepositInCopper { get; init; }
 	public long GuildBankCopper { get; init; }
+	public DateTimeOffset ApproximateDepositTimestamp { get; init; }
 }

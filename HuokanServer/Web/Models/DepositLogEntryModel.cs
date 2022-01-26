@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using HuokanServer.DataAccess.Repository.DepositRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -27,6 +28,10 @@ public record DepositLogEntryModel
 	[BindRequired]
 	[Range(typeof(long), "0", "99999999999")]
 	public long GuildBankCopper { get; init; }
+	
+	[Required]
+	[BindRequired]
+	public DateTimeOffset ApproximateDepositTime { get; init; }
 
 	public Deposit ToDeposit()
 	{
@@ -36,6 +41,7 @@ public record DepositLogEntryModel
 			CharacterRealm = CharacterRealm,
 			DepositInCopper = DepositInCopper,
 			GuildBankCopper = GuildBankCopper,
+			ApproximateDepositTimestamp = ApproximateDepositTime,
 		};
 	}
 }

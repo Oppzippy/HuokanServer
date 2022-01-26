@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
@@ -16,6 +17,7 @@ public class GetDepositTest : DepositRepositoryTestBase
 		BackedGuild guild = await CreateGuild();
 		BackedUser user = await CreateUser(guild.OrganizationId);
 
+		DateTimeOffset time = DateTimeOffset.UtcNow;
 		await Repository.Import(guild.OrganizationId, guild.Id, user.Id, new List<Deposit>()
 		{
 			new()
@@ -24,6 +26,7 @@ public class GetDepositTest : DepositRepositoryTestBase
 				CharacterRealm = "Realm",
 				DepositInCopper = 1,
 				GuildBankCopper = 1,
+				ApproximateDepositTimestamp = time,
 			},
 		});
 

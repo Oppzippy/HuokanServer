@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
@@ -21,12 +22,14 @@ public class ImportTest : DepositRepositoryTestBase
 				CharacterRealm = "Illidan",
 				DepositInCopper = 1,
 				GuildBankCopper = 1,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			},
 			new Deposit(){
 				CharacterName = "Advertiser2",
 				CharacterRealm = "Illidan",
 				DepositInCopper = 2,
 				GuildBankCopper = 3,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			},
 		});
 	}

@@ -24,6 +24,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.Deposits
 					CharacterRealm = "Realm",
 					DepositInCopper = 1,
 					GuildBankCopper = 1,
+					ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 				}
 			});
 

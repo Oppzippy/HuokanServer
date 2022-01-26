@@ -40,6 +40,10 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 						SELECT
 							graph_node.id AS id,
 							(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = graph_node.id) AS endorsements,
+							(
+								SELECT PERCENTILE_DISC(0.5) WITHIN GROUP(ORDER BY approximate_deposit_timestamp)
+								FROM deposit_node_endorsement AS dne WHERE dne.node_id = graph_node.id
+							) AS approximate_deposit_timestamp,
 							1 as recursion_count
 						FROM
 							graph
@@ -72,6 +76,10 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 						SELECT 
 							graph_edge.end_node_id AS id,
 							(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = graph_edge.end_node_id) AS endorsements,
+							(
+								SELECT PERCENTILE_DISC(0.5) WITHIN GROUP(ORDER BY approximate_deposit_timestamp)
+								FROM deposit_node_endorsement AS dne WHERE dne.node_id = graph_edge.end_node_id
+							) AS approximate_deposit_timestamp,
 							node.recursion_count + 1
 						FROM graph_node
 						INNER JOIN graph_edge ON
@@ -86,6 +94,7 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 				) SELECT
 					deposit_node.external_id AS id,
 					node.endorsements::INTEGER,
+					node.approximate_deposit_timestamp,
 					deposit_node.character_name,
 					deposit_node.character_realm,
 					deposit_node.deposit_in_copper
@@ -181,6 +190,10 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 				SELECT
 					deposit_node.external_id AS id,
 					(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = node.id) AS endorsements,
+					(
+						SELECT PERCENTILE_DISC(0.5) WITHIN GROUP(ORDER BY approximate_deposit_timestamp)
+						FROM deposit_node_endorsement AS dne WHERE dne.node_id = node.id
+					) AS approximate_deposit_timestamp,
 					deposit_node.character_name,
 					deposit_node.character_realm,
 					deposit_node.deposit_in_copper

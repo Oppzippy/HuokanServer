@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
@@ -24,6 +25,7 @@ public class GetDepositBeforeTest : DepositRepositoryTestBase
 				CharacterRealm = "Realm",
 				DepositInCopper = 1,
 				GuildBankCopper = 1,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			},
 			new()
 			{
@@ -31,6 +33,7 @@ public class GetDepositBeforeTest : DepositRepositoryTestBase
 				CharacterRealm = "Realm",
 				DepositInCopper = 2,
 				GuildBankCopper = 3,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			},
 			new()
 			{
@@ -38,6 +41,7 @@ public class GetDepositBeforeTest : DepositRepositoryTestBase
 				CharacterRealm = "Realm",
 				DepositInCopper = 3,
 				GuildBankCopper = 6,
+				ApproximateDepositTimestamp = DateTimeOffset.UtcNow,
 			},
 		});
 
