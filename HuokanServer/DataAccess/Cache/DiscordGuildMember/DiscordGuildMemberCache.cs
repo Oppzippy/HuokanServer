@@ -116,7 +116,7 @@ public class DiscordGuildMemberCache
 	private async Task<ISet<ulong>> GetRoleIds(IDatabaseAsync database, ulong guildId, ulong userId)
 	{
 		RedisValue[] roleIds = await database.SetMembersAsync($"{GetGuildMemberKey(guildId, userId)}:RoleIds");
-		if (roleIds != null)
+		if (roleIds.Length > 0)
 		{
 			return roleIds.Select(roleId => ((ulong)roleId)).ToHashSet();
 		}

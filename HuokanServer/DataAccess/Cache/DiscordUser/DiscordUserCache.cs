@@ -32,7 +32,7 @@ public class DiscordUserCache
 	{
 		IDatabase db = _redis.GetDatabase();
 		RedisValue[] guildIds = await db.SetMembersAsync($"DiscordUser:{userId}:GuildIds");
-		if (guildIds != null)
+		if (guildIds.Length > 0)
 		{
 			return guildIds.Select(guildId => Convert.ToUInt64(guildId)).ToList();
 		}
