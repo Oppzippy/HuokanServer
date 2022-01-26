@@ -125,10 +125,12 @@ public class DiscordGuildMemberCache
 
 	private async Task SetRoleIds(IDatabaseAsync database, ulong guildId, ulong userId, IEnumerable<ulong> roleIds)
 	{
+		var key = $"{GetGuildMemberKey(guildId, userId)}:RoleIds";
 		await database.SetAddAsync(
-			$"{GetGuildMemberKey(guildId, userId)}",
+			key,
 			roleIds.Select(roleId => new RedisValue(roleId.ToString())).ToArray()
 		);
+		await database.KeyExpireAsync(key, TimeSpan.FromMinutes(5));
 	}
 
 	private string GetGuildMemberKey(ulong guildId, ulong userId)
