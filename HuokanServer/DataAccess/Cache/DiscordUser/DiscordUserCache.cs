@@ -23,8 +23,8 @@ public class DiscordUserCache
 		RedisValue[] redisValues = guildIds.Select(guildId => new RedisValue(guildId.ToString())).ToArray();
 
 		ITransaction transaction = db.CreateTransaction();
-		await transaction.SetAddAsync(key, redisValues);
-		await transaction.KeyExpireAsync(key, TimeSpan.FromMinutes(1));
+		_ = transaction.SetAddAsync(key, redisValues);
+		_ = transaction.KeyExpireAsync(key, TimeSpan.FromMinutes(1));
 		await transaction.ExecuteAsync();
 	}
 
