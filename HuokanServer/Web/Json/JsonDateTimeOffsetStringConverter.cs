@@ -8,7 +8,7 @@ public class JsonDateTimeOffsetStringConverter : JsonConverter<DateTimeOffset>
 {
 	public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
-		return reader.GetDateTimeOffset();
+		return reader.GetDateTimeOffset().ToUniversalTime();
 	}
 
 	public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
