@@ -1,5 +1,6 @@
 /HuokanServer*/bin
 /HuokanServer*/obj
 /.vs
+/TestResults
 /HuokanServer.*Tests/TestResults
 *.DotSettings.user
