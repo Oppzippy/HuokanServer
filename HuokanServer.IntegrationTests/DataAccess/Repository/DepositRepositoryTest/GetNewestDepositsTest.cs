@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using HuokanServer.DataAccess.Repository.DepositRepository;
 using HuokanServer.DataAccess.Repository.GuildRepository;
@@ -9,10 +8,10 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryTest;
 
-public class GetDepositAfterTest : DepositRepositoryTestBase
+public class GetNewestDepositsTest : DepositRepositoryTestBase
 {
 	[Fact]
-	public async Task TestGetDepositAfter()
+	public async Task TestGetNewestDeposits()
 	{
 		BackedGuild guild = await CreateGuild();
 		BackedUser user = await CreateUser(guild.OrganizationId);
@@ -45,8 +44,10 @@ public class GetDepositAfterTest : DepositRepositoryTestBase
 			},
 		});
 
-		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id);
-		BackedDeposit deposit = await Repository.GetDeposit(guild.OrganizationId, guild.Id, deposits.First().Id, 1);
-		Assert.Equal(deposits[1], deposit);
+		List<BackedDeposit> deposits = await Repository.GetOlderDeposits(guild.OrganizationId, guild.Id, null, 2);
+
+		Assert.Equal(2, deposits.Count);
+		Assert.Equal("Name2", deposits[0].CharacterName);
+		Assert.Equal("Name3", deposits[1].CharacterName);
 	}
 }

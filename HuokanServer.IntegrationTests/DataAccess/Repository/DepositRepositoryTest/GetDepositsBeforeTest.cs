@@ -9,10 +9,10 @@ using Xunit;
 
 namespace HuokanServer.IntegrationTests.DataAccess.Repository.DepositRepositoryTest;
 
-public class GetDepositBeforeTest : DepositRepositoryTestBase
+public class GetDepositsBeforeTest : DepositRepositoryTestBase
 {
 	[Fact]
-	public async Task TestGetDepositBefore()
+	public async Task TestGetDepositsBefore()
 	{
 		BackedGuild guild = await CreateGuild();
 		BackedUser user = await CreateUser(guild.OrganizationId);
@@ -45,8 +45,12 @@ public class GetDepositBeforeTest : DepositRepositoryTestBase
 			},
 		});
 
-		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id);
-		BackedDeposit deposit = await Repository.GetDeposit(guild.OrganizationId, guild.Id, deposits.Last().Id, -1);
-		Assert.Equal(deposits[1], deposit);
+		List<BackedDeposit> deposits = await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, null, 5);
+		List<BackedDeposit> depositsBefore =
+			await Repository.GetOlderDeposits(guild.OrganizationId, guild.Id, deposits.Last().Id, 5);
+
+		Assert.Equal(2, depositsBefore.Count);
+		Assert.Equal("Name2", depositsBefore[0].CharacterName);
+		Assert.Equal("Name3", depositsBefore[1].CharacterName);
 	}
 }

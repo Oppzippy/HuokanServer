@@ -19,13 +19,27 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 		_depositImportExecutorFactory = depositImportExecutorFactory;
 	}
 
-	public async Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId, int limit = int.MaxValue)
+	public async Task<List<BackedDeposit>> GetNewerDeposits(Guid organizationId, Guid guildId, Guid? relativeNodeId,
+		int limit)
 	{
-		return await GetDepositsAfter(organizationId, guildId, null, limit);
+		return await GetDeposits(organizationId, guildId, relativeNodeId, limit, Direction.NEWER);
 	}
 
-	public async Task<List<BackedDeposit>> GetDepositsAfter(Guid organizationId, Guid guildId, Guid? afterNodeId,
-		int limit = int.MaxValue)
+	public async Task<List<BackedDeposit>> GetOlderDeposits(Guid organizationId, Guid guildId, Guid? relativeNodeId,
+		int limit)
+	{
+		return await GetDeposits(organizationId, guildId, relativeNodeId, limit, Direction.OLDER);
+	}
+
+	public async Task<Guid?> GetHead(Guid organizationId, Guid guildId)
+	{
+		// XXX Very inefficient implementation. Don't select unnecessary rows. Cache the result for a short period of time.
+		List<BackedDeposit> deposits = await GetDeposits(organizationId, guildId, null, int.MaxValue, Direction.NEWER);
+		return deposits.Last()?.Id;
+	}
+
+	private async Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId, Guid? relativeNodeId,
+		int limit, Direction direction)
 	{
 		await ThrowIfGuildDoesntExist(organizationId, guildId);
 		if (limit <= 0)
@@ -33,8 +47,25 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 			return new List<BackedDeposit>();
 		}
 
+		if (direction == Direction.OLDER && relativeNodeId == null)
+		{
+			// If we are looking for older deposits without specifying a relative node, we want deposits older than
+			// the newest deposit.
+			relativeNodeId = await GetHead(organizationId, guildId);
+		}
+
+		var endNodeId = "end_node_id";
+		var startNodeId = "start_node_id";
+		if (direction == Direction.OLDER)
+		{
+			(endNodeId, startNodeId) = (startNodeId, endNodeId);
+		}
+
+
+		var orderByDirection = direction == Direction.NEWER ? "ASC" : "DESC";
+
 		using IDbConnection dbConnection = GetDbConnection();
-		var results = await dbConnection.QueryAsync<BackedDeposit>(@"
+		var results = await dbConnection.QueryAsync<BackedDeposit>($@"
 				WITH RECURSIVE node AS (
 					(
 						SELECT
@@ -74,7 +105,7 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 					UNION
 					(
 						SELECT 
-							graph_edge.end_node_id AS id,
+							graph_edge.{endNodeId} AS id,
 							(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = graph_edge.end_node_id) AS endorsements,
 							(
 								SELECT PERCENTILE_DISC(0.5) WITHIN GROUP(ORDER BY approximate_deposit_timestamp)
@@ -83,9 +114,9 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 							node.recursion_count + 1
 						FROM graph_node
 						INNER JOIN graph_edge ON
-							graph_edge.start_node_id = graph_node.id
+							graph_edge.{endNodeId} = graph_node.id
 						INNER JOIN node ON
-							node.id = graph_node.id
+							node.id = graph_edge.{startNodeId}
 						WHERE
 							node.recursion_count < @Limit
 						ORDER BY endorsements DESC
@@ -103,119 +134,16 @@ public class DepositRepository : DbRepositoryBase, IDepositRepository
 				INNER JOIN deposit_node ON
 					deposit_node.node_id = node.id
 				ORDER BY
-					node.recursion_count",
+					node.recursion_count {orderByDirection}",
 			new
 			{
 				OrganizationId = organizationId,
 				GuildId = guildId,
-				AfterNodeId = afterNodeId,
-				Limit = afterNodeId == null ? limit : Math.Max(limit + 1, limit),
+				AfterNodeId = relativeNodeId,
+				Limit = relativeNodeId == null ? limit : Math.Max(limit + 1, limit),
 			}
 		);
-		return afterNodeId == null ? results.AsList() : results.Skip(1).AsList();
-	}
-
-	public async Task<BackedDeposit> GetDeposit(Guid organizationId, Guid guildId, Guid depositId, int offset = 0)
-	{
-		if (offset <= 0)
-		{
-			return await GetDepositBefore(organizationId, guildId, depositId, -offset);
-		}
-
-		return await GetDepositAfter(organizationId, guildId, depositId, offset);
-	}
-
-	private async Task<BackedDeposit> GetDepositBefore(Guid organizationId, Guid guildId, Guid referenceDepositId,
-		int offset)
-	{
-		return await GetOffsetDeposit(organizationId, guildId, referenceDepositId, offset, true);
-	}
-
-	private async Task<BackedDeposit> GetDepositAfter(Guid organizationId, Guid guildId, Guid referenceId, int offset)
-	{
-		return await GetOffsetDeposit(organizationId, guildId, referenceId, offset, false);
-	}
-
-	private async Task<BackedDeposit> GetOffsetDeposit(Guid organizationId, Guid guildId, Guid referenceDepositId,
-		int offset, bool backwards)
-	{
-		using IDbConnection dbConnection = GetDbConnection();
-		var endNodeId = "end_node_id";
-		var startNodeId = "start_node_id";
-		if (backwards)
-		{
-			(endNodeId, startNodeId) = (startNodeId, endNodeId);
-		}
-
-		try
-		{
-			return await dbConnection.QueryFirstAsync<BackedDeposit>($@"
-				WITH RECURSIVE node AS (
-					(
-						SELECT
-							graph_node.id,
-							1 AS recursion_count
-						FROM
-							graph
-						INNER JOIN guild ON
-							guild.guild_bank_graph_id = graph.id
-						INNER JOIN organization ON
-							organization.id = guild.organization_id
-						INNER JOIN graph_node ON
-							graph_node.graph_id = graph.id
-						INNER JOIN deposit_node ON
-							graph_node.id = deposit_node.node_id
-						WHERE
-							organization.external_id = @OrganizationId AND
-							guild.external_id = @GuildId AND
-							deposit_node.external_id = @DepositId
-					)
-					UNION
-					(
-						SELECT
-							graph_node.id,
-							node.recursion_count + 1
-						FROM
-							graph_node
-						INNER JOIN deposit_node ON
-							graph_node.id = deposit_node.node_id
-						INNER JOIN graph_edge ON 
-							graph_edge.{endNodeId} = graph_node.id
-						INNER JOIN node ON
-							graph_edge.{startNodeId} = node.id
-						WHERE
-							node.recursion_count <= @Offset
-					)
-				)
-				SELECT
-					deposit_node.external_id AS id,
-					(SELECT COUNT(*) FROM deposit_node_endorsement AS dne WHERE dne.node_id = node.id) AS endorsements,
-					(
-						SELECT PERCENTILE_DISC(0.5) WITHIN GROUP(ORDER BY approximate_deposit_timestamp)
-						FROM deposit_node_endorsement AS dne WHERE dne.node_id = node.id
-					) AS approximate_deposit_timestamp,
-					deposit_node.character_name,
-					deposit_node.character_realm,
-					deposit_node.deposit_in_copper
-				FROM
-					node
-				INNER JOIN deposit_node ON
-					node.id = deposit_node.node_id
-				ORDER BY
-					node.recursion_count DESC
-				LIMIT 1",
-				new
-				{
-					OrganizationId = organizationId,
-					GuildId = guildId,
-					DepositId = referenceDepositId,
-					Offset = offset,
-				});
-		}
-		catch (InvalidOperationException ex)
-		{
-			throw new ItemNotFoundException("The deposit does not exist.", ex);
-		}
+		return relativeNodeId == null ? results.AsList() : results.Skip(1).AsList();
 	}
 
 	private async Task ThrowIfGuildDoesntExist(Guid organizationId, Guid guildId)

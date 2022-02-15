@@ -44,7 +44,7 @@ public class GetDepositsLimitTest : DepositRepositoryTestBase
 			},
 		});
 
-		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id, 2);
+		List<BackedDeposit> deposits = await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, null, 2);
 		Assert.Equal(2, deposits.Count);
 	}
 }

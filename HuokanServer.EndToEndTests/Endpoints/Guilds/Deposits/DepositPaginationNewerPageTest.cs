@@ -13,7 +13,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.Deposits;
 public class PaginationTest : OrganizationUserTestBase
 {
 	[Fact]
-	public async Task TestDepositPagination()
+	public async Task TestNewerPage()
 	{
 		var depositRepository =
 			new DepositRepository(ConnectionFactory, new DepositImportExecutorFactory(ConnectionFactory));
@@ -38,7 +38,7 @@ public class PaginationTest : OrganizationUserTestBase
 
 		Guid lastOnPage1 = page1.Deposits.Last().Id;
 		var page2 = await HttpClient.GetFromJsonAsync<DepositCollectionModel>(
-			$"{BaseUrl}/organizations/{Organization.Id}/guilds/{Guild.Id}/deposits?after={lastOnPage1}");
+			$"{BaseUrl}/organizations/{Organization.Id}/guilds/{Guild.Id}/deposits?relativeTo={lastOnPage1}&direction=newer");
 		Assert.Equal(5, page2.Deposits.Count);
 
 		for (int i = 0; i < 50; i++)

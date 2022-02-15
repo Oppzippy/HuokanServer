@@ -37,7 +37,7 @@ namespace HuokanServer.EndToEndTests.Endpoints.Guilds.DepositLogs
 			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
 			var depositRepository = new DepositRepository(ConnectionFactory, new DepositImportExecutorFactory(ConnectionFactory));
-			List<BackedDeposit> deposits = await depositRepository.GetDeposits(Organization.Id, Guild.Id);
+			List<BackedDeposit> deposits = await depositRepository.GetNewerDeposits(Organization.Id, Guild.Id, null, 5);
 			Assert.Single(deposits);
 			Assert.NotEqual(Guid.Empty,deposits[0].Id);
 			Assert.Equal("Test",deposits[0].CharacterName);

@@ -76,7 +76,7 @@ public class FindBestPathTest : DepositRepositoryTestBase
 			},
 		});
 
-		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id);
+		List<BackedDeposit> deposits = await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, null, 5);
 		Assert.Equal(3, deposits.Count);
 
 		Assert.NotEqual(Guid.Empty, deposits[0].Id);

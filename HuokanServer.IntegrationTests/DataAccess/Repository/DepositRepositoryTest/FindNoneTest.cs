@@ -12,7 +12,7 @@ public class FindNoneTest : DepositRepositoryTestBase
 	public async Task TestGetNoDeposits()
 	{
 		BackedGuild guild = await CreateGuild();
-		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id);
+		List<BackedDeposit> deposits = await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, null, 5);
 		Assert.Empty(deposits);
 	}
 }

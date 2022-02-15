@@ -6,11 +6,13 @@ namespace HuokanServer.DataAccess.Repository.DepositRepository;
 
 public interface IDepositRepository
 {
-	Task<List<BackedDeposit>> GetDeposits(Guid organizationId, Guid guildId, int limit=int.MaxValue);
+	Task<List<BackedDeposit>> GetNewerDeposits(Guid organizationId, Guid guildId, Guid? relativeNodeId,
+		int limit);
+
+	Task<List<BackedDeposit>> GetOlderDeposits(Guid organizationId, Guid guildId, Guid? relativeNodeId,
+		int limit);
+
+	Task<Guid?> GetHead(Guid organizationId, Guid guildId);
+
 	Task Import(Guid organizationId, Guid guildId, Guid userId, List<Deposit> deposits);
-
-	Task<List<BackedDeposit>> GetDepositsAfter(Guid organizationId, Guid guildId, Guid? afterNodeId,
-		int limit=int.MaxValue);
-
-	Task<BackedDeposit> GetDeposit(Guid organizationId, Guid guildId, Guid depositId, int offset = 0);
 }

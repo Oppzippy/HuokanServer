@@ -44,9 +44,9 @@ public class GetDepositsAfterTest : DepositRepositoryTestBase
 			},
 		});
 
-		List<BackedDeposit> deposits = await Repository.GetDeposits(guild.OrganizationId, guild.Id);
+		List<BackedDeposit> deposits = await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, null, 5);
 		List<BackedDeposit> depositsAfter =
-			await Repository.GetDepositsAfter(guild.OrganizationId, guild.Id, deposits[0].Id);
+			await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, deposits[0].Id, 5);
 
 		Assert.Equal(2, depositsAfter.Count);
 		Assert.Equal("Name2", depositsAfter[0].CharacterName);

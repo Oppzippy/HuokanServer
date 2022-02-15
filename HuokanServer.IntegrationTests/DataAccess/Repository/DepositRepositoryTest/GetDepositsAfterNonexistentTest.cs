@@ -28,7 +28,7 @@ public class GetDepositsAfterNonexistentTest : DepositRepositoryTestBase
 			},
 		});
 
-		List<BackedDeposit> deposits = await Repository.GetDepositsAfter(guild.OrganizationId, guild.Id, Guid.Empty);
+		List<BackedDeposit> deposits = await Repository.GetNewerDeposits(guild.OrganizationId, guild.Id, Guid.Empty, 5);
 		Assert.Empty(deposits);
 	}
 }

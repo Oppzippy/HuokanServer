@@ -10,6 +10,7 @@ public class GetNonexistentGuildTest : DepositRepositoryTestBase
 	[Fact]
 	public async Task TestGetDepositsFromNonexistentGuild()
 	{
-		await Assert.ThrowsAnyAsync<ItemNotFoundException>(() => Repository.GetDeposits(Guid.Empty, Guid.Empty));
+		await Assert.ThrowsAnyAsync<ItemNotFoundException>(() =>
+			Repository.GetNewerDeposits(Guid.Empty, Guid.Empty, null, 5));
 	}
 }
